@@ -1,0 +1,12 @@
+[submodule "sources/extractor"]
+	path = sources/extractor
+	url = https://github.com/firmadyne/extractor.git
+[submodule "sources/console"]
+	path = sources/console
+	url = https://github.com/firmadyne/console.git
+[submodule "sources/scraper"]
+	path = sources/scraper
+	url = https://github.com/firmadyne/scraper.git
+[submodule "sources/libnvram"]
+	path = sources/libnvram
+	url = https://github.com/firmadyne/libnvram.git

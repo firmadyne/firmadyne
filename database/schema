@@ -1,0 +1,443 @@
+--
+-- PostgreSQL database dump
+--
+
+--
+-- Name: brand; Type: TABLE; Schema: public; Owner: firmadyne; Tablespace:
+--
+
+CREATE TABLE brand (
+    id integer NOT NULL,
+    name character varying NOT NULL
+);
+
+
+ALTER TABLE public.brand OWNER TO firmadyne;
+
+--
+-- Name: brand_id_seq; Type: SEQUENCE; Schema: public; Owner: firmadyne
+--
+
+CREATE SEQUENCE brand_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.brand_id_seq OWNER TO firmadyne;
+
+--
+-- Name: brand_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: firmadyne
+--
+
+ALTER SEQUENCE brand_id_seq OWNED BY brand.id;
+
+
+--
+-- Name: image; Type: TABLE; Schema: public; Owner: firmadyne; Tablespace:
+--
+
+CREATE TABLE image (
+    id integer NOT NULL,
+    filename character varying NOT NULL,
+    description character varying,
+    brand_id integer DEFAULT 1 NOT NULL,
+    hash character varying,
+    rootfs_extracted boolean DEFAULT false,
+    kernel_extracted boolean DEFAULT false,
+    arch character varying,
+    kernel_version character varying
+);
+
+
+ALTER TABLE public.image OWNER TO firmadyne;
+
+--
+-- Name: image_id_seq; Type: SEQUENCE; Schema: public; Owner: firmadyne
+--
+
+CREATE SEQUENCE image_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.image_id_seq OWNER TO firmadyne;
+
+--
+-- Name: image_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: firmadyne
+--
+
+ALTER SEQUENCE image_id_seq OWNED BY image.id;
+
+
+--
+-- Name: object; Type: TABLE; Schema: public; Owner: firmadyne; Tablespace:
+--
+
+CREATE TABLE object (
+    id integer NOT NULL,
+    hash character varying
+);
+
+
+ALTER TABLE public.object OWNER TO firmadyne;
+
+--
+-- Name: object_id_seq; Type: SEQUENCE; Schema: public; Owner: firmadyne
+--
+
+CREATE SEQUENCE object_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.object_id_seq OWNER TO firmadyne;
+
+--
+-- Name: object_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: firmadyne
+--
+
+ALTER SEQUENCE object_id_seq OWNED BY object.id;
+
+
+--
+-- Name: object_to_image; Type: TABLE; Schema: public; Owner: firmadyne; Tablespace:
+--
+
+CREATE TABLE object_to_image (
+    id integer NOT NULL,
+    oid integer NOT NULL,
+    iid integer NOT NULL,
+    filename character varying NOT NULL,
+    regular_file boolean DEFAULT true,
+    permissions integer,
+    uid integer,
+    gid integer
+);
+
+ALTER TABLE public.object_to_image OWNER TO firmadyne;
+
+--
+-- Name: object_to_image_id_seq; Type: SEQUENCE; Schema: public; Owner: firmadyne
+--
+
+CREATE SEQUENCE object_to_image_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.object_to_image_id_seq OWNER TO firmadyne;
+
+--
+-- Name: object_to_image_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: firmadyne
+--
+
+ALTER SEQUENCE object_to_image_id_seq OWNED BY object_to_image.id;
+
+
+--
+-- Name: product; Type: TABLE; Schema: public; Owner: firmadyne; Tablespace:
+--
+
+CREATE TABLE product (
+    id integer NOT NULL,
+    iid integer NOT NULL,
+    url character varying NOT NULL,
+    mib_hash character varying,
+    mib_url character varying,
+    sdk_hash character varying,
+    sdk_url character varying,
+    product character varying,
+    version character varying,
+    build character varying,
+    date timestamp without time zone,
+    mib_filename character varying,
+    sdk_filename character varying
+);
+
+
+ALTER TABLE public.product OWNER TO firmadyne;
+
+--
+-- Name: product_id_seq; Type: SEQUENCE; Schema: public; Owner: firmadyne
+--
+
+CREATE SEQUENCE product_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.product_id_seq OWNER TO firmadyne;
+
+--
+-- Name: product_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: firmadyne
+--
+
+ALTER SEQUENCE product_id_seq OWNED BY product.id;
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: firmadyne
+--
+
+ALTER TABLE ONLY brand ALTER COLUMN id SET DEFAULT nextval('brand_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: firmadyne
+--
+
+ALTER TABLE ONLY image ALTER COLUMN id SET DEFAULT nextval('image_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: firmadyne
+--
+
+ALTER TABLE ONLY object ALTER COLUMN id SET DEFAULT nextval('object_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: firmadyne
+--
+
+ALTER TABLE ONLY object_to_image ALTER COLUMN id SET DEFAULT nextval('object_to_image_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: firmadyne
+--
+
+ALTER TABLE ONLY product ALTER COLUMN id SET DEFAULT nextval('product_id_seq'::regclass);
+
+
+--
+-- Name: brand_name_key; Type: CONSTRAINT; Schema: public; Owner: firmadyne; Tablespace:
+--
+
+ALTER TABLE ONLY brand
+    ADD CONSTRAINT brand_name_key UNIQUE (name);
+
+
+--
+-- Name: brand_pkey; Type: CONSTRAINT; Schema: public; Owner: firmadyne; Tablespace:
+--
+
+ALTER TABLE ONLY brand
+    ADD CONSTRAINT brand_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: image_pkey; Type: CONSTRAINT; Schema: public; Owner: firmadyne; Tablespace:
+--
+
+ALTER TABLE ONLY image
+    ADD CONSTRAINT image_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: object_hash_key; Type: CONSTRAINT; Schema: public; Owner: firmadyne; Tablespace:
+--
+
+ALTER TABLE ONLY object
+    ADD CONSTRAINT object_hash_key UNIQUE (hash);
+
+
+--
+-- Name: object_pkey; Type: CONSTRAINT; Schema: public; Owner: firmadyne; Tablespace:
+--
+
+ALTER TABLE ONLY object
+    ADD CONSTRAINT object_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: object_to_image_oid_iid_filename_key; Type: CONSTRAINT; Schema: public; Owner: firmadyne; Tablespace:
+--
+
+ALTER TABLE ONLY object_to_image
+    ADD CONSTRAINT object_to_image_oid_iid_filename_key UNIQUE (oid, iid, filename);
+
+
+--
+-- Name: object_to_image_pk; Type: CONSTRAINT; Schema: public; Owner: firmadyne; Tablespace:
+--
+
+ALTER TABLE ONLY object_to_image
+    ADD CONSTRAINT object_to_image_pk PRIMARY KEY (id);
+
+
+--
+-- Name: product_iid_product_version_build_key; Type: CONSTRAINT; Schema: public; Owner: firmadyne; Tablespace:
+--
+
+ALTER TABLE ONLY product
+    ADD CONSTRAINT product_iid_product_version_build_key UNIQUE (iid, product, version, build);
+
+
+--
+-- Name: product_pkey; Type: CONSTRAINT; Schema: public; Owner: firmadyne; Tablespace:
+--
+
+ALTER TABLE ONLY product
+    ADD CONSTRAINT product_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: uniq_hash; Type: CONSTRAINT; Schema: public; Owner: firmadyne; Tablespace:
+--
+
+ALTER TABLE ONLY image
+    ADD CONSTRAINT uniq_hash UNIQUE (hash);
+
+
+--
+-- Name: idx_object_hash; Type: INDEX; Schema: public; Owner: firmadyne; Tablespace:
+--
+
+CREATE INDEX idx_object_hash ON object USING btree (hash);
+
+
+--
+-- Name: object_to_image_iid_idx; Type: INDEX; Schema: public; Owner: firmadyne; Tablespace:
+--
+
+CREATE INDEX object_to_image_iid_idx ON object_to_image USING btree (iid);
+
+
+--
+-- Name: object_to_image_iid_idx1; Type: INDEX; Schema: public; Owner: firmadyne; Tablespace:
+--
+
+CREATE INDEX object_to_image_iid_idx1 ON object_to_image USING btree (iid);
+
+
+--
+-- Name: object_to_image_oid_idx; Type: INDEX; Schema: public; Owner: firmadyne; Tablespace:
+--
+
+CREATE INDEX object_to_image_oid_idx ON object_to_image USING btree (oid);
+
+
+--
+-- Name: image_brand_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: firmadyne
+--
+
+ALTER TABLE ONLY image
+    ADD CONSTRAINT image_brand_id_fkey FOREIGN KEY (brand_id) REFERENCES brand(id) ON DELETE CASCADE;
+
+
+--
+-- Name: object_to_image_iid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: firmadyne
+--
+
+ALTER TABLE ONLY object_to_image
+    ADD CONSTRAINT object_to_image_iid_fkey FOREIGN KEY (iid) REFERENCES image(id) ON DELETE CASCADE;
+
+
+--
+-- Name: object_to_image_oid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: firmadyne
+--
+
+ALTER TABLE ONLY object_to_image
+    ADD CONSTRAINT object_to_image_oid_fkey FOREIGN KEY (oid) REFERENCES object(id) ON DELETE CASCADE;
+
+
+--
+-- Name: product_iid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: firmadyne
+--
+
+ALTER TABLE ONLY product
+    ADD CONSTRAINT product_iid_fkey FOREIGN KEY (iid) REFERENCES image(id) ON DELETE CASCADE;
+
+
+--
+-- Name: brand; Type: ACL; Schema: public; Owner: firmadyne
+--
+
+REVOKE ALL ON TABLE brand FROM PUBLIC;
+REVOKE ALL ON TABLE brand FROM firmadyne;
+GRANT ALL ON TABLE brand TO firmadyne;
+
+
+--
+-- Name: brand_id_seq; Type: ACL; Schema: public; Owner: firmadyne
+--
+
+REVOKE ALL ON SEQUENCE brand_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE brand_id_seq FROM firmadyne;
+GRANT ALL ON SEQUENCE brand_id_seq TO firmadyne;
+
+
+--
+-- Name: image; Type: ACL; Schema: public; Owner: firmadyne
+--
+
+REVOKE ALL ON TABLE image FROM PUBLIC;
+REVOKE ALL ON TABLE image FROM firmadyne;
+GRANT ALL ON TABLE image TO firmadyne;
+
+
+--
+-- Name: image_id_seq; Type: ACL; Schema: public; Owner: firmadyne
+--
+
+REVOKE ALL ON SEQUENCE image_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE image_id_seq FROM firmadyne;
+GRANT ALL ON SEQUENCE image_id_seq TO firmadyne;
+
+
+--
+-- Name: object; Type: ACL; Schema: public; Owner: firmadyne
+--
+
+REVOKE ALL ON TABLE object FROM PUBLIC;
+REVOKE ALL ON TABLE object FROM firmadyne;
+GRANT ALL ON TABLE object TO firmadyne;
+
+
+--
+-- Name: object_id_seq; Type: ACL; Schema: public; Owner: firmadyne
+--
+
+REVOKE ALL ON SEQUENCE object_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE object_id_seq FROM firmadyne;
+GRANT ALL ON SEQUENCE object_id_seq TO firmadyne;
+
+
+--
+-- Name: object_to_image; Type: ACL; Schema: public; Owner: firmadyne
+--
+
+REVOKE ALL ON TABLE object_to_image FROM PUBLIC;
+REVOKE ALL ON TABLE object_to_image FROM firmadyne;
+GRANT ALL ON TABLE object_to_image TO firmadyne;
+
+
+--
+-- Name: object_to_image_id_seq; Type: ACL; Schema: public; Owner: firmadyne
+--
+
+REVOKE ALL ON SEQUENCE object_to_image_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE object_to_image_id_seq FROM firmadyne;
+GRANT ALL ON SEQUENCE object_to_image_id_seq TO firmadyne;
+
+
+--
+-- PostgreSQL database dump complete
+--
+
