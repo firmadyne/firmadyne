@@ -36,12 +36,11 @@ else
     fi
 fi
 
-echo "Running firmware ${IID} for 60 secs..."
-timeout --signal SIGINT 60 ${SCRIPT_DIR}/run.${ARCH}.sh ${IID}
-
+echo "Running firmware ${IID}: terminating after 60 secs..."
+timeout --preserve-status --signal SIGINT 60 "${SCRIPT_DIR}/run.${ARCH}.sh" "${IID}"
 sleep 1
 
 echo "Inferring network..."
-${SCRIPT_DIR}/makeNetwork.py -i ${IID} -q -o -a ${ARCH} -S ${SCRATCH_DIR}
+"${SCRIPT_DIR}/makeNetwork.py" -i "${IID}" -q -o -a "${ARCH}" -S "${SCRATCH_DIR}"
 
 echo "Done!"
