@@ -71,7 +71,7 @@ systems should also be compatible.
 
 First, clone this repository recursively and install its dependencies.
 
-1. `sudo apt-get install busybox fakeroot git kpartx netcat-openbsd nmap python-psycopg2 python3-psycopg2 snmp uml-utilities util-linux vlan`
+1. `sudo apt-get install busybox-static fakeroot git kpartx netcat-openbsd nmap python-psycopg2 python3-psycopg2 snmp uml-utilities util-linux vlan`
 2. `git clone --recursive https://github.com/firmadyne/firmadyne.git`
 
 ## Extractor
