@@ -34,6 +34,7 @@ echo "----Unmounting----"
 umount "${DEVICE}"
 
 echo "----Disconnecting Device File----"
+umount "${IMAGE}"
 kpartx -d "${IMAGE}"
-losetup -d /dev/loop0 &
-losetup -d "${DEVICE}" &
+losetup -d "${DEVICE}" &>/dev/null
+dmsetup remove loop0p1 &>/dev/null

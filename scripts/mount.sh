@@ -33,6 +33,7 @@ DEVICE=/dev/mapper/loop0p1
 echo "----Adding Device File----"
 #/usr/bin/qemu-nbd --connect=/dev/${NBD} "${IMAGE}"
 kpartx -a -v "${IMAGE}"
+sleep 1
 
 echo "----Making image directory----"
 if [ ! -e "${IMAGE_DIR}" ]
