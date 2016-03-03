@@ -48,7 +48,10 @@ authentication.
 * SNMP Information: This script dumps the contents of the
 `public` and `private` SNMP v2c communities to disk using no credentials.
 * Vulnerability Check: This script tests for the presence
-of 74 vulnerabilities using exploits from Metasploit and other sources.
+of 60 known vulnerabilities using exploits from Metasploit. In addition, it
+also checks for 14 previously-unknown vulnerbailities that we discovered.
+For more information, including affected products and CVE's, refer to
+[analyses/README.md](https://github.com/firmadyne/firmadyne/blob/master/analyses/README.md).
 
 In our 2016 [Network and Distributed System Security Symposium (NDSS)](http://www.internetsociety.org/events/ndss-symposium)
 paper, titled [Towards Automated Dynamic Analysis for Linux-based Embedded Firmware](https://github.com/firmadyne/firmadyne/blob/master/paper/paper.pdf), we evaluated the FIRMADYNE
