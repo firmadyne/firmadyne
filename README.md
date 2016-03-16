@@ -115,7 +115,10 @@ Alternatively, refer to the instructions [below](#compiling-from-source) to comp
 
 To use [QEMU](http://wiki.qemu.org/Main_Page) provided by your distribution:
 
-* `sudo apt-get install qemu-system-arm qemu-system-mips qemu-utils`
+* `sudo apt-get install qemu-system-arm qemu-system-mips qemu-system-x86 qemu-utils`
+
+Note that emulation of x86-based firmware is not currently supported, but installing
+`qemu-system-x86` resolves a packaging issue on certain Debian-based distributions.
 
 Alternatively, use our [modified version](https://github.com/firmadyne/qemu-linaro)
 of [qemu-linaro](https://git.linaro.org/?p=qemu/qemu-linaro.git) for certain
