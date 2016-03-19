@@ -19,7 +19,7 @@ fi
 IID=${1}
 
 if [ $# -gt 1 ]; then
-    if [ check_arch ${2} -eq 1 ]; then
+    if check_arch "${2}"; then
         echo "Error: Invalid architecture!"
         exit 1
     fi
