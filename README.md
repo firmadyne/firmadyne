@@ -87,9 +87,7 @@ tool, so we need to install that and its dependencies.
 3. `sudo python ./binwalk/setup.py install`
   * For Python 2.x, `sudo apt-get install python-lzma`
 4. `sudo -H pip install git+https://github.com/ahupp/python-magic`
-5. Instead of [upstream jefferson](https://github.com/sviehb/jefferson), it is
-recommended to install our [jefferson fork](https://github.com/firmadyne/jefferson),
-which supports extraction of additional file and compression types.
+5. Install [jefferson](https://github.com/sviehb/jefferson).
 6. Optionally, instead of [upstream sasquatch](https://github.com/devttys0/sasquatch),
 our [sasquatch fork](https://github.com/firmadyne/sasquatch) can be used to
 prevent false positives by making errors fatal.
