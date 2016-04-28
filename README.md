@@ -7,6 +7,7 @@
   - [Binaries](#binaries)
   - [QEMU](#qemu)
 - [Usage](#usage)
+- [FAQ](#faq)
 - [Compiling from Source](#compiling-from-source)
   - [Toolchain](#toolchain)
   - [console](#console)
@@ -151,6 +152,14 @@ recommended), or [upstream qemu](https://github.com/qemu/qemu).
 11. The following scripts can be used to mount/unmount the filesystem of firmware `1`. Ensure that the emulated firmware is not running, and remember to unmount before performing any other operations.
    * `sudo ./scripts/mount.sh 1`
    * `sudo ./scripts/umount.sh 1`
+
+# FAQ
+## `run.sh` is not generated
+This is a common error that is encountered when the network configuration is unable to be inferred. Follow the checklist below to figure out the cause.
+
+1. `inferNetwork.sh`: Did this script find any network interfaces (e.g. `Interfaces: [br0, 192.168.0.1]`)? If so, this is a bug; please report it. Otherwise, continue below.
+2. `qemu.initial.serial.log`: Does this file end with `Unable to mount root fs on unknown-block(8,1)`? If so, the initial filesystem image was not generated correctly using `kpartx`. Try deleting the scratch directory corresponding to this firmware image, and restart at `makeImage.sh`. Otherwise, the initial emulation didn't produce any useful instrumentation. Try increasing the timeout in `inferNetwork.sh` from `60` to `120` and restarting at `inferNetwork.sh`.
+3. `qemu.initial.serial.log`: Did the `init` process crash, and is this preceded by a failed NVRAM operation (e.g. `nvram_get_buf: Unable to open key <foo>`)? If so, a new NVRAM entry may need to be manually added to `config.h` in `libnvram`, with the expected value. Otherwise, it is likely that a disassembler will be needed to figure out why the boot process failed. 
 
 # Compiling from Source
 
