@@ -165,7 +165,7 @@ def findIfacesForBridge(data, brif):
             iface = g.group(1)
             if iface != brif:
                 result.append(g.group(1))
-        return result
+    return result
 
 def findVlanInfoForDev(data, dev):
     #lines = data.split("\r\n")
@@ -259,8 +259,8 @@ def qemuCmd(iid, network, arch, endianness):
                               'QEMU_ENV_VARS' : qemuEnvVars}
 
 def process(infile, iid, arch, endianness=None, makeQemuCmd=False, outfile=None):
-    brifs = None
-    vlans = None
+    brifs = []
+    vlans = []
     data = open(infile).read()
     network = set()
     success = False
