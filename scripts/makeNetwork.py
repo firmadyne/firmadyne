@@ -114,6 +114,7 @@ def findMacChanges(data, endianness):
         fmt = ">I"
     elif endianness == "el":
         fmt = "<I"
+    for c in candidates:
         g = re.match(r"^ioctl_SIOCSIFHWADDR\[[^\]]+\]: dev:([^ ]+) mac:0x([0-9a-f]+) 0x([0-9a-f]+)", c)
         if g:
             (iface, mac0, mac1) = g.groups()
