@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- encoding:utf-8 -*-
+# -*- coding: utf-8 -*-
 import psycopg2
 import sys
 import traceback
