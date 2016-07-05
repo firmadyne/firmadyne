@@ -7,6 +7,7 @@ import struct
 import socket
 import stat
 import os
+import psycopg2
 
 debug = 0
 
@@ -251,6 +252,21 @@ def qemuCmd(iid, network, arch, endianness):
     else:
         raise Exception("Unsupported architecture")
 
+    try:
+        conn = psycopg2.connect(database='firmware', user='firmadyne',
+                password='firmadyne', host='127.0.0.1')
+        cur = conn.cursor()
+        cur.execute("UPDATE image SET guest_ip='%s' WHERE id=%d"%(ip,iid))
+        cur.execute("UPDATE image SET netdev='%s' WHERE id=%d"%(netdev,iid))
+        cur.execute("UPDATE image SET network_inferred=true WHERE id=%d"%(iid))
+        conn.commit()
+    except Exception as ex:
+        import traceback
+        traceback.print_exc()
+        import pdb
+        pdb.set_trace()
+    finally:
+        conn.close()
     return QEMUCMDTEMPLATE % {'IID': iid, 'GUESTIP': ip, 'NETDEVIP': closeIp(ip),
                               'HASVLAN' : hasVlan, 'VLANID': vlan_id,
                               'ARCHEND' : arch + endianness,
