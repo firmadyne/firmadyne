@@ -23,7 +23,7 @@ def main():
         endianness = args.archend[-2:]
     except (AttributeError, TypeError):
         parser.print_usage()
-        sys.exit()
+        return "Bad arguments"
 
     begin = time.time()
     while True:

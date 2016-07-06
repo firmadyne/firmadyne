@@ -37,7 +37,16 @@ else
 fi
 
 echo "Running firmware ${IID}: terminating after 60 secs..."
-timeout --preserve-status --signal SIGINT 60 "${SCRIPT_DIR}/run.${ARCH}.sh" "${IID}"
+# timeout --preserve-status --signal SIGINT 60 "${SCRIPT_DIR}/run.${ARCH}.sh" "${IID}"
+"${SCRIPT_DIR}/run.${ARCH}.sh" "${IID}" &
+WORK_DIR=`get_scratch ${IID}`
+# echo "\$ARCH = $ARCH, \$WORK_DIR=$WORK_DIR"
+sleep 3
+echo 'wait for inet_insert_ifa'
+python3 scripts/wait_for_inet_insert_ifa.py ${WORK_DIR}/qemu.initial.serial.log --timeout 30 --archend ${ARCH}
+QEMU=`get_qemu ${ARCH}`
+# echo "\$QEMU = $QEMU"
+killall ${QEMU} # qemu-system-mipsel
 sleep 1
 
 echo "Inferring network..."
