@@ -13,7 +13,7 @@ def main():
         if len(sys.argv) < 1 :
             return
         sql_cmd = sys.argv[1]
-        rows = cur.execute(sql_cmd)
+        cur.execute(sql_cmd)
         sql_act = sql_cmd.split()[0]
         if sql_act=='SELECT':
             rows = cur.fetchone()

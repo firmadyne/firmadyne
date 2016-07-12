@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+# set -e
 set -u
 
 if [ -e ./firmadyne.config ]; then
@@ -81,7 +81,7 @@ do
         ARCHEND=${ARCH}${END}
         echo ${ARCHEND}
 
-        python ./scripts/psql_firmware.py "UPDATE image SET arch = '$ARCHEND' WHERE id = $IID;"
+        scripts/psql_firmware.py "UPDATE image SET arch = '$ARCHEND' WHERE id = $IID;"
 
         rm -fr "/tmp/${IID}"
         exit 0

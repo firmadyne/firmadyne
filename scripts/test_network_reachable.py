@@ -9,6 +9,7 @@ import re
 import time
 from urllib import request
 import subprocess
+from shellutils import shell
 
 conn = psycopg2.connect(database="firmware", user="firmadyne", 
         password="firmadyne", host="127.0.0.1")
@@ -25,15 +26,6 @@ def gl(localvars):
     d.update(localvars)
     return d
 
-def shell(cmd):
-    cmd = path.expandvars(cmd)
-    proc= subprocess.Popen(cmd, shell=True,stdout=subprocess.PIPE)
-    returncode = proc.wait()
-    cmdout = proc.stdout.read().decode('utf8')
-    print(cmdout, end='', flush=True)
-    if returncode!=0:
-        print('\'%s\' returns %d'%(cmd,returncode), file=sys.stderr)
-    return returncode, cmdout
 
 def get_kernel(archend):
     if archend=='armel':
