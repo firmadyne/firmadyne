@@ -6,18 +6,18 @@ import time
 import re
 import struct
 import socket
+from itertools import count
 
-def wait_for_inet_insert_ifa(logfile, timeout, archend, interval=10):
+def wait_for_inet_insert_ifa(logfile, timeout, archend, interval=1):
     endianness = archend[-2:]
+    fmt = '>I' if endianness=='eb' else '<I'
     begin = time.time()
     while True:
-        with open(logfile, mode='r') as fin:
+        with open(logfile, mode='r', errors='ignore') as fin:
             s = fin.read()
-        i = s.find('__inet_insert_ifa')
-        if i!=-1:
-            m = re.search(r'0x[0-9a-z]{8}', s[i:], flags=re.I)
-            fmt = '>I' if endianness=='eb' else '<I'
-            ip = socket.inet_ntoa(struct.pack(fmt, int(m.group(0)[2:], 16)))
+        matches = re.findall(r'__inet_insert_ifa.+0x([0-9a-z]{8})', s, flags=re.I)
+        for m in matches:
+            ip = socket.inet_ntoa(struct.pack(fmt, int(m, 16)))
             if ip not in ['0.0.0.0', '127.0.0.1']:
                 return ip
 
