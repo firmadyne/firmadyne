@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+# set -e
 set -u
 
 if [ -e ./firmadyne.config ]; then

@@ -45,7 +45,7 @@ sudo rm -f ${WORK_DIR}/run.sh
 # echo "\$ARCH = $ARCH, \$WORK_DIR=$WORK_DIR"
 sleep 3
 echo 'wait for inet_insert_ifa'
-scripts/wait_for_inet_insert_ifa.py ${WORK_DIR}/qemu.initial.serial.log --timeout 30 --archend ${ARCH}
+scripts/wait_for_inet_insert_ifa.py ${WORK_DIR}/qemu.initial.serial.log --timeout 60 --archend ${ARCH}
 QEMU=`get_qemu ${ARCH}`
 # echo "\$QEMU = $QEMU"
 killall ${QEMU} # qemu-system-mipsel

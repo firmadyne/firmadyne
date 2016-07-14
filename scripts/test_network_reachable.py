@@ -10,10 +10,7 @@ import time
 from urllib import request
 import subprocess
 from shellutils import shell
-
-conn = psycopg2.connect(database="firmware", user="firmadyne", 
-        password="firmadyne", host="127.0.0.1")
-cur = conn.cursor()
+from psql_firmware import psql
 
 FIRMWARE_DIR = path.dirname(path.dirname(path.realpath(__file__)))
 BINARY_DIR=path.join(FIRMWARE_DIR,'binaries')
@@ -61,95 +58,105 @@ def closeIp(ip):
         tups[3] = 2
     return ".".join([str(x) for x in tups])
 
-
-
-if len(sys.argv)<2:
-    print("usage: \n\
-            %s {IID}"%(sys.argv[0]))
-    sys.exit()
-IID = int(sys.argv[1])
-cur.execute("SELECT arch FROM image WHERE id=%s"%IID)
-ARCHEND = cur.fetchone()[0]
-cur.execute("SELECT guest_ip FROM image WHERE id=%d"%IID)
-GUESTIP = cur.fetchone()[0]
-NETDEVIP=closeIp(GUESTIP)
-TAPDEV='tap%d'%IID
-HOSTNETDEV=TAPDEV
-
-IMAGE=get_fs(IID)
-KERNEL=get_kernel(ARCHEND)
-QEMU=get_qemu(ARCHEND)
-QEMU_MACHINE=get_qemu_machine(ARCHEND)
-QEMU_ROOTFS=get_qemu_disk(ARCHEND)
-WORK_DIR=get_scratch(IID)
-
-print("Creating TAP device {TAPDEV}...".format(**gl(locals())))
-shell('sudo tunctl -t {TAPDEV} -u $USER'.format(**gl(locals())))
-print("Bringing up TAP device...")
-shell('sudo ifconfig {HOSTNETDEV} {NETDEVIP}/24 up'.format(**gl(locals())))
-print("Adding route to {GUESTIP}...".format(**gl(locals())))
-shell('sudo route add -host {GUESTIP} gw {GUESTIP} {HOSTNETDEV}'.format(**gl(locals())))
-
 def ifaceNo(dev):
     g = re.match(r"[^0-9]+([0-9]+)", dev)
     return int(g.group(1))
-def qemuNetworkConfig(dev):
+
+def qemuNetworkConfig(netdev, iid):
+    tapdev='tap%d'%iid
     result = ""
     for i in range(0, 4):
-        if i == ifaceNo(dev):
-            result += "-net nic,vlan=%i -net tap,vlan=%i,ifname={TAPDEV},script=no ".format(**gl(locals())) \
-                    % (i, i)
+        if i == ifaceNo(netdev):
+            result += "-net nic,vlan=%(i)d -net tap,vlan=%(i)d,ifname=%(tapdev)s,script=no "%locals()
         else:
-            result += "-net nic,vlan=%i -net socket,vlan=%i,listen=:200%i "% (i, i, i)
+            result += "-net nic,vlan=%(i)d -net socket,vlan=%(i)d,listen=:200%(i)d "% locals()
     return result
 
-print("Starting emulation of firmware... ")
-if ARCHEND=='mipsel' or ARCHEND=='mipseb':
-    qemuEnvVars=""
-    qemuDisk = "-drive if=ide,format=raw,file={IMAGE}".format(**locals())
-elif ARCHEND=='armel':
-    qemuEnvVars = "QEMU_AUDIO_DRV=none "
-    qemuDisk = "-drive if=none,file={IMAGE},format=raw,id=rootfs -device virtio-blk-device,drive=rootfs".format(**locals())
-cur.execute("SELECT netdev FROM image WHERE id=%d"%IID)
-netdev=cur.fetchone()[0]
-qemuNetwork=qemuNetworkConfig(netdev)
+def get_qemu_cmd_line(iid, archend):
+    IMAGE=get_fs(iid)
+    KERNEL=get_kernel(archend)
+    QEMU=get_qemu(archend)
+    QEMU_MACHINE=get_qemu_machine(archend)
+    QEMU_ROOTFS=get_qemu_disk(archend)
+    WORK_DIR=get_scratch(iid)
+
+    if archend=='mipsel' or archend=='mipseb':
+        qemuEnvVars=""
+        qemuDisk = "-drive if=ide,format=raw,file={IMAGE}".format(**locals())
+    elif archend=='armel':
+        qemuEnvVars = "QEMU_AUDIO_DRV=none "
+        qemuDisk = "-drive if=none,file={IMAGE},format=raw,id=rootfs -device virtio-blk-device,drive=rootfs".format(**locals())
+    netdev = psql("SELECT netdev FROM image WHERE id=%d"%iid)
+    
+    qemuNetwork=qemuNetworkConfig(netdev, iid)
+    return ('''{qemuEnvVars} {QEMU} -m 256 -M {QEMU_MACHINE} -kernel {KERNEL} \
+            {qemuDisk} -append "root={QEMU_ROOTFS} console=ttyS0 \
+            nandsim.parts=64,64,64,64,64,64,64,64,64,64 rdinit=/preInit.sh rw debug ignore_loglevel \
+            print-fatal-signals=1 user_debug=31 firmadyne.syscall=8" \
+            -serial file:{WORK_DIR}/qemu.final.serial.log \
+            -display none \
+            -daemonize \
+            {qemuNetwork}'''.format(**locals()))
+
+def try_ip(ip_addr, timeout=60):
+    begin = time.time()
+    while True:
+        try:
+            print('test http://%s/'%ip_addr)
+            with request.urlopen('http://%s/'%ip_addr, timeout=3) as fin:
+                return True
+        except Exception as ex:
+            pass
+        if time.time()-begin > timeout:
+            return False
+
+def test_network_reachable(iid):
+    try:
+        archend = psql("SELECT arch FROM image WHERE id=%d"%iid)
+        guestip = psql("SELECT guest_ip FROM image WHERE id=%d"%iid)
+        netdevip=closeIp(guestip)
+        tapdev='tap%d'%iid
+        hostnetdev=tapdev
+
+        print("Creating TAP device %(tapdev)s..."%locals())
+        shell('sudo tunctl -t %(tapdev)s -u $USER'%locals())
+        print("Bringing up TAP device...")
+        shell('sudo ifconfig %(hostnetdev)s %(netdevip)s/24 up'%locals())
+        print("Adding route to %(guestip)s..."%locals())
+        shell('sudo route add -host %(guestip)s gw %(guestip)s %(hostnetdev)s'%locals())
+        print("Starting emulation of firmware... ")
+        WORK_DIR=get_scratch(iid)
+        shell('sudo rm -f {WORK_DIR}/qemu.final.serial.log'.format(**locals()))
+        ret, _ = shell(get_qemu_cmd_line(iid, archend))
+        if ret!=0:
+            raise Exception(ret)
+        time.sleep(10)
+        network_reachable = try_ip(guestip, 60)
+        print('network_reachable=%s'%network_reachable)
+        psql("UPDATE image SET network_reachable=%s WHERE id=%s", (network_reachable, iid))
+        print("Done!")
+    except Exception as ex:
+        pass
+    finally:
+        QEMU=get_qemu(archend)
+        shell('killall %(QEMU)s'%locals())
+        print( "Deleting route...")
+        shell('sudo route del -host %(guestip)s gw %(guestip)s %(hostnetdev)s'%locals())
+        print( "Bringing down %(tapdev)s..."%locals())
+        shell('sudo ifconfig %(tapdev)s down'%locals())
+        print("Deleting TAP device %(tapdev)s... "%locals())
+        shell('sudo tunctl -d %(tapdev)s'%locals())
 
 
-shell('''{qemuEnvVars} {QEMU} -m 256 -M {QEMU_MACHINE} -kernel {KERNEL} \
-        {qemuDisk} -append "root={QEMU_ROOTFS} console=ttyS0 \
-        nandsim.parts=64,64,64,64,64,64,64,64,64,64 rdinit=/preInit.sh rw debug ignore_loglevel \
-        print-fatal-signals=1 user_debug=31 firmadyne.syscall=8" \
-        -serial file:{WORK_DIR}/qemu.final.serial.log \
-        -display none \
-        -daemonize \
-        {qemuNetwork}'''.format(**gl(locals())))
-
-# the good sleep time depends on the time whether eth1 appear in the serial.log
-time.sleep(10)
-network_reachable=False
-try:
-    with request.urlopen('http://{GUESTIP}/'.format(**gl(locals())), timeout=10) as fin:
-        htmlsrc = fin.readall().decode('utf8')
-        if len(htmlsrc)>0:
-            network_reachable=True
-except Exception as ex:
-    pass
-print('network_reachable=%s'%network_reachable)
-cur.execute("UPDATE image SET network_reachable=%s WHERE id=%s", 
-        (network_reachable, IID))
-conn.commit()
+def main():
+    if len(sys.argv)<2:
+        print("usage: \n\
+                %s <IID>"%(sys.argv[0]))
+        return
+    iid = int(sys.argv[1])
+    test_network_reachable(iid)
 
 
-shell('killall {QEMU}'.format(**gl(locals())))
+if __name__=="__main__":
+    main()
 
-print( "Deleting route...")
-shell('sudo route del -host {GUESTIP} gw {GUESTIP} {HOSTNETDEV}'.format(**gl(locals())))
-
-print( "Bringing down TAP device...")
-shell('sudo ifconfig {TAPDEV} down'.format(**gl(locals())))
-
-
-print("Deleting TAP device {TAPDEV}... ".format(**gl(locals())))
-shell('sudo tunctl -d {TAPDEV}'.format(**gl(locals())))
-
-print("Done!")

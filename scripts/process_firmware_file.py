@@ -38,11 +38,12 @@ ret, txt = shell('sudo ./scripts/makeImage.sh %(iid)d %(arch)s'%locals())
 #    sys.exit(ret)
 if not path.exists('./scratch/%(iid)d/image.raw'%locals()):
     sys.exit(ret)
+print('inferNetwork.sh %(iid)s %(arch)s'%locals())
 ret, txt = shell('./scripts/inferNetwork.sh %(iid)s %(arch)s'%locals())
 if 'network_inferred=true' not in txt:
     sys.exit(ret)
 print('test_network_reachable')
-ret, txt = shell('./scripts/test_network_reachable.py %(iid)s'%locals())
+from test_network_reachable import test_network_reachable
+test_network_reachable(iid)
 # ret ,txt= shell('./scripts/run.sh %(iid)s'%locals())
 # shell('./analyses/runExploits.py -t %(guest_ip)s'%locals())
-
