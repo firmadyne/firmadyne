@@ -102,7 +102,7 @@ def get_qemu_cmd_line(iid, archend):
 
 def try_ip(ip_addr, timeout=60):
     begin = time.time()
-    while True:
+    for _i in range(20):
         try:
             print('test http://%s/'%ip_addr)
             with request.urlopen('http://%s/'%ip_addr, timeout=3) as fin:
@@ -113,19 +113,23 @@ def try_ip(ip_addr, timeout=60):
             return False
 
 def test_network_reachable(iid):
-    try:
-        archend = psql("SELECT arch FROM image WHERE id=%d"%iid)
-        if archend not in ['mipseb', 'mipsel', 'armel']:
-            print('archend="%(archend)s" is invalid!'%locals())
-            return
-        guestip = psql("SELECT guest_ip FROM image WHERE id=%d"%iid)
-        if not guestip:
-            print('guestip is empty!')
-            return
-        netdevip=closeIp(guestip)
-        tapdev='tap%d'%iid
-        hostnetdev=tapdev
+    archend = psql("SELECT arch FROM image WHERE id=%d"%iid)
+    if archend not in ['mipseb', 'mipsel', 'armel']:
+        print('archend="%(archend)s" is invalid!'%locals())
+        return
+    guestip = psql("SELECT guest_ip FROM image WHERE id=%d"%iid)
+    if not guestip:
+        print('guestip is empty!')
+        return
+    netdev = psql("SELECT netdev FROM image WHERE id=%d"%iid)
+    if not netdev:
+        print('netdev is empty!')
+        return
+    netdevip=closeIp(guestip)
+    tapdev='tap%d'%iid
+    hostnetdev=tapdev
 
+    try:
         print("Creating TAP device %(tapdev)s..."%locals())
         shell('sudo tunctl -t %(tapdev)s -u $USER'%locals())
         print("Bringing up TAP device...")
@@ -137,6 +141,7 @@ def test_network_reachable(iid):
         shell('sudo rm -f {WORK_DIR}/qemu.final.serial.log'.format(**locals()))
         ret, _ = shell(get_qemu_cmd_line(iid, archend))
         if ret!=0:
+            print('failed to launch %s'%get_qemu(archend), file=sys.stderr)
             raise Exception(ret)
         time.sleep(10)
         network_reachable = try_ip(guestip, 60)
@@ -162,6 +167,7 @@ def main():
                 %s <IID>"%(sys.argv[0]))
         return
     iid = int(sys.argv[1])
+    print('test_network_reachable %(iid)d'%locals())
     test_network_reachable(iid)
 
 
