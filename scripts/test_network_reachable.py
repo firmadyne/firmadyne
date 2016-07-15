@@ -100,17 +100,15 @@ def get_qemu_cmd_line(iid, archend):
             -daemonize \
             {qemuNetwork}'''.format(**locals()))
 
-def try_ip(ip_addr, timeout=60):
-    begin = time.time()
-    for _i in range(20):
+def try_ip(ip_addr, loopcount=20, timeout=3):
+    for _i in range(loopcount):
         try:
             print('test http://%s/'%ip_addr)
-            with request.urlopen('http://%s/'%ip_addr, timeout=3) as fin:
+            with request.urlopen('http://%s/'%ip_addr, timeout=timeout) as fin:
                 return True
         except Exception as ex:
             pass
-        if time.time()-begin > timeout:
-            return False
+    return False
 
 def test_network_reachable(iid):
     archend = psql("SELECT arch FROM image WHERE id=%d"%iid)
@@ -144,7 +142,7 @@ def test_network_reachable(iid):
             print('failed to launch %s'%get_qemu(archend), file=sys.stderr)
             raise Exception(ret)
         time.sleep(10)
-        network_reachable = try_ip(guestip, 60)
+        network_reachable = try_ip(guestip, 20, 3)
         print('network_reachable=%s'%network_reachable)
         psql("UPDATE image SET network_reachable=%s WHERE id=%s", (network_reachable, iid))
         print("Done!")
