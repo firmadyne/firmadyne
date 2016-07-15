@@ -38,10 +38,10 @@ fi
 
 echo "Running firmware ${IID}: terminating after 60 secs..."
 # timeout --preserve-status --signal SIGINT 60 "${SCRIPT_DIR}/run.${ARCH}.sh" "${IID}"
-"${SCRIPT_DIR}/run.${ARCH}.sh" "${IID}" &
 WORK_DIR=`get_scratch ${IID}`
 sudo rm -f ${WORK_DIR}/qemu.initial.serial.log
 sudo rm -f ${WORK_DIR}/run.sh
+"${SCRIPT_DIR}/run.${ARCH}.sh" "${IID}" &
 # echo "\$ARCH = $ARCH, \$WORK_DIR=$WORK_DIR"
 sleep 3
 echo 'wait for inet_insert_ifa'

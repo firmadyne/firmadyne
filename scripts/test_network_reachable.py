@@ -87,6 +87,8 @@ def get_qemu_cmd_line(iid, archend):
         qemuEnvVars = "QEMU_AUDIO_DRV=none "
         qemuDisk = "-drive if=none,file={IMAGE},format=raw,id=rootfs -device virtio-blk-device,drive=rootfs".format(**locals())
     netdev = psql("SELECT netdev FROM image WHERE id=%d"%iid)
+    if not netdev:
+        raise Exception('netdev for id=%(iid)d is empty'%locals())
     
     qemuNetwork=qemuNetworkConfig(netdev, iid)
     return ('''{qemuEnvVars} {QEMU} -m 256 -M {QEMU_MACHINE} -kernel {KERNEL} \
@@ -113,7 +115,13 @@ def try_ip(ip_addr, timeout=60):
 def test_network_reachable(iid):
     try:
         archend = psql("SELECT arch FROM image WHERE id=%d"%iid)
+        if archend not in ['mipseb', 'mipsel', 'armel']:
+            print('archend="%(archend)s" is invalid!'%locals())
+            return
         guestip = psql("SELECT guest_ip FROM image WHERE id=%d"%iid)
+        if not guestip:
+            print('guestip is empty!')
+            return
         netdevip=closeIp(guestip)
         tapdev='tap%d'%iid
         hostnetdev=tapdev
