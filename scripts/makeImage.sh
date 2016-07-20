@@ -32,7 +32,7 @@ if [ $# -gt 1 ]; then
     ARCH=${2}
 else
     echo -n "Querying database for architecture... "
-    ARCH=$(python ./scripts/psql_firmware.py "SELECT arch from image WHERE id=${1};")
+    ARCH=$(scripts/psql_firmware.py "SELECT arch from image WHERE id=${1};")
     ARCH="${ARCH#"${ARCH%%[![:space:]]*}"}"
     echo "${ARCH}"
     if [ -z "${ARCH}" ]; then
