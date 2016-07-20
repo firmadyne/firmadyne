@@ -25,8 +25,8 @@ if ret!=0:
     sys.exit(ret)
 # >> Database Image ID: 774
 iid =  int(re.search(r'Image ID: (\d+)', txt).group(1))
-if not path.exists('images/%(iid)d.tar.gz'):
-    print('failed to extract "%(fw_file)s" ', file=sys.stderr)
+if not path.exists('images/%(iid)d.tar.gz'%locals()):
+    print('failed to extract "%(fw_file)s" '%locals(), file=sys.stderr)
     sys.exit()
 
 ret, txt = shell('./scripts/getArch.sh ./images/%(iid)d.tar.gz 2>&1'%locals())
