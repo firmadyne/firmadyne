@@ -110,7 +110,7 @@ def try_ip(ip_addr, loopcount=20, timeout=3):
             pass
     return False
 
-def test_network_reachable(iid):
+def test_network_reachable(iid, emulate_only=False):
     archend = psql("SELECT arch FROM image WHERE id=%d"%iid)
     if archend not in ['mipseb', 'mipsel', 'armel']:
         print('archend="%(archend)s" is invalid!'%locals())
@@ -141,11 +141,16 @@ def test_network_reachable(iid):
         if ret!=0:
             print('failed to launch %s'%get_qemu(archend), file=sys.stderr)
             raise Exception(ret)
-        time.sleep(10)
-        network_reachable = try_ip(guestip, 20, 3)
-        print('network_reachable=%s'%network_reachable)
-        psql("UPDATE image SET network_reachable=%s WHERE id=%s", (network_reachable, iid))
-        print("Done!")
+        if emulate_only==False:
+            time.sleep(10)
+            network_reachable = try_ip(guestip, 20, 3)
+            print('network_reachable=%s'%network_reachable)
+            psql("UPDATE image SET network_reachable=%s WHERE id=%s", (network_reachable, iid))
+            print("Done!")
+        else:
+            print('open http://%(guestip)s/'%locals())
+            print('press any key to stop')
+            input()
     except Exception as ex:
         pass
     finally:
@@ -165,8 +170,14 @@ def main():
                 %s <IID>"%(sys.argv[0]))
         return
     iid = int(sys.argv[1])
-    print('test_network_reachable %(iid)d'%locals())
-    test_network_reachable(iid)
+    emulate_only=False
+    if len(sys.argv)>2:
+        emulate_only = sys.argv[2]=='emulate'
+    if emulate_only==False:
+        print('test_network_reachable %(iid)d'%locals())
+    else:
+        print('emulate image iid=%(iid)d'%locals())
+    test_network_reachable(iid, emulate_only)
 
 
 if __name__=="__main__":
