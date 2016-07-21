@@ -5,3 +5,6 @@
 binaries/
 images/
 scratch/
+__pycache__
+*.swp
+*.swo
