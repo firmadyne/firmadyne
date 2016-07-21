@@ -2,8 +2,114 @@
 -- PostgreSQL database dump
 --
 
+-- Dumped from database version 9.5.3
+-- Dumped by pg_dump version 9.5.3
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET row_security = off;
+
+DROP DATABASE firmware;
 --
--- Name: brand; Type: TABLE; Schema: public; Owner: firmadyne; Tablespace:
+-- Name: firmware; Type: DATABASE; Schema: -; Owner: firmadyne
+--
+
+CREATE DATABASE firmware WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'en_US.UTF-8' LC_CTYPE = 'en_US.UTF-8';
+
+
+ALTER DATABASE firmware OWNER TO firmadyne;
+
+\connect firmware
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+CREATE SCHEMA public;
+
+
+ALTER SCHEMA public OWNER TO postgres;
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
+--
+
+COMMENT ON SCHEMA public IS 'standard public schema';
+
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET search_path = public, pg_catalog;
+
+--
+-- Name: array_sort(anyarray); Type: FUNCTION; Schema: public; Owner: firmadyne
+--
+
+CREATE FUNCTION array_sort(anyarray) RETURNS anyarray
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$select array(select unnest($1) order by unnest );$_$;
+
+
+ALTER FUNCTION public.array_sort(anyarray) OWNER TO firmadyne;
+
+--
+-- Name: set_union(anyarray, anyarray); Type: FUNCTION; Schema: public; Owner: firmadyne
+--
+
+CREATE FUNCTION set_union(anyarray, anyarray) RETURNS anyarray
+    LANGUAGE plpgsql IMMUTABLE
+    AS $_$
+begin
+  return array(select unnest($1) union select unnest($2) order by unnest);
+end; $_$;
+
+
+ALTER FUNCTION public.set_union(anyarray, anyarray) OWNER TO firmadyne;
+
+--
+-- Name: set_union(anyarray, anyelement); Type: FUNCTION; Schema: public; Owner: firmadyne
+--
+
+CREATE FUNCTION set_union(anyarray, anyelement) RETURNS anyarray
+    LANGUAGE plpgsql IMMUTABLE
+    AS $_$
+begin
+  return array(select unnest($1) union select $2 order by unnest);
+end; $_$;
+
+
+ALTER FUNCTION public.set_union(anyarray, anyelement) OWNER TO firmadyne;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: brand; Type: TABLE; Schema: public; Owner: firmadyne
 --
 
 CREATE TABLE brand (
@@ -12,7 +118,7 @@ CREATE TABLE brand (
 );
 
 
-ALTER TABLE public.brand OWNER TO firmadyne;
+ALTER TABLE brand OWNER TO firmadyne;
 
 --
 -- Name: brand_id_seq; Type: SEQUENCE; Schema: public; Owner: firmadyne
@@ -26,7 +132,7 @@ CREATE SEQUENCE brand_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.brand_id_seq OWNER TO firmadyne;
+ALTER TABLE brand_id_seq OWNER TO firmadyne;
 
 --
 -- Name: brand_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: firmadyne
@@ -36,7 +142,7 @@ ALTER SEQUENCE brand_id_seq OWNED BY brand.id;
 
 
 --
--- Name: image; Type: TABLE; Schema: public; Owner: firmadyne; Tablespace:
+-- Name: image; Type: TABLE; Schema: public; Owner: firmadyne
 --
 
 CREATE TABLE image (
@@ -48,11 +154,16 @@ CREATE TABLE image (
     rootfs_extracted boolean DEFAULT false,
     kernel_extracted boolean DEFAULT false,
     arch character varying,
-    kernel_version character varying
+    kernel_version character varying,
+    network_inferred boolean,
+    network_reachable boolean,
+    guest_ip text,
+    netdev text,
+    vulns text[]
 );
 
 
-ALTER TABLE public.image OWNER TO firmadyne;
+ALTER TABLE image OWNER TO firmadyne;
 
 --
 -- Name: image_id_seq; Type: SEQUENCE; Schema: public; Owner: firmadyne
@@ -66,7 +177,7 @@ CREATE SEQUENCE image_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.image_id_seq OWNER TO firmadyne;
+ALTER TABLE image_id_seq OWNER TO firmadyne;
 
 --
 -- Name: image_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: firmadyne
@@ -76,7 +187,7 @@ ALTER SEQUENCE image_id_seq OWNED BY image.id;
 
 
 --
--- Name: object; Type: TABLE; Schema: public; Owner: firmadyne; Tablespace:
+-- Name: object; Type: TABLE; Schema: public; Owner: firmadyne
 --
 
 CREATE TABLE object (
@@ -85,7 +196,7 @@ CREATE TABLE object (
 );
 
 
-ALTER TABLE public.object OWNER TO firmadyne;
+ALTER TABLE object OWNER TO firmadyne;
 
 --
 -- Name: object_id_seq; Type: SEQUENCE; Schema: public; Owner: firmadyne
@@ -99,7 +210,7 @@ CREATE SEQUENCE object_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.object_id_seq OWNER TO firmadyne;
+ALTER TABLE object_id_seq OWNER TO firmadyne;
 
 --
 -- Name: object_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: firmadyne
@@ -109,7 +220,7 @@ ALTER SEQUENCE object_id_seq OWNED BY object.id;
 
 
 --
--- Name: object_to_image; Type: TABLE; Schema: public; Owner: firmadyne; Tablespace:
+-- Name: object_to_image; Type: TABLE; Schema: public; Owner: firmadyne
 --
 
 CREATE TABLE object_to_image (
@@ -123,7 +234,8 @@ CREATE TABLE object_to_image (
     gid integer
 );
 
-ALTER TABLE public.object_to_image OWNER TO firmadyne;
+
+ALTER TABLE object_to_image OWNER TO firmadyne;
 
 --
 -- Name: object_to_image_id_seq; Type: SEQUENCE; Schema: public; Owner: firmadyne
@@ -137,7 +249,7 @@ CREATE SEQUENCE object_to_image_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.object_to_image_id_seq OWNER TO firmadyne;
+ALTER TABLE object_to_image_id_seq OWNER TO firmadyne;
 
 --
 -- Name: object_to_image_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: firmadyne
@@ -147,7 +259,7 @@ ALTER SEQUENCE object_to_image_id_seq OWNED BY object_to_image.id;
 
 
 --
--- Name: product; Type: TABLE; Schema: public; Owner: firmadyne; Tablespace:
+-- Name: product; Type: TABLE; Schema: public; Owner: firmadyne
 --
 
 CREATE TABLE product (
@@ -167,7 +279,7 @@ CREATE TABLE product (
 );
 
 
-ALTER TABLE public.product OWNER TO firmadyne;
+ALTER TABLE product OWNER TO firmadyne;
 
 --
 -- Name: product_id_seq; Type: SEQUENCE; Schema: public; Owner: firmadyne
@@ -181,7 +293,7 @@ CREATE SEQUENCE product_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.product_id_seq OWNER TO firmadyne;
+ALTER TABLE product_id_seq OWNER TO firmadyne;
 
 --
 -- Name: product_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: firmadyne
@@ -226,7 +338,7 @@ ALTER TABLE ONLY product ALTER COLUMN id SET DEFAULT nextval('product_id_seq'::r
 
 
 --
--- Name: brand_name_key; Type: CONSTRAINT; Schema: public; Owner: firmadyne; Tablespace:
+-- Name: brand_name_key; Type: CONSTRAINT; Schema: public; Owner: firmadyne
 --
 
 ALTER TABLE ONLY brand
@@ -234,7 +346,7 @@ ALTER TABLE ONLY brand
 
 
 --
--- Name: brand_pkey; Type: CONSTRAINT; Schema: public; Owner: firmadyne; Tablespace:
+-- Name: brand_pkey; Type: CONSTRAINT; Schema: public; Owner: firmadyne
 --
 
 ALTER TABLE ONLY brand
@@ -242,7 +354,7 @@ ALTER TABLE ONLY brand
 
 
 --
--- Name: image_pkey; Type: CONSTRAINT; Schema: public; Owner: firmadyne; Tablespace:
+-- Name: image_pkey; Type: CONSTRAINT; Schema: public; Owner: firmadyne
 --
 
 ALTER TABLE ONLY image
@@ -250,7 +362,7 @@ ALTER TABLE ONLY image
 
 
 --
--- Name: object_hash_key; Type: CONSTRAINT; Schema: public; Owner: firmadyne; Tablespace:
+-- Name: object_hash_key; Type: CONSTRAINT; Schema: public; Owner: firmadyne
 --
 
 ALTER TABLE ONLY object
@@ -258,7 +370,7 @@ ALTER TABLE ONLY object
 
 
 --
--- Name: object_pkey; Type: CONSTRAINT; Schema: public; Owner: firmadyne; Tablespace:
+-- Name: object_pkey; Type: CONSTRAINT; Schema: public; Owner: firmadyne
 --
 
 ALTER TABLE ONLY object
@@ -266,7 +378,7 @@ ALTER TABLE ONLY object
 
 
 --
--- Name: object_to_image_oid_iid_filename_key; Type: CONSTRAINT; Schema: public; Owner: firmadyne; Tablespace:
+-- Name: object_to_image_oid_iid_filename_key; Type: CONSTRAINT; Schema: public; Owner: firmadyne
 --
 
 ALTER TABLE ONLY object_to_image
@@ -274,7 +386,7 @@ ALTER TABLE ONLY object_to_image
 
 
 --
--- Name: object_to_image_pk; Type: CONSTRAINT; Schema: public; Owner: firmadyne; Tablespace:
+-- Name: object_to_image_pk; Type: CONSTRAINT; Schema: public; Owner: firmadyne
 --
 
 ALTER TABLE ONLY object_to_image
@@ -282,7 +394,7 @@ ALTER TABLE ONLY object_to_image
 
 
 --
--- Name: product_iid_product_version_build_key; Type: CONSTRAINT; Schema: public; Owner: firmadyne; Tablespace:
+-- Name: product_iid_product_version_build_key; Type: CONSTRAINT; Schema: public; Owner: firmadyne
 --
 
 ALTER TABLE ONLY product
@@ -290,7 +402,7 @@ ALTER TABLE ONLY product
 
 
 --
--- Name: product_pkey; Type: CONSTRAINT; Schema: public; Owner: firmadyne; Tablespace:
+-- Name: product_pkey; Type: CONSTRAINT; Schema: public; Owner: firmadyne
 --
 
 ALTER TABLE ONLY product
@@ -298,7 +410,7 @@ ALTER TABLE ONLY product
 
 
 --
--- Name: uniq_hash; Type: CONSTRAINT; Schema: public; Owner: firmadyne; Tablespace:
+-- Name: uniq_hash; Type: CONSTRAINT; Schema: public; Owner: firmadyne
 --
 
 ALTER TABLE ONLY image
@@ -306,28 +418,28 @@ ALTER TABLE ONLY image
 
 
 --
--- Name: idx_object_hash; Type: INDEX; Schema: public; Owner: firmadyne; Tablespace:
+-- Name: idx_object_hash; Type: INDEX; Schema: public; Owner: firmadyne
 --
 
 CREATE INDEX idx_object_hash ON object USING btree (hash);
 
 
 --
--- Name: object_to_image_iid_idx; Type: INDEX; Schema: public; Owner: firmadyne; Tablespace:
+-- Name: object_to_image_iid_idx; Type: INDEX; Schema: public; Owner: firmadyne
 --
 
 CREATE INDEX object_to_image_iid_idx ON object_to_image USING btree (iid);
 
 
 --
--- Name: object_to_image_iid_idx1; Type: INDEX; Schema: public; Owner: firmadyne; Tablespace:
+-- Name: object_to_image_iid_idx1; Type: INDEX; Schema: public; Owner: firmadyne
 --
 
 CREATE INDEX object_to_image_iid_idx1 ON object_to_image USING btree (iid);
 
 
 --
--- Name: object_to_image_oid_idx; Type: INDEX; Schema: public; Owner: firmadyne; Tablespace:
+-- Name: object_to_image_oid_idx; Type: INDEX; Schema: public; Owner: firmadyne
 --
 
 CREATE INDEX object_to_image_oid_idx ON object_to_image USING btree (oid);
@@ -363,6 +475,16 @@ ALTER TABLE ONLY object_to_image
 
 ALTER TABLE ONLY product
     ADD CONSTRAINT product_iid_fkey FOREIGN KEY (iid) REFERENCES image(id) ON DELETE CASCADE;
+
+
+--
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
 --
