@@ -163,7 +163,8 @@ CREATE TABLE image (
     brand text,
     model text,
     version text,
-    file_url text
+    file_url text,
+    rel_date date
 );
 
 
