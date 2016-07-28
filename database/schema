@@ -159,7 +159,11 @@ CREATE TABLE image (
     network_reachable boolean,
     guest_ip text,
     netdev text,
-    vulns text[]
+    vulns text[],
+    brand text,
+    model text,
+    version text,
+    file_url text
 );
 
 
@@ -275,7 +279,8 @@ CREATE TABLE product (
     build character varying,
     date timestamp without time zone,
     mib_filename character varying,
-    sdk_filename character varying
+    sdk_filename character varying,
+    brand text
 );
 
 
