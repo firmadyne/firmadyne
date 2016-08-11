@@ -164,7 +164,10 @@ CREATE TABLE image (
     model text,
     version text,
     file_url text,
-    rel_date date
+    rel_date date,
+    page_url text,
+    file_sha1 text,
+    file_size integer
 );
 
 
@@ -344,6 +347,267 @@ ALTER TABLE ONLY product ALTER COLUMN id SET DEFAULT nextval('product_id_seq'::r
 
 
 --
+-- Data for Name: brand; Type: TABLE DATA; Schema: public; Owner: firmadyne
+--
+
+COPY brand (id, name) FROM stdin;
+1	Avm
+\.
+
+
+--
+-- Name: brand_id_seq; Type: SEQUENCE SET; Schema: public; Owner: firmadyne
+--
+
+SELECT pg_catalog.setval('brand_id_seq', 1, true);
+
+
+--
+-- Data for Name: image; Type: TABLE DATA; Schema: public; Owner: firmadyne
+--
+
+COPY image (id, filename, description, brand_id, hash, rootfs_extracted, kernel_extracted, arch, kernel_version, network_inferred, network_reachable, guest_ip, netdev, vulns, brand, model, version, file_url, rel_date, page_url, file_sha1, file_size) FROM stdin;
+2	avm/fritz.box_2030.17.03.93.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 2030	17.03.93 Language:de	\N	\N	\N	\N	\N
+3	avm/FRITZ.Box_Fon_WLAN_7113.de-en-es-it-fr.90.04.86.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7113	90.04.86 Language:en,fr,it,es	\N	\N	\N	\N	\N
+4	avm/FRITZ.Box_Fon_WLAN_7140.AnnexB.en.30.04.77.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7140	30.04.77 Language:en	\N	\N	\N	\N	\N
+5	avm/fritz.box_sl_wlan.09.04.34.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box SL WLAN	9.04.34 Language:de	\N	\N	\N	\N	\N
+6	avm/FRITZ.Box_3272.en-de-es-it-fr-pl.126.06.52.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 3272	FRITZ!OS 6.52 Language:en,fr,it,es,pl	\N	\N	\N	\N	\N
+7	avm/FRITZ.Box_Fon_WLAN_7140.AnnexA.en.39.04.77.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7140	39.04.77 Language:en	\N	\N	\N	\N	\N
+8	avm/FRITZ.Fon_7150.AnnexB.38.04.72.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Fon 7150	38.04.72 Language:de	\N	\N	\N	\N	\N
+9	avm/FRITZ.Box_Fon_WLAN_7360.en-de-es-it-fr-pl.124.06.52.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7360	FRITZ!OS 6.52 Language:en,fr,it,es	\N	\N	\N	\N	\N
+10	avm/FRITZ.Box_Fon_WLAN_7141.40.04.77.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7141	40.04.77 Language:de	\N	\N	\N	\N	\N
+11	avm/FRITZ.Box_7312.117.06.50.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 7312	FRITZ!OS 6.50 Language:de	\N	\N	\N	\N	\N
+12	avm/fritz.box_fon_5012.25.04.27.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon 5012	25.04.27 Language:de	\N	\N	\N	\N	\N
+13	avm/fritz.box_fon_5010.annexa.48.04.43.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon 5010	48.04.43 Language:de	\N	\N	\N	\N	\N
+14	avm/FRITZ.Box_Fon_WLAN_7360.en-de-es-it-fr.111.06.30.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7360	FRITZ!OS 6.30 Language:en,fr,it,es	\N	\N	\N	\N	\N
+15	avm/FRITZ.Box_7272.120.06.50.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 7272	FRITZ!OS 6.50 Language:de	\N	\N	\N	\N	\N
+16	avm/fritz.wlan_repeater_ng_en.68.04.88.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!WLAN Repeater N/G	68.04.88 Language:en	\N	\N	\N	\N	\N
+17	avm/FRITZ.Box_Fon_WLAN_7390.en-de-es-it-fr.84.06.30.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7390	FRITZ!OS 6.30 Language:en,fr,it,es	\N	\N	\N	\N	\N
+18	avm/FRITZ.Box_3272.126.06.50.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 3272	FRITZ!OS 6.50 Language:de	\N	\N	\N	\N	\N
+19	avm/fritz.box_fon.en.06.04.49.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon	6.04.49 Language:en	\N	\N	\N	\N	\N
+20	avm/FRITZ.Box_Fon_WLAN_7390.AnnexB.84.06.51.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7390	FRITZ!OS 06.51 Language:de	\N	\N	\N	\N	\N
+21	avm/FRITZ.Box_Fon_5140.AnnexB.43.04.67.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon 5140	43.04.67 Language:de	\N	\N	\N	\N	\N
+22	avm/FRITZ.Box_Fon_WLAN_7170.AnnexA.en.58.04.85.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7170	58.04.85 Language:en	\N	\N	\N	\N	\N
+23	avm/FRITZ.Box_WLAN_3370.AnnexB.103.06.51.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box WLAN 3370	FRITZ!OS 06.51 Language:de	\N	\N	\N	\N	\N
+24	avm/fritz.wlan_repeater_300E.101.06.30.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!WLAN Repeater 300E	FRITZ!OS 6.30 Language:de	\N	\N	\N	\N	\N
+25	avm/FRITZ.Box_6840_LTE.en-de-es-it-fr-pl.105.06.50.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 6840 LTE	FRITZ!OS 6.50 Language:en,fr,es,it,pl	\N	2016-05-19	\N	\N	\N
+26	avm/FRITZ.Box_WLAN_Repeater_450E.128.06.30.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!WLAN Repeater 450E	FRITZ!OS 6.30 Language:de	\N	\N	\N	\N	\N
+27	avm/FRITZ.Box_Fon_WLAN_7570_vDSL.75.04.81.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7570 vDSL	75.04.81 Language:de	\N	\N	\N	\N	\N
+28	avm/FRITZ.Box_3490.en-de-es-it-fr-pl.140.06.52.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 3490	FRITZ!OS 6.52 Language:en,fr,it,es,pl	\N	2016-06-06	\N	\N	\N
+29	avm/FRITZ.Box_7560.149.06.51.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 7560	FRITZ!OS 6.51 Language:de	\N	\N	\N	\N	\N
+30	avm/FRITZ.Fon_7150.AnnexB.dect_update-vbf003212-26-A.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Fon 7150	32.12 Language:de	\N	\N	\N	\N	\N
+31	avm/FRITZ.Box_4020.de-en-es-it-fr-pl.147.06.50.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 4020	FRITZ!OS 6.50 Language:en,fr,it,pl,es	\N	2016-04-14	\N	\N	\N
+32	avm/FRITZ.Box_7430.146.06.50.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 7430	FRITZ!OS 6.50 Language:de	\N	\N	\N	\N	\N
+33	avm/FRITZ.Box_6820_LTE.142.06.50.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 6820 LTE	FRITZ!OS 6.50 Language:en,fr,it,es,pl	\N	\N	\N	\N	\N
+34	avm/fritz.box_fon.06.04.33.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon	6.04.33 Language:de	\N	\N	\N	\N	\N
+35	avm/FRITZ.Box_5490.de-en-es-it-fr-pl.151.06.51.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 5490	FRITZ!OS 6.51 Language:de,en,fr,it,pl,es	\N	2016-01-29	\N	\N	\N
+36	avm/FRITZ.Powerline_540E.en-de-es-it-fr-pl.129.06.30.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Powerline 540E	FRITZ!OS 6.30 Language:en,fr,it,es,pl	\N	\N	\N	\N	\N
+37	avm/FRITZ.Box_WLAN_Repeater_1750E.134.06.50.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!WLAN Repeater 1750E	FRITZ!OS 6.50 Language:de	\N	\N	\N	\N	\N
+38	avm/fritz.box_wlan_3130.44.04.34.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box WLAN 3130	44.04.34 Language:de	\N	\N	\N	\N	\N
+39	avm/FRITZ.Box_Fon_WLAN_7113.60.04.68.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7113	60.04.68 Language:de	\N	\N	\N	\N	\N
+40	avm/FRITZ.Box_Fon_WLAN_7170.29.04.88.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7170	29.04.88 Language:de	\N	\N	\N	\N	\N
+41	avm/FRITZ.Box_3390.121.06.51.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box WLAN 3390	FRITZ!OS 06.51 Language:de	\N	\N	\N	\N	\N
+42	avm/fritz.box_fon_wlan_7140.annexb.30.04.33.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7140	30.04.33 Language:de	\N	\N	\N	\N	\N
+43	avm/FRITZ.Box_Fon_WLAN_7270_v2.54.06.06.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7270	FRITZ!OS 06.06 (54.06.06) Language:de	\N	\N	\N	\N	\N
+44	avm/fritz.box_fon.de.06.04.01.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon Edition A/Ch	6.04.01 Language:de	\N	\N	\N	\N	\N
+45	avm/fritz.box_2070.20.04.15.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 2070	20.04.15 Language:de	\N	\N	\N	\N	\N
+46	avm/fritz.box_fon_wlan_7050.en.14.04.26.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7050	14.04.26 Language:en	\N	\N	\N	\N	\N
+47	avm/fritz.box_fon_ata.en.11.04.01.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon ata	11.04.01 Language:en	\N	\N	\N	\N	\N
+48	avm/fritz.box_fon_wlan_7050.14.04.33.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7050	14.04.33 Language:de	\N	\N	\N	\N	\N
+49	avm/FRITZ.Box_6840_LTE.105.06.50.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 6840 LTE	FRITZ!OS 6.50 Language:de	\N	\N	\N	\N	\N
+50	avm/FRITZ.Box_Fon_WLAN_7340.en-de-es-it-fr.99.06.06.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7340	FRITZ!OS 06.06 (99.06.06) Language:en,fr,it,es	\N	\N	\N	\N	\N
+51	avm/fritz.box_fon_5010.23.04.27.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon 5010	23.04.27 Language:de	\N	\N	\N	\N	\N
+52	avm/fritz.box_fon_wlan_7050.annexa.en.14.04.26.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7050	14.04.26 Language:en	\N	\N	\N	\N	\N
+53	avm/FRITZ.Box_6810_LTE.108.06.30.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 6810 LTE	FRITZ!OS 6.30 Language:de	\N	\N	\N	\N	\N
+54	avm/FRITZ.Box_WLAN_Repeater_310_.143.06.31.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!WLAN Repeater 310	FRITZ!OS 6.31 Language:de	\N	\N	\N	\N	\N
+55	avm/FRITZ.Box_7490.113.06.30.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 7490	FRITZ!OS 6.30 Language:de	\N	\N	\N	\N	\N
+56	avm/fritz.box_fon_ata.11.04.01.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon ata	11.04.01 Language:de	\N	\N	\N	\N	\N
+57	avm/fritz.box_wlan_3070.19.04.15.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box WLAN 3070	19.04.15 Language:de	\N	\N	\N	\N	\N
+58	avm/FRITZ.Box_6842_LTE.123.06.30.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 6842 LTE	FRITZ!OS 6.30 Language:de	\N	\N	\N	\N	\N
+59	avm/fritz.box_fon_wlan.annexa.de.08.04.15.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon Edition A/Ch	8.04.15 Language:de	\N	\N	\N	\N	\N
+60	avm/FRITZ.Box_Fon_WLAN_7270_v3.en-de-es-it-fr.74.05.53.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7270	FRITZ!OS 5.53 (74.05.53) Language:en,fr,it,es	\N	\N	\N	\N	\N
+61	avm/FRITZ.Box_Fon_WLAN_7112.87.04.88.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7112	87.04.88 Language:de	\N	\N	\N	\N	\N
+62	avm/VoIP-Gateway-5188.36.04.81.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	AVM VoIP Gateway 5188	36.04.81 Language:de	\N	\N	\N	\N	\N
+63	avm/FRITZ.Box_3490.140.06.51.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 3490	FRITZ!OS 06.51 Language:de	\N	\N	\N	\N	\N
+64	avm/FRITZ.Box_Fon_WLAN_7360.124.06.50.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7360	FRITZ!OS 6.50 Language:de	\N	\N	\N	\N	\N
+65	avm/FRITZ.Box_Fon_5124.AnnexB.en.56.04.77.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon 5124	56.04.77 Language:en	\N	\N	\N	\N	\N
+66	avm/FRITZ.Box_Fon_WLAN_7360.en-de-es-it-fr.111.06.31.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7360	FRITZ!OS 6.31 Language:en,fr,it,es	\N	\N	\N	\N	\N
+67	avm/FRITZ.Box_Fon_WLAN.AnnexA.en.08.04.49.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN	8.04.49 Language:en	\N	\N	\N	\N	\N
+68	avm/FRITZ.Box_7362_SL.131.06.50.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 7362 SL	FRITZ!OS 6.50 Language:de	\N	\N	\N	\N	\N
+69	avm/FRITZ.Box_6810_LTE.en-de-es-it-fr.108.06.30.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 6810 LTE	FRITZ!OS 6.30 Language:en,fr,it,es	\N	\N	\N	\N	\N
+70	avm/FRITZ.Box_Fon_WLAN_7360.111.06.30.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7360	FRITZ!OS 6.30 Language:de	\N	\N	\N	\N	\N
+71	avm/FRITZ.Box_Fon_WLAN_7360.en-de-es-it-fr-pl.124.06.31.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7360	FRITZ!OS 6.31 Language:en,fr,it,es	\N	\N	\N	\N	\N
+72	avm/fritz.box_wlan_3170.49.04.58.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box WLAN 3170	49.04.58 Language:de	\N	\N	\N	\N	\N
+73	avm/fritz.powerline_1220E_221_00_10.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Powerline 1220E	2.2.1 00 Language:de	\N	\N	\N	\N	\N
+74	avm/fritz.box_fon_5050.12.04.31.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon 5050	12.04.31 Language:de	\N	\N	\N	\N	\N
+75	avm/FRITZ.Box_Fon_WLAN.AnnexB.en.08.04.49.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN	8.04.49 Language:en	\N	\N	\N	\N	\N
+76	avm/fritz.box.annexa.en.05.04.02.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box	5.04.02 Language:en	\N	\N	\N	\N	\N
+77	avm/fritz.box_fon.annexa.de.06.04.15.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon Edition A/Ch	6.04.15 Language:de	\N	\N	\N	\N	\N
+78	avm/FRITZ.Box_7272.en-de-es-it-fr-pl.120.06.52.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 7272	FRITZ!OS 6.52 Language:en,fr,it,es,pl	\N	\N	\N	\N	\N
+79	avm/FRITZ.Powerline_1240E.150.06.34.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Powerline 1240E	FRITZ!OS 06.34 Language:de	\N	\N	\N	\N	\N
+80	avm/fritz.powerline_510E_A_130_00_17.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Powerline 510E	1.3.0 00 Language:de	\N	\N	\N	\N	\N
+81	avm/fritz.box_wlan_3270_v3.96.05.54.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box WLAN 3270v3	FRITZ!OS 05.54 (96.05.54) Language:de	\N	\N	\N	\N	\N
+82	avm/FRITZ.Box_7330_SL.116.06.50.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 7330 SL	FRITZ!OS 6.50 Language:de	\N	\N	\N	\N	\N
+83	avm/FRITZ.Box_Fon_WLAN_7170.AnnexB.en.29.04.83.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7170	29.04.83 Language:en	\N	\N	\N	\N	\N
+84	avm/fritz.powerline_530E_130_00_12.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Powerline 530E	1.3.0 00 Language:de	\N	\N	\N	\N	\N
+85	avm/fritz.box_wlan_3030.21.04.34.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box WLAN 3030	21.04.34 Language:de	\N	\N	\N	\N	\N
+86	avm/fritz.box_sl.10.03.94.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box SL	10.03.94 Language:de	\N	\N	\N	\N	\N
+87	avm/FRITZ.Box_3390.en-de-es-it-fr-pl.121.06.30.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 3390	FRITZ!OS 6.30 Language:en,fr,it,es,pl	\N	\N	\N	\N	\N
+88	avm/fritz.box_fon_wlan.08.04.34.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN	8.04.34 Language:de	\N	\N	\N	\N	\N
+89	avm/FRITZ.Powerline_540E.129.06.34.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Powerline 540E	FRITZ!OS 06.34 Language:de	\N	\N	\N	\N	\N
+90	avm/FRITZ.Box_7430.en-de-es-it-fr-pl.146.06.52.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 7430	FRITZ!OS 6.52 Language:en,fr,it,es	\N	\N	\N	\N	\N
+91	avm/FRITZ.Box_7330.en-de-es-it-fr.107.06.30.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 7330	FRITZ!OS 6.30 Language:en,fr,it,es	\N	\N	\N	\N	\N
+92	avm/FRITZ.Box_7412.137.06.50.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 7412	FRITZ!OS 6.50 Language:de	\N	\N	\N	\N	\N
+93	avm/FRITZ.Box_WLAN_Repeater_310.122.06.30.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!WLAN Repeater 310	FRITZ!OS 6.30 Language:de	\N	\N	\N	\N	\N
+94	avm/FRITZ.Box_WLAN_3270_v3_Edition_Italia.it-de.125.05.52.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box WLAN 3270	FRITZ!OS 5.51 (125.05.51) Language:it	\N	\N	\N	\N	\N
+95	avm/FRITZ.Box_Fon_WLAN_7240.73.06.06.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7240	FRITZ!OS 06.06 (73.06.06) Language:de	\N	\N	\N	\N	\N
+96	avm/fritz.box_wlan_3131.50.04.57.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box WLAN 3131	50.04.57 Language:de	\N	\N	\N	\N	\N
+97	avm/FRITZ.Powerline_546E.118.06.34.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Powerline 546E	FRITZ!OS 06.34 Language:de	\N	\N	\N	\N	\N
+98	avm/FRITZ.Box_2170.51.04.57.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 2170	51.04.57 Language:de	\N	\N	\N	\N	\N
+99	avm/FRITZ.Box_Fon_WLAN_7270_v3.74.06.06.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7270	FRITZ!OS 06.06 (74.06.06) Language:de	\N	\N	\N	\N	\N
+100	avm/FRITZ.Box_7490.en-de-es-it-fr-pl.113.06.31.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 7490	FRITZ!OS 6.31 Language:en,fr,it,es,pl	\N	\N	\N	\N	\N
+101	avm/FRITZ.Box_3390.en-de-es-it-fr-pl.121.06.52.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 3390	FRITZ!OS 6.52 Language:en,fr,it,es,pl	\N	\N	\N	\N	\N
+102	avm/FRITZ.Powerline_546E.en-de-es-it-fr-pl.118.06.30.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Powerline 546E	FRITZ!OS 6.30 Language:en,fr,it,es,pl	\N	\N	\N	\N	\N
+103	avm/FRITZ.Box_3490.en-de-es-it-fr-pl.140.06.31.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 3490	FRITZ!OS 6.31 Language:en,fr,it,es,pl	\N	\N	\N	\N	\N
+104	avm/FRITZ.Box_Fon_WLAN_7320.100.06.30.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7320	FRITZ!OS 6.30 Language:de	\N	\N	\N	\N	\N
+105	avm/fritz.box_wlan_3270.67.05.54.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box WLAN 3270	FRITZ!OS 05.54 (67.05.54) Language:de	\N	\N	\N	\N	\N
+106	avm/fritz.box_fon_ata.de.11.04.01.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon ata Edition A/CH	11.04.01 Language:de	\N	\N	\N	\N	\N
+107	avm/FRITZ.Box_Fon_WLAN_7360_SL.109.06.30.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7360 SL	FRITZ!OS 6.30 Language:de	\N	\N	\N	\N	\N
+108	avm/fritz.box.05.03.87.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box	5.03.87 Language:de	\N	\N	\N	\N	\N
+109	avm/FRITZ.Box_Fon_WLAN_7270_16.en-de-es-it-fr.54.05.53.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7270	FRITZ!OS 5.53 (54.05.53) Language:en,fr,it,es	\N	\N	\N	\N	\N
+110	avm/fritz.box_fon_wlan.de.08.04.01.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN Edition A/CH	8.04.01 Language:de	\N	\N	\N	\N	\N
+111	avm/FRITZ.Box_7490.113.06.60.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 7490	FRITZ!OS 6.60 Language:de	\N	\N	\N	\N	\N
+112	avm/fritz.wlan_repeater_ng_68.04.88.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!WLAN Repeater N/G	FRITZ!OS 4.88 Language:de	\N	\N	\N	\N	\N
+113	avm/fritz.powerline_1000E_221_00_19.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Powerline 1000E	2.2.1 00 Language:de	\N	\N	\N	\N	\N
+114	avm/FRITZ.Box_Fon_WLAN_7360_SL.en-de-es-it-fr.109.06.30.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7360 SL	FRITZ!OS 6.30 Language:de,en,fr,it,es	\N	\N	\N	\N	\N
+115	avm/fritz.box.en.05.04.02.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box	5.04.02 Language:en	\N	\N	\N	\N	\N
+116	avm/FRITZ.Box_Fon_WLAN_7270_v1.54.04.89.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7270	54.04.89 Language:de	\N	\N	\N	\N	\N
+117	avm/FRITZ.Box_WLAN_3370.en-de-es-it-fr-pl.103.06.30.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box WLAN 3370	FRITZ!OS 6.30 Language:en,fr,it,es,pl	\N	\N	\N	\N	\N
+118	avm/FRITZ.Box_Fon_WLAN_7170.29.04.81.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7170	29.04.81 Language:de	\N	\N	\N	\N	\N
+119	avm/FRITZ.Box_7330.107.06.50.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 7330	FRITZ!OS 6.50 Language:de	\N	\N	\N	\N	\N
+120	avm/FRITZ.Box_WLAN_Repeater_DVB_C.133.06.50.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!WLAN Repeater DVB C	FRITZ!OS 6.50 Language:de	\N	\N	\N	\N	\N
+121	avm/FRITZ.Box_Fon_WLAN_7140.AnnexA.39.04.77.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7140 (Annex A)	39.04.77 Language:de	\N	\N	\N	\N	\N
+122	avm/fritz.box_fon.annexa.en.06.04.49.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon	6.04.49 Language:en	\N	\N	\N	\N	\N
+123	avm/FRITZ.Box_Fon_5124.AnnexA.en.57.04.77.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon 5124	57.04.77 Language:en	\N	\N	\N	\N	\N
+124	avm/FRITZ.Box_7369.en-de-es-it-fr-pl.119.06.32.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 7369	FRITZ!OS 6.32 Language:en,fr,it,es,pl	\N	\N	\N	\N	\N
+125	avm/FRITZ.Box_Fon_5113.AnnexA.de-en-es-it-fr.83.04.83.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon 5113	83.04.83 Language:en,fr,it,es	\N	\N	\N	\N	\N
+126	avm/FRITZ.Box_Fon_WLAN_7170.AnnexA.58.04.77.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7170 (Annex A)	58.04.77 Language:de	\N	\N	\N	\N	\N
+127	avm/FRITZ.Box_7490.en-de-es-it-fr-pl.113.06.52.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box 7490	FRITZ!OS 6.52 Language:en,fr,it,es,pl	\N	2016-05-26	\N	\N	\N
+128	avm/FRITZ.Box_WLAN_3270_v3.en-de-es-it-fr.96.05.52.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box WLAN 3270	FRITZ!OS 5.51 (96.05.51) Language:en,fr,it,es	\N	\N	\N	\N	\N
+129	avm/FRITZ.Box_Fon_WLAN_7570_vDSL.en-de-fr.75.04.92.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box Fon WLAN 7570 vDSL	75.04.92 Language:en,fr	\N	\N	\N	\N	\N
+130	avm/fritz.box_wlan_3050.16.04.07.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box WLAN 3050	16.04.07 Language:de	\N	\N	\N	\N	\N
+132	avm/FRITZ.Box_WLAN_Repeater_1750E.en-de-es-it-fr-pl.134.06.50.image.info.txt	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!WLAN Repeater 1750E	FRITZ!OS 6.50 Language:en,de,es,it,fr,pl	\N	\N	\N	\N	\N
+136	avm/FRITZ.Box_WLAN_Repeater_DVB_C.en-de-es-it-fr-pl.133.06.50.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	Fritz!WLAN Repeater DVB-C	FRITZ!OS 6.50 Language:en,de,es,it,fr,pl	\N	\N	\N	\N	\N
+137	avm/FRITZ.Box_WLAN_Repeater_310.en-de-es-it-fr-pl.122.06.32.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!WLAN Repeater 310	FRITZ!OS 6.32 Language:en,de,es,it,fr,pl	\N	\N	\N	\N	\N
+138	avm/FRITZ.Box_WLAN_Repeater_310_.en-de-es-it-fr-pl.143.06.32.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!WLAN Repeater 310	FRITZ!OS 6.32 Language:en,de,es,it,fr,pl	\N	\N	\N	\N	\N
+140	avm/FRITZ.Box_WLAN_Repeater_450E.en-de-es-it-fr-pl.128.06.32.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!WLAN Repeater 450E	FRITZ!OS 6.32 Language:en,de,es,it,fr,pl	\N	\N	\N	\N	\N
+131	avm/fritz.powerline_510E_T_120_01_14.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Powerline 510E	1.2.0 Language:de	\N	\N	\N	\N	\N
+133	avm/fritz.powerline_520E_A_531_03_08.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Powerline 520E	5.3.1 03 08 A Language:de	\N	\N	\N	\N	\N
+134	avm/FRITZ.Box_WLAN_Repeater_300E.en-de-es-it-fr-pl.101.06.32.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Box WLAN Repeater 300E	FRITZ!OS 6.32 Language:en,de,es,it,fr,pl	\N	\N	\N	\N	\N
+135	avm/FRITZ.Box_3490.140.06.31.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	Fritz!Box 3490	FRITZ!OS 6.31 Language:de	\N	\N	\N	\N	\N
+139	avm/fritz.powerline_500E_T_531_03_07.image	\N	1	\N	f	f	\N	\N	\N	\N	\N	\N	\N	Avm	FRITZ!Powerline 500E	5.3.1 Language:de	\N	\N	\N	\N	\N
+204	./output/sitecom/Greyhoundv1001-firmware-v12.bin	- Added more Bandsteering options\n- Modified WiFi drivers for better stability	1	4da1b3ee0562680f1a6b1782f8576477	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	Greyhound v1 001	1.2	http://www.sitecomlearningcentre.com/download/firmware/3071	2016-07-27	http://www.sitecomlearningcentre.com/products/greyhoundv1001/wi-fi-router-ac2600/downloads	1e82afb32e43c4ad6a2653863c6d8d57738dc17a	22833952
+205	./output/sitecom/Greyhoundv1001-firmware-v11.bin	- Added more Bandsteering options\n- Modified WiFi drivers for better stability	1	dbd35c5e16371a7a1b3cf83279c67afe	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	Greyhound v1 001	1.1	http://www.sitecomlearningcentre.com/download/firmware/2815	2016-01-27	http://www.sitecomlearningcentre.com/products/greyhoundv1001/wi-fi-router-ac2600/downloads	fbba51417812e3e0df8e99b8346c9cb6acdb629a	24673056
+206	./output/sitecom/Greyhoundv1001-firmware-v10.bin	- Added more Bandsteering options\n- Modified WiFi drivers for better stability	1	c2ba69434f09ee14e2dea8a460735675	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	Greyhound v1 001	1.0	http://www.sitecomlearningcentre.com/download/firmware/2805	2016-01-22	http://www.sitecomlearningcentre.com/products/greyhoundv1001/wi-fi-router-ac2600/downloads	28f219d8913b877d4810c177936237a67337a01d	23626528
+207	./output/sitecom/LN-554v1001-firmware-vFirmware-130.zip	Firmware 1.30	1	5f5d0917097b44b1dab4c51db41bb618	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	LN-554 v1 001	1.30	http://www.sitecomlearningcentre.com/download/firmware/809	2015-03-02	http://www.sitecomlearningcentre.com/products/ln-554v1001/wi-fi-homeplug-500-mbps/downloads	f2631990082d3374a4ef8e0111930a2c570225d2	6848978
+208	./output/sitecom/LN-555v1001-firmware-vFirmware-130.zip	Firmware 1.30	1	7a15c53476a517ad42fd189e55e08bd9	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	LN-555 v1 001	1.30	http://www.sitecomlearningcentre.com/download/firmware/815	2015-03-02	http://www.sitecomlearningcentre.com/products/ln-555v1001/wi-fi-homeplug-500-mbps-combo-pack/downloads	3868fbc60fef55395a8b580667148a4c5725287a	6849703
+209	./output/sitecom/WL-328v1001-firmware-v13.zip	Fixed MAC address control issue where only MAC addresses starting with '00' were accepted.	1	9d58421190bae24cf6af8f18b058e044	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WL-328 v1 001	1.3	http://www.sitecomlearningcentre.com/download/firmware/3063	2016-07-22	http://www.sitecomlearningcentre.com/products/wl-328v1001/300n-dualband-router/downloads	84f08c134b44003ac8fa960f34f23fa07400995e	3650440
+210	./output/sitecom/WLM-2600v1001-firmware-vFirmware-130.zip	WLM-2600 Firmware Fixlist\n\nFirmware 1.30\n\n- Fixed ISP Wizard settings\n- Changed SIP setting to enabled by default\n\nFirmware 1.22\n\n \n\n- Fixed WiFi authentication issue\n\n- Fixed DNS security issue\n\n \n\nFirmware 1.21\n\n- Various bugfixes and improvements\n\nFirmware 1.20\n\n- Full IPv6 compatibility\n\n- Disable WPS PIN for security issues	1	cbbed010d9cb480d94d5a083005f45fa	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLM-2600 v1 001	1.30	http://www.sitecomlearningcentre.com/download/firmware/772	2015-03-02	http://www.sitecomlearningcentre.com/products/wlm-2600v1001/wi-fi-modem-router-n300/downloads	4a769845d1d6f3f3640bf16be0b745a1d2758fe1	5566012
+211	./output/sitecom/WLM-3600v1001-firmware-vFirmware-130.zip	WLM-3600v1-001\n\nFirmware 1.30\n\n- Fixed ISP Wizard settings\n- Changed SIP setting to enabled by default\n\nFirmware 1.23\n\n- Fixed DNS security issue\n\nFirmware 1.21\n\n- Various bugfixes and improvements\n\nFirmware 1.20\n\n- Full IPv6 compatibility\n\n- New Sitecom Cloud Security scan engine\n\n- Disable WPS PIN for security issues	1	9ec0947abdc1f6b7ebafb747c0400ede	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLM-3600 v1 001	1.30	http://www.sitecomlearningcentre.com/download/firmware/779	2015-03-02	http://www.sitecomlearningcentre.com/products/wlm-3600v1001/wi-fi-modem-router-n300-x3/downloads	f9c90996dd4cf811e1a608dc18805c204ee33fce	6322525
+212	./output/sitecom/WLM-4600v1001-firmware-vFirmware-140.zip	WLM-4600v1-001\n\nFirmware 1.40\n- Fixed ISP Wizard settings\n- Changed SIP setting to enabled by default\n\nFirmware 1.22\n\n- Fixed WiFi authentication issue\n\n- Fixed DNS security issue\n\nFirmware 1.21\n\n- Various bugfixes and improvements\n\nFirmware 1.20\n\n- Full IPv6 compatibility\n\n- New Sitecom Cloud Security scan engine\n\n- Disable WPS PIN for security issues	1	9306c2efaaa290e5815da15acd5d6f7e	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLM-4600 v1 001	1.40	http://www.sitecomlearningcentre.com/download/firmware/786	2015-03-02	http://www.sitecomlearningcentre.com/products/wlm-4600v1001/wi-fi-modem-router-x4-n300/downloads	8ee290d8b4bcbf9e330866ec5175353e6adad14f	6458163
+213	./output/sitecom/WLM-5600v1001-firmware-vFirmware-140.zip	WLM-5600v1-001\n\nFirmware 1.40\n- Fixed ISP Wizard settings\n- Changed SIP setting to enabled by default\n\nFirmware 1.23\n\n- Fixed WiFi authentication issue\n\n- Fixed DNS security issue\n\nFirmware 1.22\n- Wifi stability improvements\n\n- Increased security\n\n- IPv6 static routing\n\n- QoS improvements\n\nFirmware 1.21\n\n- Various bugfixes and improvements\n\nFirmware 1.20\n\n- Full IPv6 compatibility\n\n- New Sitecom Cloud Security scan engine\n\n- Disable WPS PIN for security issues	1	c800f6a076cd0a79522b3ed4d6da3c80	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLM-5600 v1 001	1.40	http://www.sitecomlearningcentre.com/download/firmware/794	2015-03-02	http://www.sitecomlearningcentre.com/products/wlm-5600v1001/wi-fi-modem-router-x5-n600/downloads	c42273473bc958f69e4f11b389d728b001270eab	6481399
+214	./output/sitecom/WLM-6600v1001-firmware-v-Firmware-130.zip	WLM-6600 v1-001\n\nFirmware 1.30\n- Fixed ISP Wizard settings\n- Changed SIP setting to enabled by default\n\nFirmware 1.14\n\n- Fixed WiFi performace issue\n\nFirmware 1.13\n\n- Fixed WiFi authentication issue\n\n- Fixed DNS security issue\n\nFirmware 1.12\n\n- Wifi stability improvements\n\n- Increased security\n\n- IPv6 static routing\n\n- QoS improvements\n\nFirmware 1.11\n\n- Various bugfixes and improvements\n\nFirmware 1.10\n\n- Full IPv6 compatibility\n\n- New Sitecom Cloud Security scan engine\n\n- Disable WPS PIN for security issues	1	a06b79dad005cd024babcc5e55b90c69	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLM-6600 v1 001	1.30	http://www.sitecomlearningcentre.com/download/firmware/800	2015-03-02	http://www.sitecomlearningcentre.com/products/wlm-6600v1001/wi-fi-modem-router-x6-n900/downloads	7027fcc41b66aa6e6363a5516fdb4f509ec118fe	6480896
+215	./output/sitecom/WLR-3100v2003-firmware-v13.dlf	Changed:\n\n\n\tAdd timeout to check DNS alive\n\tAdd procedure to verify ipv4 and ipv6 on ppp session\n\tShow the guest network client on DHCP table on web and app agent\n\n\nFixed:\n\n\n\tIgnore DHCP-PD check when use IPv6 Static/6RD type of connection\n\tFix IPv4 PPTP/L2TP hostname set/get error on app agent\n\tFixed Apple iOS 9 login issue with the MyWiFi app.	1	22f064b1c27e3d4faa8a5db8ece14b6f	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLR-3100 v2 003	1.3	http://www.sitecomlearningcentre.com/download/firmware/2691	2016-01-18	http://www.sitecomlearningcentre.com/products/wlr-3100v2003/wi-fi-router-x3-n300/downloads	9819a924c45960e7710caa77d5d7ba90ff97e3c1	4661365
+216	./output/sitecom/WLR-4002Bv1001-firmware-v11.zip	Firmware 1.1	1	aa9a980b2c537f2f8ce06d980672f133	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLR-4002B v1 001	1.1	http://www.sitecomlearningcentre.com/download/firmware/876	2015-04-14	http://www.sitecomlearningcentre.com/products/wlr-4002bv1001/wireless-gigabit-vpn-router-n300/downloads	4817d968e0113ebeee5c6ebdc486eb7c85dd58f2	3790699
+223	./output/sitecom/WLR-4100OEMv1001-firmware-vFirmware-22.zip	WLR-4100 OEM\n\nFirmware 2.2\n\n- Fixes some IPv6 PPPoE configuration issues\n- Fixes some bugs in the web interface	1	5cd94fa16d7115e582a8ad5edc6d7ebe	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLR-4100OEM v1 001	2.2	http://www.sitecomlearningcentre.com/download/firmware/753	2015-02-27	http://www.sitecomlearningcentre.com/products/wlr-4100oemv1001/wi-fi-router-x4-n300/downloads	0a28ba9e9dab38330659c05dc2ecf8caae8f7cf2	3399500
+217	./output/sitecom/WLR-4004v1002-firmware-v104.bin	- Improved stability and possibly higher data throughput of the WiFi signal in crowded 2.4GHZ environments. This is achieved by automatically dropping the channel width to 20MHz of other 20MHz signals are detected in the environment.\n- A 'Check for updates' button is added on the firmware update page. This can be used to manually check for firmware updates on the Sitecom servers. An automatic check is done once a week. When an update is found, a pop-up will be shown in the user interface.\n- 2 messages regarding the automatic firmware update function are added in the system log: 'New firmware detected' and 'No new firmware detected, new check in xxxxx seconds'. When a new firmware is detected, a special update page will be shown where the update can be performed.\n- On the startpage of the webinterface, the versionnumber is added to the modelnumber.\n- Userinterface login issue with the Microsoft Edge browser is fixed.	1	7aa399557bef09ab179638ba9ecd37b4	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLR-4004 v1 002	1.04	http://www.sitecomlearningcentre.com/download/firmware/2674	2016-01-13	http://www.sitecomlearningcentre.com/products/wlr-4004v1002/wi-fi-gigabit-router-n300/downloads	b26eac3f3fd76ef290542b5f162ecaa6ec1b72c8	3408000
+218	./output/sitecom/WLR-4004v1002-firmware-v10.zip	- Improved stability and possibly higher data throughput of the WiFi signal in crowded 2.4GHZ environments. This is achieved by automatically dropping the channel width to 20MHz of other 20MHz signals are detected in the environment.\n- A 'Check for updates' button is added on the firmware update page. This can be used to manually check for firmware updates on the Sitecom servers. An automatic check is done once a week. When an update is found, a pop-up will be shown in the user interface.\n- 2 messages regarding the automatic firmware update function are added in the system log: 'New firmware detected' and 'No new firmware detected, new check in xxxxx seconds'. When a new firmware is detected, a special update page will be shown where the update can be performed.\n- On the startpage of the webinterface, the versionnumber is added to the modelnumber.\n- Userinterface login issue with the Microsoft Edge browser is fixed.	1	b44d8b2558c12cf27c67d9b1aedb2469	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLR-4004 v1 002	1.0	http://www.sitecomlearningcentre.com/download/firmware/2501	2015-05-13	http://www.sitecomlearningcentre.com/products/wlr-4004v1002/wi-fi-gigabit-router-n300/downloads	6810c8aa806cf34c69e947a25c2a12c99f45dc34	3392956
+219	./output/sitecom/WLR-4004v1002-firmware-v103.bin	- Improved stability and possibly higher data throughput of the WiFi signal in crowded 2.4GHZ environments. This is achieved by automatically dropping the channel width to 20MHz of other 20MHz signals are detected in the environment.\n- A 'Check for updates' button is added on the firmware update page. This can be used to manually check for firmware updates on the Sitecom servers. An automatic check is done once a week. When an update is found, a pop-up will be shown in the user interface.\n- 2 messages regarding the automatic firmware update function are added in the system log: 'New firmware detected' and 'No new firmware detected, new check in xxxxx seconds'. When a new firmware is detected, a special update page will be shown where the update can be performed.\n- On the startpage of the webinterface, the versionnumber is added to the modelnumber.\n- Userinterface login issue with the Microsoft Edge browser is fixed.	1	51272ec8d7a1901ac164e119bdf6041c	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLR-4004 v1 002	1.03	http://www.sitecomlearningcentre.com/download/firmware/2509	2015-05-13	http://www.sitecomlearningcentre.com/products/wlr-4004v1002/wi-fi-gigabit-router-n300/downloads	c4e9ac90786f5d142ba9d675194bdfe4817a454f	3403904
+220	./output/sitecom/WLR-4004v1003-firmware-v104.bin	- Improved stability and possibly higher data throughput of the WiFi signal in crowded 2.4GHZ environments. This is achieved by automatically dropping the channel width to 20MHz of other 20MHz signals are detected in the environment.\n- A 'Check for updates' button is added on the firmware update page. This can be used to manually check for firmware updates on the Sitecom servers. An automatic check is done once a week. When an update is found, a pop-up will be shown in the user interface.\n- 2 messages regarding the automatic firmware update function are added in the system log: 'New firmware detected' and 'No new firmware detected, new check in xxxxx seconds'. When a new firmware is detected, a special update page will be shown where the update can be performed.\n- On the startpage of the webinterface, the versionnumber is added to the modelnumber.\n- Userinterface login issue with the Microsoft Edge browser is fixed.	1	7aa399557bef09ab179638ba9ecd37b4	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLR-4004 v1 003	1.04	http://www.sitecomlearningcentre.com/download/firmware/2763	2016-01-20	http://www.sitecomlearningcentre.com/products/wlr-4004v1003/wi-fi-gigabit-router-n300/downloads	b26eac3f3fd76ef290542b5f162ecaa6ec1b72c8	3408000
+221	./output/sitecom/WLR-4004v1003-firmware-v10.zip	- Improved stability and possibly higher data throughput of the WiFi signal in crowded 2.4GHZ environments. This is achieved by automatically dropping the channel width to 20MHz of other 20MHz signals are detected in the environment.\n- A 'Check for updates' button is added on the firmware update page. This can be used to manually check for firmware updates on the Sitecom servers. An automatic check is done once a week. When an update is found, a pop-up will be shown in the user interface.\n- 2 messages regarding the automatic firmware update function are added in the system log: 'New firmware detected' and 'No new firmware detected, new check in xxxxx seconds'. When a new firmware is detected, a special update page will be shown where the update can be performed.\n- On the startpage of the webinterface, the versionnumber is added to the modelnumber.\n- Userinterface login issue with the Microsoft Edge browser is fixed.	1	b44d8b2558c12cf27c67d9b1aedb2469	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLR-4004 v1 003	1.0	http://www.sitecomlearningcentre.com/download/firmware/2529	2015-05-13	http://www.sitecomlearningcentre.com/products/wlr-4004v1003/wi-fi-gigabit-router-n300/downloads	6810c8aa806cf34c69e947a25c2a12c99f45dc34	3392956
+222	./output/sitecom/WLR-4004v1003-firmware-v103.bin	- Improved stability and possibly higher data throughput of the WiFi signal in crowded 2.4GHZ environments. This is achieved by automatically dropping the channel width to 20MHz of other 20MHz signals are detected in the environment.\n- A 'Check for updates' button is added on the firmware update page. This can be used to manually check for firmware updates on the Sitecom servers. An automatic check is done once a week. When an update is found, a pop-up will be shown in the user interface.\n- 2 messages regarding the automatic firmware update function are added in the system log: 'New firmware detected' and 'No new firmware detected, new check in xxxxx seconds'. When a new firmware is detected, a special update page will be shown where the update can be performed.\n- On the startpage of the webinterface, the versionnumber is added to the modelnumber.\n- Userinterface login issue with the Microsoft Edge browser is fixed.	1	51272ec8d7a1901ac164e119bdf6041c	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLR-4004 v1 003	1.03	http://www.sitecomlearningcentre.com/download/firmware/2537	2015-05-13	http://www.sitecomlearningcentre.com/products/wlr-4004v1003/wi-fi-gigabit-router-n300/downloads	c4e9ac90786f5d142ba9d675194bdfe4817a454f	3403904
+224	./output/sitecom/WLR-4100v1001-firmware-v31.dlf	Changed:\n\n\n\tShow the guest network client on DHCP table on web and app agent\n\tAdd timeout to check DNS alive\n\tAdd procedure to verify ipv4 and ipv6 on ppp session\n\n\nFixed:\n\n\n\tFix IPv4 PPTP/L2TP hostname set/get error on app agent\n\tFixed Apple iOS 9 login issue with the MyWiFi app.	1	385e14e2456bdeeb812d49a7c583f328	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLR-4100 v1 001	3.1	http://www.sitecomlearningcentre.com/download/firmware/2699	2016-01-18	http://www.sitecomlearningcentre.com/products/wlr-4100v1001/wi-fi-router-x4-n300/downloads	51b630dd8bea3d57cc94372b2e0669e886227a9a	4075637
+225	./output/sitecom/WLR-4100v1001-firmware-v30.zip	Changed:\n\n\n\tShow the guest network client on DHCP table on web and app agent\n\tAdd timeout to check DNS alive\n\tAdd procedure to verify ipv4 and ipv6 on ppp session\n\n\nFixed:\n\n\n\tFix IPv4 PPTP/L2TP hostname set/get error on app agent\n\tFixed Apple iOS 9 login issue with the MyWiFi app.	1	fd88903662e4b735247dfcefa8ee9910	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLR-4100 v1 001	3.0	http://www.sitecomlearningcentre.com/download/firmware/656	2015-02-27	http://www.sitecomlearningcentre.com/products/wlr-4100v1001/wi-fi-router-x4-n300/downloads	3f714d05ca400fd7bc948d0113a127c3b928e289	3536868
+226	./output/sitecom/WLR-4100v1002-firmware-v27.dlf	Changed:\n\n1. Add timeout to check DNS alive\n\n2. Add procedure to verify ipv4 and ipv6 on ppp session\n\nFixed:\n\n1. Fixed Apple iOS 9 login issue with the MyWiFi app.	1	567ed1ccf92cc34e2402f87f6cdac6ff	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLR-4100 v1 002	2.7	http://www.sitecomlearningcentre.com/download/firmware/2707	2016-01-18	http://www.sitecomlearningcentre.com/products/wlr-4100v1002/wi-fi-router-x4-n300/downloads	8cefc02d123f69b8f41d7433898cfe0c088d5397	5144704
+227	./output/sitecom/WLR-4100v1002-firmware-v14.zip	Changed:\n\n1. Add timeout to check DNS alive\n\n2. Add procedure to verify ipv4 and ipv6 on ppp session\n\nFixed:\n\n1. Fixed Apple iOS 9 login issue with the MyWiFi app.	1	d450244e07d21d5ce41407c0d8393502	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLR-4100 v1 002	1.4	http://www.sitecomlearningcentre.com/download/firmware/674	2015-02-27	http://www.sitecomlearningcentre.com/products/wlr-4100v1002/wi-fi-router-x4-n300/downloads	38e57c27fdd261303630124babfc6ee63d4447d3	5242725
+228	./output/sitecom/WLR-4100v1003-firmware-v27.dlf	Changed:\n\n1. Add timeout to check DNS alive\n\n2. Add procedure to verify ipv4 and ipv6 on ppp session\n\nFixed:\n\n1. Fixed Apple iOS 9 login issue with the MyWiFi app.	1	567ed1ccf92cc34e2402f87f6cdac6ff	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLR-4100 v1 003	2.7	http://www.sitecomlearningcentre.com/download/firmware/2842	2016-01-18	http://www.sitecomlearningcentre.com/products/wlr-4100v1003/wi-fi-router-x4-n300/downloads	8cefc02d123f69b8f41d7433898cfe0c088d5397	5144704
+229	./output/sitecom/WLR-5002v1001-firmware-v101.bin	- Fix login issue, can not login via Win8.1+IE11+Metro mode.\n- Fix Apple Airprint connection issue.	1	12f9223ff1eae64f39990e957c19156f	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLR-5002 v1 001	1.01	http://www.sitecomlearningcentre.com/download/firmware/3079	2016-07-28	http://www.sitecomlearningcentre.com/products/wlr-5002v1001/wi-fi-router-ac750/downloads	1341266aba28a31712cc6c7ab5b07244ac07677b	4071552
+230	./output/sitecom/WLR-5002v2001-firmware-v10.img	Original Firmware	1	8fbc596308e6e1d474a7a8e7b62321c2	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLR-5002 v2 001	1.0	http://www.sitecomlearningcentre.com/download/firmware/3103	2015-07-04	http://www.sitecomlearningcentre.com/products/wlr-5002v2001/wi-fi-router-ac750/downloads	40563353ab22d1c160916ec884a68e4d8fb2a533	7128836
+231	./output/sitecom/WLR-5100v1001-firmware-v30.zip	WLR-5100v1-001\n\nFirmware 3.0\n\n(1)    Added support for Mobile App\n\nFirmware 2.1\n\n(1)    Guest Network functionality\n(2)    Auto LAN IP Change detection\n(3)    Replace domain name to "sitecom.router"\n(4)    Multi Wan Port Bridge in Russia L2TP mode.\n(5)    IPv6 support\n(6)    IPv6 with latest utmproxy\n(7)    Disable WPS PIN code functionality\n\nNote: Because of the changed functionality it is necessary to reset the router to factory defaults after the firmware upgrade!	1	c774351b0dcd46ab5b11680d2f4a762d	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLR-5100 v1 001	3.0	http://www.sitecomlearningcentre.com/download/firmware/702	2015-02-27	http://www.sitecomlearningcentre.com/products/wlr-5100v1001/wi-fi-router-x5-n600/downloads	22d794cc36f6868e0c1ec1fc7eb701af3062da64	4640844
+232	./output/sitecom/WLR-5100v1002-firmware-v14.dlf	Changed:\n\n\n\tShow the guest network client on web and app agent\n\tAdd timeout to check DNS alive\n\tAdd procedure to verify ipv4 and ipv6 on ppp session\n\n\nFixed:\n\n\n\tIgnore DHCP-PD check when use IPv6 Static/6RD type of connection\n\tFix IPv4 PPTP/L2TP hostname set/get error on app agent\n\tFixed Apple iOS 9 login issue with the MyWiFi app.	1	6ff136dc00bd091a8d104dcccc0fd774	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLR-5100 v1 002	1.4	http://www.sitecomlearningcentre.com/download/firmware/2723	2016-01-18	http://www.sitecomlearningcentre.com/products/wlr-5100v1002/wi-fi-router-x5-n600/downloads	2b998ec1041d79a7d929bf1d28beb89de7d3708c	5476469
+233	./output/sitecom/WLR-5100v1002-firmware-v12.zip	Changed:\n\n\n\tShow the guest network client on web and app agent\n\tAdd timeout to check DNS alive\n\tAdd procedure to verify ipv4 and ipv6 on ppp session\n\n\nFixed:\n\n\n\tIgnore DHCP-PD check when use IPv6 Static/6RD type of connection\n\tFix IPv4 PPTP/L2TP hostname set/get error on app agent\n\tFixed Apple iOS 9 login issue with the MyWiFi app.	1	0ce86acbfed1433950dc67a0d7ccb7c9	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLR-5100 v1 002	1.2	http://www.sitecomlearningcentre.com/download/firmware/728	2015-02-27	http://www.sitecomlearningcentre.com/products/wlr-5100v1002/wi-fi-router-x5-n600/downloads	12a7b2e9bb73e7eeb7817a59e02b0dcc62d0fb85	4906519
+234	./output/sitecom/WLR-6100v1001-firmware-v211.dlf	Changed:\n\n\n\tAdd timeout to check DNS alive\n\tAdd procedure to verify ipv4 and ipv6 on ppp session\n\n\nFixed:\n\n\n\tfix USB2 get function on app agent\n\tIgnore DHCP-PD check when use IPv6 Static/6RD type of connection\n\tFix IPv4 PPTP/L2TP hostname set/get error on app agent\n\tshow the guest network client on DHCP table on web and app agent\n\tFixed Apple iOS 9 login issue with the MyWiFi app.	1	6ba30301ea3686826d61de5b6da042ab	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLR-6100 v1 001	2.11	http://www.sitecomlearningcentre.com/download/firmware/2731	2016-01-18	http://www.sitecomlearningcentre.com/products/wlr-6100v1001/wi-fi-router-x6-n900/downloads	731c4bf7d66da0ac7a922251c80eeedfaf8789d2	6815861
+235	./output/sitecom/WLR-6100v1001-firmware-v210.zip	Changed:\n\n\n\tAdd timeout to check DNS alive\n\tAdd procedure to verify ipv4 and ipv6 on ppp session\n\n\nFixed:\n\n\n\tfix USB2 get function on app agent\n\tIgnore DHCP-PD check when use IPv6 Static/6RD type of connection\n\tFix IPv4 PPTP/L2TP hostname set/get error on app agent\n\tshow the guest network client on DHCP table on web and app agent\n\tFixed Apple iOS 9 login issue with the MyWiFi app.	1	199dde5befd448399d4aeaeb7c8b17f9	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLR-6100 v1 001	2.10	http://www.sitecomlearningcentre.com/download/firmware/646	2015-02-27	http://www.sitecomlearningcentre.com/products/wlr-6100v1001/wi-fi-router-x6-n900/downloads	400b22b1d009e7ad892a5bf4bb5df860e5249380	6245166
+236	./output/sitecom/WLR-7100v1001-firmware-v18.dlf	Changed:\n\n\n\tAdd procedure to verify ipv4 and ipv6 on ppp session\n\n\nFixed:\n\n\n\tFix security issue of NetUSB\n\tFixed Apple iOS 9 login issue with the MyWiFi app.	1	c88d53830112e55cf0441dfbde6c4c0a	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLR-7100 v1 001	1.8	http://www.sitecomlearningcentre.com/download/firmware/2739	2016-01-18	http://www.sitecomlearningcentre.com/products/wlr-7100v1001/wi-fi-router-x7-ac1200/downloads	b0d2a244bd9be00fe71d5920729cc2675829440c	7188597
+237	./output/sitecom/WLR-7100v1001-firmware-v15.zip	Changed:\n\n\n\tAdd procedure to verify ipv4 and ipv6 on ppp session\n\n\nFixed:\n\n\n\tFix security issue of NetUSB\n\tFixed Apple iOS 9 login issue with the MyWiFi app.	1	d684af07f86e204993c8db340525bd0a	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLR-7100 v1 001	1.5	http://www.sitecomlearningcentre.com/download/firmware/626	2015-02-19	http://www.sitecomlearningcentre.com/products/wlr-7100v1001/wi-fi-router-x7-ac1200/downloads	86337f041f056d0e1d3c9d1cdddb44011b109959	6738637
+238	./output/sitecom/WLR-7100v1002-firmware-v18.dlf	Changed:\n\n\n\tAdd procedure to verify ipv4 and ipv6 on ppp session\n\n\nFixed:\n\n\n\tFix security issue of NetUSB\n\tFixed Apple iOS 9 login issue with the MyWiFi app.	1	c88d53830112e55cf0441dfbde6c4c0a	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLR-7100 v1 002	1.8	http://www.sitecomlearningcentre.com/download/firmware/2796	2016-01-18	http://www.sitecomlearningcentre.com/products/wlr-7100v1002/wi-fi-router-x7-ac1200/downloads	b0d2a244bd9be00fe71d5920729cc2675829440c	7188597
+239	./output/sitecom/WLR-8100v1001-firmware-v26.dlf	Changed:\n\n\n\tAdd timeout to check DNS alive\n\tAdd procedure to verify ipv4 and ipv6 on ppp session\n\n\nFixed:\n\n\n\tFix security issue of NetUSB\n\tFixed Apple iOS 9 login issue with the MyWiFi app.	1	7adb6148220c80c91d3f4d89c4e2982e	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLR-8100 v1 001	2.6	http://www.sitecomlearningcentre.com/download/firmware/2747	2016-01-18	http://www.sitecomlearningcentre.com/products/wlr-8100v1001/wi-fi-router-x8-ac1750/downloads	43cd5de7987000d522323d8cebdbda04d534e148	7770240
+240	./output/sitecom/WLR-8100v1001-firmware-v24.zip	Changed:\n\n\n\tAdd timeout to check DNS alive\n\tAdd procedure to verify ipv4 and ipv6 on ppp session\n\n\nFixed:\n\n\n\tFix security issue of NetUSB\n\tFixed Apple iOS 9 login issue with the MyWiFi app.	1	b32ae4b94b63acb5bcf80ee859fd775e	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLR-8100 v1 001	2.4	http://www.sitecomlearningcentre.com/download/firmware/2658	2015-11-11	http://www.sitecomlearningcentre.com/products/wlr-8100v1001/wi-fi-router-x8-ac1750/downloads	c7aae669cc3c3edcf0a7929f2ae5baa7de25d067	7222255
+241	./output/sitecom/WLR-8100v1001-firmware-v21.zip	Changed:\n\n\n\tAdd timeout to check DNS alive\n\tAdd procedure to verify ipv4 and ipv6 on ppp session\n\n\nFixed:\n\n\n\tFix security issue of NetUSB\n\tFixed Apple iOS 9 login issue with the MyWiFi app.	1	5b977135bea21ec4be9654e239ea8ac1	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLR-8100 v1 001	2.1	http://www.sitecomlearningcentre.com/download/firmware/611	2015-02-19	http://www.sitecomlearningcentre.com/products/wlr-8100v1001/wi-fi-router-x8-ac1750/downloads	3b265acbedb9c863dc73e2afe0de1da52dba3df5	7162319
+242	./output/sitecom/WLR-8100v1002-firmware-v26.dlf	Changed:\n\n\n\tAdd timeout to check DNS alive\n\tAdd procedure to verify ipv4 and ipv6 on ppp session\n\n\nFixed:\n\n\n\tFix security issue of NetUSB\n\tFixed Apple iOS 9 login issue with the MyWiFi app.	1	7adb6148220c80c91d3f4d89c4e2982e	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLR-8100 v1 002	2.6	http://www.sitecomlearningcentre.com/download/firmware/2755	2016-01-18	http://www.sitecomlearningcentre.com/products/wlr-8100v1002/wi-fi-router-x8-ac1750/downloads	43cd5de7987000d522323d8cebdbda04d534e148	7770240
+243	./output/sitecom/WLR-8100v1002-firmware-v24.zip	Changed:\n\n\n\tAdd timeout to check DNS alive\n\tAdd procedure to verify ipv4 and ipv6 on ppp session\n\n\nFixed:\n\n\n\tFix security issue of NetUSB\n\tFixed Apple iOS 9 login issue with the MyWiFi app.	1	b32ae4b94b63acb5bcf80ee859fd775e	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLR-8100 v1 002	2.4	http://www.sitecomlearningcentre.com/download/firmware/2666	2015-10-01	http://www.sitecomlearningcentre.com/products/wlr-8100v1002/wi-fi-router-x8-ac1750/downloads	c7aae669cc3c3edcf0a7929f2ae5baa7de25d067	7222255
+244	./output/sitecom/WLX-1000v1001-firmware-vFirmware-10.zip	Firmware 1.0	1	fe05118edcd96ee33205f9bc04e29a34	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLX-1000 v1 001	1.0	http://www.sitecomlearningcentre.com/download/firmware/827	2015-03-02	http://www.sitecomlearningcentre.com/products/wlx-1000v1001/wi-fi-range-extender-n300/downloads	efcf622d4d8271469740d5d7c4da4d9d7f0933e2	2644337
+245	./output/sitecom/WLX-2005v1001-firmware-vFirmware-14.zip	Firmware 1.4	1	86fa2f1a3deffa6ce9bc1ccb6784bf44	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLX-2005 v1 001	1.4	http://www.sitecomlearningcentre.com/download/firmware/837	2015-03-02	http://www.sitecomlearningcentre.com/products/wlx-2005v1001/wi-fi-access-point-n300/downloads	7b5751d465e4ffcbc87fa76190f568ae885b27bd	2612888
+246	./output/sitecom/WLX-2006v1001-firmware-vFirmware-15.zip	Firmware 1.5	1	a96d152c1ed6f5088d43086031ecfe2e	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLX-2006 v1 001	1.5	http://www.sitecomlearningcentre.com/download/firmware/845	2015-03-02	http://www.sitecomlearningcentre.com/products/wlx-2006v1001/wi-fi-range-extender-n300/downloads	2fe0a6f6f5cd394f2f32f17129f36263860e1f2b	2645450
+247	./output/sitecom/WLX-5000v1001-firmware-vFirmware-16.zip	Firmware 1.6	1	b48108496657098885fffab9cf1896b8	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLX-5000 v1 001	1.6	http://www.sitecomlearningcentre.com/download/firmware/851	2015-03-02	http://www.sitecomlearningcentre.com/products/wlx-5000v1001/wi-fi-range-extender-dualband-n600/downloads	560d4f879defd992889764f459aaf72c9b749db1	3144458
+248	./output/sitecom/WLX-5100v1001-firmware-vFirmware-106.zip	Firmware 1.06	1	fab972c65e7ab8b4e9c5a1d644cb60de	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLX-5100 v1 001	1.06	http://www.sitecomlearningcentre.com/download/firmware/861	2015-03-02	http://www.sitecomlearningcentre.com/products/wlx-5100v1001/wi-fi-range-extender-dualband-ac750/downloads	8a6f6ccdb94c4887af2301394777f1625e0e707f	3317695
+249	./output/sitecom/WLX-7000v1001-firmware-v11.bin	- Fixed some language issues	1	ee797d83ebaf806277a866a3c86b1dee	f	f	\N	\N	\N	\N	\N	\N	\N	Sitecom	WLX-7000 v1 001	1.1	http://www.sitecomlearningcentre.com/download/firmware/2850	2016-02-25	http://www.sitecomlearningcentre.com/products/wlx-7000v1001/ac1200-wi-fi-dual-band-access-point/downloads	496f8080143a7e99f673d60fe120b43f3337f885	3530880
+\.
+
+
+--
+-- Name: image_id_seq; Type: SEQUENCE SET; Schema: public; Owner: firmadyne
+--
+
+SELECT pg_catalog.setval('image_id_seq', 249, true);
+
+
+--
+-- Data for Name: object; Type: TABLE DATA; Schema: public; Owner: firmadyne
+--
+
+COPY object (id, hash) FROM stdin;
+\.
+
+
+--
+-- Name: object_id_seq; Type: SEQUENCE SET; Schema: public; Owner: firmadyne
+--
+
+SELECT pg_catalog.setval('object_id_seq', 1, false);
+
+
+--
+-- Data for Name: object_to_image; Type: TABLE DATA; Schema: public; Owner: firmadyne
+--
+
+COPY object_to_image (id, oid, iid, filename, regular_file, permissions, uid, gid) FROM stdin;
+\.
+
+
+--
+-- Name: object_to_image_id_seq; Type: SEQUENCE SET; Schema: public; Owner: firmadyne
+--
+
+SELECT pg_catalog.setval('object_to_image_id_seq', 1, false);
+
+
+--
+-- Data for Name: product; Type: TABLE DATA; Schema: public; Owner: firmadyne
+--
+
+COPY product (id, iid, url, mib_hash, mib_url, sdk_hash, sdk_url, product, version, build, date, mib_filename, sdk_filename, brand) FROM stdin;
+\.
+
+
+--
+-- Name: product_id_seq; Type: SEQUENCE SET; Schema: public; Owner: firmadyne
+--
+
+SELECT pg_catalog.setval('product_id_seq', 1, false);
+
+
+--
 -- Name: brand_name_key; Type: CONSTRAINT; Schema: public; Owner: firmadyne
 --
 
@@ -413,14 +677,6 @@ ALTER TABLE ONLY product
 
 ALTER TABLE ONLY product
     ADD CONSTRAINT product_pkey PRIMARY KEY (id);
-
-
---
--- Name: uniq_hash; Type: CONSTRAINT; Schema: public; Owner: firmadyne
---
-
-ALTER TABLE ONLY image
-    ADD CONSTRAINT uniq_hash UNIQUE (hash);
 
 
 --
