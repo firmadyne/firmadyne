@@ -167,7 +167,7 @@ def test_network_reachable(iid, emulate_only=False):
 def main():
     if len(sys.argv)<2:
         print("usage: \n\
-                %s <IID>"%(sys.argv[0]))
+                %s <IID> [emulate]"%(sys.argv[0]))
         return
     iid = int(sys.argv[1])
     emulate_only=False
