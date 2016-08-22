@@ -29,20 +29,20 @@ try:
     db2=psycopg2.connect(database='firmware', user='firmadyne',
                          password='firmadyne', host='127.0.0.1')
     cur = db2.cursor()
-    cur.execute("SELECT filename,brand FROM image")
+    cur.execute("SELECT id, filename,brand FROM image")
     rows = cur.fetchall()
-    for fname, brand in rows:
+    for iid, fname, brand in rows:
         fpath = find_file(fname, brand)
         if not fpath:
-            print('cannot find %(brand)s, %(fname)s'%locals())
+            print('cannot find %(iid)s, %(brand)s, %(fname)s'%locals())
             sha1=None
-            cur.execute("UPDATE image SET file_sha1=%(sha1)s", locals())
+            cur.execute("UPDATE image SET file_sha1=%(sha1)s where id=%(iid)s", locals())
             db2.commit()
             continue
         with open(fpath, 'rb') as fin:
             sha1 = hashlib.sha1(fin.read()).hexdigest()
-            print('%(brand)s, %(fname)s, %(sha1)s'%locals())
-            cur.execute("UPDATE image SET file_sha1=%(sha1)s", locals())
+            print('%(iid)s, %(brand)s, %(fname)s, %(sha1)s'%locals())
+            cur.execute("UPDATE image SET file_sha1=%(sha1)s where id=%(iid)s", locals())
             db2.commit()
 
 except Exception as ex:
