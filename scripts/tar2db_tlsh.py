@@ -11,7 +11,7 @@ import re
 import traceback
 
 
-def main:
+def main():
     if len(sys.argv)<2:
         print('eg:\n  %s images/123.tar.gz'%(sys.argv[0]))
         return
