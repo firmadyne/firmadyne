@@ -12,11 +12,12 @@ def psql(sql_cmd, params=None):
         cur = conn.cursor()
         cur.execute(sql_cmd, params)
         sql_act = sql_cmd.split()[0]
-        if sql_act=='SELECT':
+        if sql_act.upper()=='SELECT':
             row = cur.fetchone()
             return row[0]
-        elif sql_act in ['UPDATE','DELETE']:
+        elif sql_act.upper() in ['UPDATE','DELETE']:
             conn.commit()
+            return None
     except Exception as ex:
         traceback.print_exc()
     finally:
@@ -27,7 +28,7 @@ def main():
         return
     sql_cmd = sys.argv[1]
     ret = psql(sql_cmd)
-    if ret:
+    if ret is not None:
         print(ret)
 
 if __name__=="__main__":
