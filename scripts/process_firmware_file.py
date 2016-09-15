@@ -19,17 +19,17 @@ if not brand or not fw_file:
     sys.exit()
 
 
-ret, txt = shell('./sources/extractor/extractor.py -b "%(brand)s" '
-                '-sql 127.0.0.1 -np -nk "%(fw_file)s" images 2>&1'%locals())
+ret, txt = shell('python -u ./sources/extractor/extractor.py -b "%(brand)s" '
+                '-sql 127.0.0.1 -np -nk "%(fw_file)s" images'%locals())
 if ret!=0:
     sys.exit(ret)
-# >> Database Image ID: 774
+
 iid =  int(re.search(r'Image ID: (\d+)', txt).group(1))
 if not path.exists('images/%(iid)d.tar.gz'%locals()):
     print('failed to extract "%(fw_file)s" '%locals(), file=sys.stderr)
     sys.exit()
 
-ret, txt = shell('./scripts/getArch.sh ./images/%(iid)d.tar.gz 2>&1'%locals())
+ret, txt = shell('./scripts/getArch.sh ./images/%(iid)d.tar.gz'%locals())
 if ret!=0:
     print('failed to getArch.sh %(iid)s'%locals(), file=sys.stderr)
     sys.exit(ret)
@@ -38,11 +38,14 @@ if arch not in ['mipsel','mipseb','armel']:
     print('unknown CPU Architect "%(arch)s" for %(iid)d'%locals(), file=sys.stderr)
     sys.exit(1)
 
-ret, txt = shell('./scripts/tar2db.py -i %(iid)d -f images/%(iid)d.tar.gz 2>&1'%locals())
+ret, txt = shell('./scripts/tar2db.py -i %(iid)d -f images/%(iid)d.tar.gz'%locals())
 if ret!=0:
     if 'duplicate key value' not in  txt:
         print('failed to tar2db.py -i %(iid)d -f "images/%(iid)d.tar.gz"'%locals(), file=sys.stderr)
         sys.exit(ret)
+
+# tlsh hash to unpacked_fw
+ret, txt = shell('./scripts/tar2db_tlsh.py images/%(iid)d.tar.gz'%locals())
 
 ret, txt = shell('sudo ./scripts/makeImage.sh %(iid)d %(arch)s'%locals())
 shell('sudo rm -f images/%(iid)d.tar.gz'%locals())
