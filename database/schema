@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.5.4
+-- Dumped from database version 9.5.3
 -- Dumped by pg_dump version 9.5.3
 
 SET statement_timeout = 0;
@@ -61,20 +61,6 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
-
---
--- Name: plpython3u; Type: EXTENSION; Schema: -; Owner: 
---
-
-CREATE EXTENSION IF NOT EXISTS plpython3u WITH SCHEMA pg_catalog;
-
-
---
--- Name: EXTENSION plpython3u; Type: COMMENT; Schema: -; Owner: 
---
-
-COMMENT ON EXTENSION plpython3u IS 'PL/Python3U untrusted procedural language';
 
 
 SET search_path = public, pg_catalog;
@@ -182,7 +168,8 @@ CREATE TABLE image (
     page_url text,
     file_sha1 text,
     file_size integer,
-    tree_trail json
+    tree_trail json,
+    hw_rev text
 );
 
 
@@ -337,7 +324,9 @@ CREATE TABLE unpacked_fw (
     sha1_hash text,
     md5_hash text,
     linkpath text,
-    tlsh_hash text
+    tlsh_hash text,
+    filesize integer,
+    permission integer
 );
 
 
@@ -423,6 +412,14 @@ ALTER TABLE ONLY brand
 
 
 --
+-- Name: fw_id_filename_uniq; Type: CONSTRAINT; Schema: public; Owner: firmadyne
+--
+
+ALTER TABLE ONLY unpacked_fw
+    ADD CONSTRAINT fw_id_filename_uniq UNIQUE (parent_id, filename);
+
+
+--
 -- Name: image_pkey; Type: CONSTRAINT; Schema: public; Owner: firmadyne
 --
 
@@ -476,6 +473,14 @@ ALTER TABLE ONLY product
 
 ALTER TABLE ONLY product
     ADD CONSTRAINT product_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: uniq_hash; Type: CONSTRAINT; Schema: public; Owner: firmadyne
+--
+
+ALTER TABLE ONLY image
+    ADD CONSTRAINT uniq_hash UNIQUE (hash);
 
 
 --
