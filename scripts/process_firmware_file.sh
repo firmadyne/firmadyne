@@ -10,7 +10,7 @@ sources/extractor/extractor.py -b "${brand}" -sql 127.0.0.1 -np -nk "${fw_file}"
 IID=$(scripts/psql_firmware.py "SELECT MAX(id) FROM image")
 extract_OK=$(scripts/psql_firmware.py "SELECT rootfs_extracted FROM image WHERE id=${IID};")
 if [ "$extract_OK" == "False" ] ; then
-    exit
+    exit 0
 fi
 
 scripts/getArch.sh images/${IID}.tar.gz
@@ -22,6 +22,6 @@ echo "inferNetwork.sh ${IID}"
 scripts/inferNetwork.sh ${IID} $arch
 net_infer_OK=$(scripts/psql_firmware.py "SELECT network_inferred FROM image WHERE id=${IID};")
 if [ "$net_infer_OK" == "False" ] ; then
-    exit
+    exit 0
 fi
 scripts/test_network_reachable.py ${IID}
