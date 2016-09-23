@@ -40,12 +40,16 @@ def main():
                 md5_hash = hashlib.md5(cont).hexdigest()
                 filesize = mem.size
                 tlsh_hash = tlsh.hash(cont)
+                perm=mem.mode
+                uid=mem.uid
+                gid=mem.gid
                 try:
                     cur.execute("INSERT INTO unpacked_fw \
-                            (  parent_id,   filename,    sha1_hash,    md5_hash,    tlsh_hash,       filesize) VALUES \
-                            (%(parent_id)s, %(fname)s, %(sha1_hash)s, %(md5_hash)s, %(tlsh_hash)s, %(filesize)s)", 
+                            (  parent_id,   filename,    sha1_hash,    md5_hash,    tlsh_hash,       filesize, permission, uid, gid) VALUES \
+                            (%(parent_id)s, %(fname)s, %(sha1_hash)s, %(md5_hash)s, %(tlsh_hash)s, %(filesize)s, %(perm)s, %(uid)s, %(gid)s )", 
                             locals())
                     db.commit()
+                    print(fname)
                 except psycopg2.Error as ex:
                     if ex.pgcode not in [psqlerr.UNIQUE_VIOLATION]:
                         print(ex)
@@ -58,6 +62,7 @@ def main():
                             (%(parent_id)s, %(fname)s,  %(linkpath)s)", 
                             locals())
                     db.commit()
+                    print(fname)
                 except psycopg2.Error as ex:
                     if ex.pgcode not in [psqlerr.UNIQUE_VIOLATION]:
                         print(ex)
