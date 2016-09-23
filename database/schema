@@ -326,7 +326,9 @@ CREATE TABLE unpacked_fw (
     linkpath text,
     tlsh_hash text,
     filesize integer,
-    permission integer
+    permission integer,
+    uid integer,
+    gid integer
 );
 
 
