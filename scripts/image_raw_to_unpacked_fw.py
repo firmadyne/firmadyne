@@ -40,7 +40,10 @@ try:
                     sha1_hash=md5_hash=tlsh_hash=None
                 else:
                     gid=uid=perm=None
-                    fsize=path.getsize(f2)
+                    try:
+                        fsize=path.getsize(f2)
+                    except:
+                        fsize=None
                     sha1_hash=md5_hash=tlsh_hash=None
 
                 print(fname, f2)
