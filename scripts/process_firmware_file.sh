@@ -15,8 +15,8 @@ fi
 
 scripts/getArch.sh images/${IID}.tar.gz
 arch=$(scripts/psql_firmware.py "SELECT arch FROM image WHERE id=${IID};")
-scripts/tar2db.py -i ${IID} -f images/${IID}.tar.gz
 scripts/tar2db_tlsh.py images/${IID}.tar.gz
+# scripts/tar2db.py -i ${IID} -f images/${IID}.tar.gz
 sudo ./scripts/makeImage.sh ${IID} $arch
 echo "inferNetwork.sh ${IID}"
 scripts/inferNetwork.sh ${IID} $arch
