@@ -22,7 +22,11 @@ try:
                 fname ='./'+f2[prelen:] 
                 if path.isfile(f2):
                     fsize=path.getsize(f2)
-                    perm=os.stat(f2).st_mode
+                    stat=os.stat(f2)
+                    perm=stat.st_mode
+                    uid=stat.st_uid
+                    gid=stat.st_gid
+                    
                     with open(f2, 'rb') as fin:
                         cont = fin.read()
                         sha1_hash = hashlib.sha1(cont).hexdigest()
@@ -31,18 +35,19 @@ try:
                     symtgt=None
                 elif path.islink(f2):
                     symtgt=path.realpath(f2)
-                    perm=os.stat(f2, follow_symlinks=False).st_mode
+                    gid=uid=perm=None
                     fsize=None
                     sha1_hash=md5_hash=tlsh_hash=None
                 else:
-                    perm=os.stat(f2, follow_symlinks=False).st_mode
+                    gid=uid=perm=None
                     fsize=path.getsize(f2)
                     sha1_hash=md5_hash=tlsh_hash=None
 
                 print(fname, f2)
                 cur.execute("INSERT INTO unpacked_fw "
-                        "(parent_id,filename,sha1_hash,md5_hash,tlsh_hash,linkpath,filesize,permission) VALUES "
-                        "(%(parent_id)s, %(fname)s, %(sha1_hash)s, %(md5_hash)s, %(tlsh_hash)s, %(symtgt)s, %(fsize)s, %(perm)s )",
+                        "(parent_id,filename,sha1_hash,md5_hash,tlsh_hash,linkpath,filesize,permission,uid,gid) VALUES "
+                        "(%(parent_id)s, %(fname)s, %(sha1_hash)s, %(md5_hash)s, %(tlsh_hash)s, %(symtgt)s, %(fsize)s, %(perm)s,%(uid)s,%(gid)s )"
+                        " ON CONFLICT (parent_id,filename) DO UPDATE SET permission=%(perm)s,uid=%(uid)s,gid=%(gid)s,filesize=%(fsize)s,sha1_hash=%(sha1_hash)s,md5_hash=%(md5_hash)s,tlsh_hash=%(tlsh_hash)s ",
                         locals())
             except FileNotFoundError:
                 print('%s error'%(f2))
