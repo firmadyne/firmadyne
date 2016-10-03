@@ -149,7 +149,7 @@ fi
 
 if $BUSYBOX grep -sq "time_zone_x" /lib/libacos_shared.so; then
     echo "Creating default time_zone_x!"
-    echo -n "0" > /libnvram.defaults/time_zone_x fi
+    echo -n "0" > /libnvram.defaults/time_zone_x
 fi
 
 if $BUSYBOX grep -sq "rip_multicast" /usr/sbin/httpd; then
