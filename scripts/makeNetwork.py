@@ -98,7 +98,7 @@ echo "Done!"
 """
 
 def stripTimestamps(data):
-    lines = data.split("\r\n")
+    lines = data.split("\n")
     #throw out the timestamps
     lines = [re.sub(r"^\[[^]]*] firmadyne: ", "", l) for l in lines]
     return lines
