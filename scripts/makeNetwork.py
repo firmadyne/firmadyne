@@ -48,16 +48,17 @@ sudo tunctl -t ${TAPDEV} -u ${USER}
 
 if [ ${HASVLAN} -ne 0 ]; then
     echo "Initializing VLAN..."
-    sudo vconfig add ${TAPDEV} ${VLANID}
-    sudo ifconfig ${TAPDEV} 0.0.0.0 up
     HOSTNETDEV=${TAPDEV}.${VLANID}
+    sudo ip link add link ${TAPDEV} name ${HOSTNETDEV} type vlan id ${VLANID}
+    sudo ip link set ${HOSTNETDEV} up
 fi
 
 echo "Bringing up TAP device..."
-sudo ifconfig ${HOSTNETDEV} ${NETDEVIP}/24 up
+sudo ip link set ${HOSTNETDEV} up
+sudo ip addr add ${NETDEVIP}/24 dev ${HOSTNETDEV}
 
 echo "Adding route to ${GUESTIP}..."
-sudo route add -host ${GUESTIP} gw ${GUESTIP} ${HOSTNETDEV}
+sudo ip route add ${GUESTIP} via ${GUESTIP} dev ${HOSTNETDEV}
 
 echo -n "Starting emulation of firmware... "
 %(QEMU_ENV_VARS)s${QEMU} -m 256 -M ${QEMU_MACHINE} -kernel ${KERNEL} \\
@@ -80,15 +81,15 @@ read -n 1
 killall ${QEMU}
 
 echo "Deleting route..."
-sudo route del -host ${GUESTIP} gw ${GUESTIP} ${HOSTNETDEV}
+sudo ip route flush dev ${HOSTNETDEV}
 
 echo "Bringing down TAP device..."
-sudo ifconfig ${TAPDEV} down
+sudo ip link set ${TAPDEV} down
 
 if [ ${HASVLAN} -ne 0 ]
 then
     echo "Removing VLAN..."
-    sudo vconfig rem ${HOSTNETDEV}
+    sudo ip link delete ${HOSTNETDEV}
 fi
 
 echo -n "Deleting TAP device ${TAPDEV}... "
