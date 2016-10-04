@@ -32,7 +32,7 @@ fi
 # make /dev and add default device nodes if current /dev does not have greater
 # than 5 device nodes
 mkdir -p $(resolve_link /dev)
-FILECOUNT="$($BUSYBOX find ${WORKDIR}/dev -maxdepth 1 -type b -or -type c -print | $BUSYBOX wc -l)"
+FILECOUNT="$($BUSYBOX find ${WORKDIR}/dev -maxdepth 1 -type b -o -type c -print | $BUSYBOX wc -l)"
 if [ $FILECOUNT -lt "5" ]; then
     echo "Warning: Recreating device nodes!"
 
