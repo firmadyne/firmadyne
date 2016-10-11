@@ -84,8 +84,9 @@ The extractor depends on the [binwalk](https://github.com/devttys0/binwalk)
 tool, so we need to install that and its dependencies.
 
 1. `git clone https://github.com/devttys0/binwalk.git`
-2. `sudo ./binwalk/deps.sh`
-3. `sudo python ./binwalk/setup.py install`
+2. `cd binwalk`
+2. `sudo ./deps.sh`
+3. `sudo python ./setup.py install`
   * For Python 2.x, `sudo apt-get install python-lzma`
 4. `sudo -H pip install git+https://github.com/ahupp/python-magic`
 5. Install [jefferson](https://github.com/sviehb/jefferson).
@@ -146,7 +147,7 @@ recommended), or [upstream qemu](https://github.com/qemu/qemu).
    * `./analyses/webAccess.py 1 192.168.0.100 log.txt`
    * `mkdir exploits; ./analyses/runExploits.py -t 192.168.0.100 -o exploits/exploit -e x` (requires Metasploit Framework)
    * `sudo nmap -O -sV 192.168.0.100`
-10. To access a console in the firmware, use a presupplied debug run script to access the default console (no network access), modify the network-enabled `run.sh` script to provide console access, or use the second console provided by the framework.
+10. To access a console in the firmware, use a presupplied debug run script to access the default console (no network access), modify the network-enabled `run.sh` script to provide console access, or use the second console provided by the framework. Note that for the sample firmware above, you will need to first delete the file `/etc/securetty` from the filesystem.
    * `./scripts/run-debug.sh 1`
    * `nc -U /tmp/qemu.1.S1`
 11. The following scripts can be used to mount/unmount the filesystem of firmware `1`. Ensure that the emulated firmware is not running, and remember to unmount before performing any other operations.
@@ -159,7 +160,7 @@ This is a common error that is encountered when the network configuration is una
 
 1. `inferNetwork.sh`: Did this script find any network interfaces (e.g. `Interfaces: [br0, 192.168.0.1]`)? If so, this is a bug; please report it. Otherwise, continue below.
 2. `qemu.initial.serial.log`: Does this file end with `Unable to mount root fs on unknown-block(8,1)`? If so, the initial filesystem image was not generated correctly using `kpartx`. Try deleting the scratch directory corresponding to this firmware image, and restart at `makeImage.sh`. Otherwise, the initial emulation didn't produce any useful instrumentation. Try increasing the timeout in `inferNetwork.sh` from `60` to `120` and restarting at `inferNetwork.sh`.
-3. `qemu.initial.serial.log`: Did the `init` process crash, and is this preceded by a failed NVRAM operation (e.g. `nvram_get_buf: Unable to open key <foo>`)? If so, a new NVRAM entry may need to be manually added to `config.h` in `libnvram`, with the expected value. Otherwise, it is likely that a disassembler will be needed to figure out why the boot process failed. 
+3. `qemu.initial.serial.log`: Did the `init` process crash, and is this preceded by a failed NVRAM operation (e.g. `nvram_get_buf: Unable to open key <foo>`)? If so, a new NVRAM entry may need to be manually added to `config.h` in `libnvram`, with the expected value. Otherwise, it is likely that a disassembler will be needed to figure out why the boot process failed.
 
 # Compiling from Source
 
