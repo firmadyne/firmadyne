@@ -17,11 +17,21 @@ scripts/getArch.sh images/${IID}.tar.gz
 arch=$(scripts/psql_firmware.py "SELECT arch FROM image WHERE id=${IID};")
 scripts/tar2db_tlsh.py images/${IID}.tar.gz
 sudo ./scripts/makeImage.sh ${IID} $arch
+# infer network
 echo "inferNetwork.sh ${IID}"
 scripts/inferNetwork.sh ${IID} $arch
 net_infer_OK=$(scripts/psql_firmware.py "SELECT network_inferred FROM image WHERE id=${IID};")
 if [ "$net_infer_OK" == "False" ] ; then
     exit 0
 fi
-scripts/test_network_reachable.py ${IID}
+# net_reachable
+python3 -u scripts/test_network_reachable.py ${IID} test | tee test_network_reachable.log
+net_reachalbe=$(cat test_network_reachable.log | grep "network_reachable=" | grep -ohE 'True|False')
+rm test_network_reachable.log
+if [ "$net_reachable" == "False" ] ; then
+    exit 0
+fi
+python3 -u scripts/test_network_reachable.py ${IID} construct
+python3 -u analyses/runExploits.py -i ${IID}
+python3 -u scripts/test_network_reachable.py ${IID} destruct
 

@@ -116,7 +116,7 @@ def get_qemu_cmd_line(iid, archend):
             {qemuNetwork}'''.format(**locals()))
 
 
-def try_ip(ip_addr, loopcount=3, timeout=20):
+def try_ip(ip_addr, loopcount=20, timeout=3):
     for _i in range(loopcount):
         try:
             print('test http://%s/'%ip_addr)
@@ -130,7 +130,11 @@ def try_ip(ip_addr, loopcount=3, timeout=20):
 def construct(iid):
     archend = psql("SELECT arch FROM image WHERE id=%d"%iid)
     guestip = psql("SELECT guest_ip FROM image WHERE id=%d"%iid)
+    if not guestip:
+        return False
     netdev = psql("SELECT netdev FROM image WHERE id=%d"%iid)
+    if not guestip:
+        return False
     netdevip=closeIp(guestip)
     tapdev='tap%d'%iid
     print("Creating TAP device %(tapdev)s..."%locals())
@@ -168,11 +172,15 @@ def destruct(iid):
 def main():
     if len(sys.argv)<2:
         print("""
-        usage: 
-                {0} <IID> [test] 
-                {0} <IID> [emulate] 
-                {0} <IID> [construct]
-                {0} <IID> [destruct]
+usage: 
+        {0} <IID> [test] 
+        {0} <IID> [emulate] 
+        {0} <IID> [construct]
+        {0} <IID> [destruct]
+Use "test" to test network reachability in automatic process.
+Use "emulate" to test network in a manually GUI way.
+Use "construct" if you wanna use metasploit in the same process.
+Use "destruct" to destruct network setups.
                 """.format(sys.argv[0]))
         return
     iid = int(sys.argv[1])
