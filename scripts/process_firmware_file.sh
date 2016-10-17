@@ -6,8 +6,8 @@ brand=$1
 fw_file=$2
 
 python -u sources/extractor/extractor.py -b "${brand}" -sql 127.0.0.1 -np -nk "${fw_file}" images | tee extraction.log
-rm extraction.log
 IID=`cat extraction.log | sed -r 's/.*Database Image ID: ([0-9]+)/\1/;tx;d;:x'`
+rm extraction.log
 echo "\$IID = $IID"
 echo "scripts/fw_file_to_psql.py $fw_file --brand $brand"
 scripts/fw_file_to_psql.py $fw_file --brand $brand
