@@ -1,0 +1,7 @@
+[flake8]
+# E501 line too long
+# E226 missing whitespace around arithmetic operator
+# W391 blank line at end of file
+# E228 missing whitespace around modulo operator
+# W293 blank line contains whitespace
+ignore = E225,E231,E501,E226,W391,E228,W293
