@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-import re
-import sys
-import glob
-import io
+import re,sys,glob,io,os
 from psql_firmware import psql
+sys.path.append(os.path.join(os.path.dirname(__file__), '../analyses'))
+from runExploits import SHELL_EXPLOITS
+from runExploits import METASPLOIT_EXPLOITS
 
 
 MSF_SUCCESS_MSG = {
@@ -90,9 +90,12 @@ def merge_metasploit_logs(iid):
                 if eid in MSF_SUCCESS_MSG:
                     m = re.search(MSF_SUCCESS_MSG[eid], msfblock+cont2, re.MULTILINE|re.I)
                     if m:
-                        print('vulnerable to exploit %d'%eid)
-                        # print(MSF_SUCCESS_MSG[eid])
-                        psql("""UPDATE image SET vulns = set_union(vulns::TEXT[], '{"%(eid)s"}'::TEXT[]) where id=%(iid)s;""", locals())
+                        msfcmd = METASPLOIT_EXPLOITS[eid]
+                        m = re.search(r'\w+/\w+(/\w+)+', msfcmd, re.I)
+                        msfid = m.group(0)
+                        print('vulnerable to exploit_id=%d, %s'%(eid, msfid))
+                        psql("""UPDATE image SET vulns = 
+                                set_union(vulns::TEXT[], %(msfid)s::TEXT) where id=%(iid)s;""", locals())
             else:
                 fout.write(msfblock+'\n')
         for logfile in logfiles:
@@ -103,10 +106,19 @@ def merge_metasploit_logs(iid):
             with open(expdir+'/'+logfile, 'r', errors='ignore') as fin2:
                 cont2 = fin2.read()
                 fout.write(cont2 + '\n')
+            m = re.search(r'Result: 0', cont2, re.MULTILINE|re.I)
+            if m:
+                print("vulnerable expliot_id=%d"%eid)
+                psql("""UPDATE image SET vulns = set_union(vulns::TEXT[], 'firmadyne-%(eid)s'::TEXT) 
+                        where id=%(iid)s;""", locals())
 
 def main():
+    if len(sys.argv)<2:
+        print("""\
+        Usage: %s <iid>
+        """%sys.argv[0])
+        return
     iid = int(sys.argv[1])
-    # iid=1097
     psql("UPDATE image SET vulns = '{}'::TEXT[] where id=%(iid)s;", locals())
     merge_metasploit_logs(iid)
 
