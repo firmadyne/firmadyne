@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from os import path
 import sys
+import os
 import pdb
 import traceback
 import psycopg2
@@ -140,15 +141,15 @@ def construct(iid):
     netdevip=closeIp(guestip)
     tapdev='tap%d'%iid
     print("Creating TAP device %(tapdev)s..."%locals())
-    shell('sudo tunctl -t %(tapdev)s -u $USER'%locals())
+    os.system('sudo tunctl -t %(tapdev)s -u $USER'%locals())
     print("Bringing up TAP device...")
-    shell('sudo ifconfig %(tapdev)s %(netdevip)s/24 up'%locals())
+    os.system('sudo ifconfig %(tapdev)s %(netdevip)s/24 up'%locals())
     print("Adding route to %(guestip)s..."%locals())
-    shell('sudo route add -host %(guestip)s gw %(guestip)s %(tapdev)s'%locals())
+    os.system('sudo route add -host %(guestip)s gw %(guestip)s %(tapdev)s'%locals())
     print("Starting emulation of firmware... ")
     WORK_DIR=get_scratch(iid)
-    shell('sudo rm -f {WORK_DIR}/qemu.final.serial.log'.format(**locals()))
-    ret, _ = shell(get_qemu_cmd_line(iid, archend))
+    os.system('sudo rm -f {WORK_DIR}/qemu.final.serial.log'.format(**locals()))
+    ret = os.system(get_qemu_cmd_line(iid, archend))
     if ret!=0:
         print('failed to launch %s'%get_qemu(archend), file=sys.stderr)
         return False
@@ -161,13 +162,13 @@ def destruct(iid):
     netdev = psql1("SELECT netdev FROM image WHERE id=%d"%iid)
     tapdev='tap%d'%iid
     QEMU=get_qemu(archend)
-    shell('killall %(QEMU)s'%locals())
+    os.system('killall %(QEMU)s'%locals())
     print( "Deleting route...")
-    shell('sudo route del -host %(guestip)s gw %(guestip)s %(tapdev)s'%locals())
+    os.system('sudo route del -host %(guestip)s gw %(guestip)s %(tapdev)s'%locals())
     print( "Bringing down %(tapdev)s..."%locals())
-    shell('sudo ifconfig %(tapdev)s down'%locals())
+    os.system('sudo ifconfig %(tapdev)s down'%locals())
     print("Deleting TAP device %(tapdev)s... "%locals())
-    shell('sudo tunctl -d %(tapdev)s'%locals())
+    os.system('sudo tunctl -d %(tapdev)s'%locals())
     return True
 
 
