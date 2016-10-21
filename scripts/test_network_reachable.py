@@ -12,6 +12,8 @@ import subprocess
 from shellutils import shell
 from psql_firmware import psql
 
+def psql1(q,v=None):
+    return psql(q,v)[0][0]
 FIRMWARE_DIR = path.dirname(path.dirname(path.realpath(__file__)))
 BINARY_DIR=path.join(FIRMWARE_DIR,'binaries')
 TARBALL_DIR=path.join(FIRMWARE_DIR,'images')
@@ -101,7 +103,7 @@ def get_qemu_cmd_line(iid, archend):
     elif archend=='armel':
         qemuEnvVars = "QEMU_AUDIO_DRV=none "
         qemuDisk = "-drive if=none,file={IMAGE},format=raw,id=rootfs -device virtio-blk-device,drive=rootfs".format(**locals())
-    netdev = psql("SELECT netdev FROM image WHERE id=%d"%iid)
+    netdev = psql1("SELECT netdev FROM image WHERE id=%d"%iid)
     if not netdev:
         raise Exception('netdev for id=%(iid)d is empty'%locals())
     
@@ -128,11 +130,11 @@ def try_ip(ip_addr, loopcount=20, timeout=3):
 
 
 def construct(iid):
-    archend = psql("SELECT arch FROM image WHERE id=%d"%iid)
-    guestip = psql("SELECT guest_ip FROM image WHERE id=%d"%iid)
+    archend = psql1("SELECT arch FROM image WHERE id=%d"%iid)
+    guestip = psql1("SELECT guest_ip FROM image WHERE id=%d"%iid)
     if not guestip:
         return False
-    netdev = psql("SELECT netdev FROM image WHERE id=%d"%iid)
+    netdev = psql1("SELECT netdev FROM image WHERE id=%d"%iid)
     if not guestip:
         return False
     netdevip=closeIp(guestip)
@@ -154,9 +156,9 @@ def construct(iid):
 
 
 def destruct(iid):
-    archend = psql("SELECT arch FROM image WHERE id=%d"%iid)
-    guestip = psql("SELECT guest_ip FROM image WHERE id=%d"%iid)
-    netdev = psql("SELECT netdev FROM image WHERE id=%d"%iid)
+    archend = psql1("SELECT arch FROM image WHERE id=%d"%iid)
+    guestip = psql1("SELECT guest_ip FROM image WHERE id=%d"%iid)
+    netdev = psql1("SELECT netdev FROM image WHERE id=%d"%iid)
     tapdev='tap%d'%iid
     QEMU=get_qemu(archend)
     shell('killall %(QEMU)s'%locals())
@@ -189,7 +191,7 @@ Use "destruct" to destruct network setups.
         if not construct(iid):
             destruct(iid)
             return False
-        guestip = psql("SELECT guest_ip FROM image WHERE id=%d"%iid)
+        guestip = psql1("SELECT guest_ip FROM image WHERE id=%d"%iid)
         time.sleep(10)
         network_reachable = try_ip(guestip)
         print('network_reachable=%s'%network_reachable)
@@ -199,7 +201,7 @@ Use "destruct" to destruct network setups.
         if not construct(iid):
             destruct(iid)
             return False
-        guestip = psql("SELECT guest_ip FROM image WHERE id=%d"%iid)
+        guestip = psql1("SELECT guest_ip FROM image WHERE id=%d"%iid)
         print('open http://%(guestip)s/'%locals())
         print('press any key to stop')
         input()

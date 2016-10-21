@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import psycopg2
 import sys
@@ -13,11 +13,11 @@ def psql(sql_cmd, params=None):
         cur.execute(sql_cmd, params)
         sql_act = sql_cmd.split()[0]
         if sql_act.upper()=='SELECT':
-            row = cur.fetchone()
+            return cur.fetchall()
             return row[0]
         elif sql_act.upper() in ['UPDATE','DELETE']:
             conn.commit()
-            return None
+        return None
     except Exception as ex:
         traceback.print_exc()
     finally:
@@ -27,9 +27,15 @@ def main():
     if len(sys.argv) < 1 :
         return
     sql_cmd = sys.argv[1]
-    ret = psql(sql_cmd)
-    if ret is not None:
-        print(ret)
+    rows = psql(sql_cmd)
+    if rows is not None:
+        for row in rows:
+            if len(row)==1:
+                print(row[0])
+            else:
+                for c in row:
+                    print(c, end=' ')
+                print('\n', end='')
 
 if __name__=="__main__":
     main()
