@@ -169,7 +169,8 @@ CREATE TABLE image (
     file_sha1 text,
     file_size integer,
     tree_trail json,
-    hw_rev text
+    hw_rev text,
+    open_ports text[]
 );
 
 
