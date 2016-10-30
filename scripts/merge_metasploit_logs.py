@@ -83,6 +83,7 @@ def merge_metasploit_logs(iid):
                 with open(expdir+'/%d.log'%eid, 'r') as fin2:
                     cont2 = fin2.read()
                 logfiles.remove('%d.log'%eid)
+                os.remove(expdir+'/%d.log'%eid)
                 fout.write('\n\n')
                 fout.write('<< eid= %(eid)d >>\n'%locals())
                 fout.write(msfblock+'\n')
@@ -106,6 +107,7 @@ def merge_metasploit_logs(iid):
             with open(expdir+'/'+logfile, 'r', errors='ignore') as fin2:
                 cont2 = fin2.read()
                 fout.write(cont2 + '\n')
+            os.remove(expdir+'/'+logfile)
             m = re.search(r'Result: 0', cont2, re.MULTILINE|re.I)
             if m:
                 print("vulnerable expliot_id=%d"%eid)
