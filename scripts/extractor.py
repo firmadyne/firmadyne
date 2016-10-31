@@ -33,8 +33,9 @@ class Extractor(object):
     # static because it cannot be pickled or passed as instance attribute.
     visited_lock = multiprocessing.Lock()
 
-    def __init__(self, indir, outdir=None, rootfs=True, kernel=True,
-                 numproc=True, server=None, brand=None):
+    def __init__(self, indir, outdir, brand):
+        rootfs=True; kernel=False; numproc=False; server='127.0.0.1'
+
         # Input firmware update file or directory
         self._input = os.path.abspath(indir)
         # Output firmware directory
@@ -117,6 +118,8 @@ class Extractor(object):
                 hasher.update(buf)
                 buf = ifp.read(blocksize)
             return hasher.hexdigest()
+
+    @staticmethod
     def io_sha1(tgt):
         with open(tgt, 'rb') as fin:
             return hashlib.sha1(fin.read()).hexdigest()
@@ -234,6 +237,7 @@ class ExtractionItem(object):
         # Checksum
         self.checksum = Extractor.io_md5(path)
         self.file_sha1 = Extractor.io_sha1(path)
+        self.file_size = os.path.getsize(path)
 
         # Tag
         self.tag = tag if tag else self.generate_tag()
@@ -286,10 +290,10 @@ class ExtractionItem(object):
                         (self.checksum, ))
             image_id = cur.fetchone()
             if not image_id:
-                cur.execute("INSERT INTO image (filename, brand, hash, file_sha1) \
-                            VALUES (%s, %s, %s, %s) RETURNING id",
+                cur.execute("INSERT INTO image (filename, brand, hash, file_sha1, file_size) \
+                            VALUES (%s, %s, %s, %s, %s) RETURNING id",
                             (os.path.basename(self.item), brand, 
-                             self.checksum, self.file_sha1))
+                             self.checksum, self.file_sha1, self.file_size))
                 image_id = cur.fetchone()
             self.database.commit()
         except BaseException:
@@ -725,9 +729,7 @@ def main():
                         help="Brand of the firmware image")
     result = parser.parse_args()
 
-    extract = Extractor(result.input, result.output, result.rootfs,
-                        result.kernel, result.parallel, result.sql,
-                        result.brand)
+    extract = Extractor(result.input, result.output, result.brand)
     extract.extract()
 
 if __name__ == "__main__":
