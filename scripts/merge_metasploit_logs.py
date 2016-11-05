@@ -6,6 +6,7 @@ from runExploits import SHELL_EXPLOITS
 from runExploits import METASPLOIT_EXPLOITS
 
 
+
 MSF_SUCCESS_MSG = {
     # 0~34
     0: "Command shell session \d+ opened",
@@ -95,7 +96,7 @@ def merge_metasploit_logs(iid):
                         m = re.search(r'\w+/\w+(/\w+)+', msfcmd, re.I)
                         msfid = m.group(0)
                         print('vulnerable to exploit_id=%d, %s'%(eid, msfid))
-                        psql("""UPDATE image SET vulns = 
+                        psql("""UPDATE image SET vulns =
                                 set_union(vulns::TEXT[], %(msfid)s::TEXT) where id=%(iid)s;""", locals())
             else:
                 fout.write(msfblock+'\n')
@@ -111,7 +112,7 @@ def merge_metasploit_logs(iid):
             m = re.search(r'Result: 0', cont2, re.MULTILINE|re.I)
             if m:
                 print("vulnerable expliot_id=%d"%eid)
-                psql("""UPDATE image SET vulns = set_union(vulns::TEXT[], 'firmadyne-%(eid)s'::TEXT) 
+                psql("""UPDATE image SET vulns = set_union(vulns::TEXT[], 'firmadyne-%(eid)s'::TEXT)
                         where id=%(iid)s;""", locals())
 
 def main():
