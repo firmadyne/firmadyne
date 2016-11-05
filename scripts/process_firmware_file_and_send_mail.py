@@ -51,17 +51,40 @@ def main():
         if m:
             iid = int(m.group(1))
             break
-    from psql_firmware import psql
-    vulns = psql("SELECT vulns FROM image WHERE id=%(iid)s", locals())
-    vulns = vulns[0][0]
     subject = 'FAS result of "%s" "%s"' % (brand, basename(fname))
     from io import StringIO
     buf = StringIO()
+
+    from psql_firmware import psql
+    extractOK, arch, netInfOK, netReachOK, default_ip, vulns = \
+        psql("SELECT rootfs_extracted, arch, network_inferred, network_reachable, "
+             "guest_ip, vulns FROM image WHERE id=%(iid)s", locals())[0]
+    if not extractOK:
+        buf.write('extraction failed\n')
+        send_mail(recipients, subject, buf.getvalue(), cwd + '/process.log')
+        return
+    if not arch:
+        buf.write('arch is unknown\n')
+        send_mail(recipients, subject, buf.getvalue(), cwd + '/process.log')
+        return
+    if not netInfOK:
+        buf.write('arch=%(arch)s\n' % locals())
+        buf.write('network inference failed\n')
+        send_mail(recipients, subject, buf.getvalue(), cwd + '/process.log')
+        return
+    if not netReachOK:
+        buf.write('arch=%(arch)s\n' % locals())
+        buf.write('default_ip=%(default_ip)s\n' % locals())
+        buf.write('network reachability failed\n')
+        send_mail(recipients, subject, buf.getvalue(), cwd + '/process.log')
+        return
+    buf.write('arch=%(arch)s\n' % locals())
+    buf.write('default_ip=%(default_ip)s\n' % locals())
+    buf.write('network reachability OK\n')
     buf.write('Vulnerabilites:\n')
     for vuln in vulns:
         buf.write('  %s\n'%vuln)
-    msgbody = buf.getvalue()
-    send_mail(recipients, subject, msgbody, cwd + '/process.log')
+    send_mail(recipients, subject, buf.getvalue(), cwd + '/process.log')
 
 if __name__=='__main__':
     main()
