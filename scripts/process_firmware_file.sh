@@ -8,10 +8,9 @@ fw_file=$2
 echo "<<1>> extract fw_file\n"
 python -u scripts/extractor.py -b "${brand}" "${fw_file}" images | tee extraction.log
 IID=`cat extraction.log | sed -r 's/.*Database Image ID: ([0-9]+)/\1/;tx;d;:x'`
-rm extraction.log
 echo "\$IID = $IID"
 echo "scripts/fw_file_to_psql.py \"$fw_file\" --brand $brand"
-scripts/fw_file_to_psql.py "$fw_file" --brand $brand
+scripts/fw_file_to_psql.py "$fw_file" --brand "$brand"
 [ -e images/${IID}.tar.gz ] || { echo "images/${IID}.tar.gz doesn't exist. Extraction failed."; exit 1; }
 
 echo "<<2>> store unpacked file names and hashes\n"
