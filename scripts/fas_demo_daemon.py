@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 import asyncio
 import re
-from subprocess import Popen
-from subprocess import PIPE
+from subprocess import Popen, PIPE
 import sys
+
 
 
 def run_fas(brand, fname, recipients):
