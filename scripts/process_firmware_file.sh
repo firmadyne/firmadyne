@@ -43,5 +43,6 @@ guest_ip=$(scripts/psql_firmware.py "SELECT guest_ip FROM image WHERE id=${IID}"
 scripts/test_network_reachable.py ${IID} construct
 while ! ping -c1 $guest_ip &>/dev/null; do :; done
 analyses/runExploits.py -i ${IID}
+scripts/nmap_scan.py ${IID}
 scripts/test_network_reachable.py ${IID} destruct
 scripts/merge_metasploit_logs.py ${IID}
