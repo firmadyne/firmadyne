@@ -279,21 +279,16 @@ class ExtractionItem(object):
                 brand = self.extractor.brand
             else:
                 brand = os.path.relpath(self.item).split(os.path.sep)[0]
-            # cur.execute("SELECT id FROM brand WHERE LOWER(name)=LOWER(%s)", (brand, ))
-            # brand_id = 1 # cur.fetchone()
-            # if not brand_id:
-            #     cur.execute("INSERT INTO brand (name) VALUES (%s) RETURNING id",
-            #                 (brand, ))
-            #     brand_id = cur.fetchone()
-            # if brand_id:
             cur.execute("SELECT id FROM image WHERE hash=%s",
                         (self.checksum, ))
             image_id = cur.fetchone()
             if not image_id:
-                cur.execute("INSERT INTO image (filename, brand, hash, file_sha1, file_size) \
-                            VALUES (%s, %s, %s, %s, %s) RETURNING id",
-                            (os.path.basename(self.item), brand, 
-                             self.checksum, self.file_sha1, self.file_size))
+                cur.execute(
+                    "INSERT INTO image "
+                    "(filename, brand, hash, file_sha1, file_size) "
+                    "VALUES (%s, %s, %s, %s, %s) RETURNING id",
+                    (os.path.basename(self.item), brand,
+                     self.checksum, self.file_sha1, self.file_size))
                 image_id = cur.fetchone()
             self.database.commit()
         except BaseException:
