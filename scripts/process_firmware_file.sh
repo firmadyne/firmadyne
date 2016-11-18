@@ -8,12 +8,12 @@ fw_file=$2
 set_finish_ts(){
     IID=$1
     python3 - <<EOF
-    import pytz
-    from datetime import datetime
-    ts = datetime.now(pytz.utc)
-    from scripts.psql_firmware import psql
-    iid=${IID}
-    psql('UPDATE image SET process_finish_ts=%(ts)s WHERE id=%(iid)s', locals())
+import pytz
+from datetime import datetime
+ts = datetime.now(pytz.utc)
+from scripts.psql_firmware import psql
+iid=${IID}
+psql('UPDATE image SET process_finish_ts=%(ts)s WHERE id=%(iid)s', locals())
 EOF
 }
 
