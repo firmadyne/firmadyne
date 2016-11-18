@@ -3,28 +3,26 @@
 import psycopg2
 import sys
 import traceback
-import pdb
 
 def psql(sql_cmd, params=None):
     try:
-        conn = psycopg2.connect(database="firmware", user="firmadyne", 
-                password="firmadyne", host="127.0.0.1")
+        conn = psycopg2.connect(database="firmware", user="firmadyne",
+                                password="firmadyne", host="127.0.0.1")
         cur = conn.cursor()
         cur.execute(sql_cmd, params)
-        sql_act = sql_cmd.split()[0]
-        if sql_act.upper()=='SELECT':
+        sql_act = sql_cmd.split()[0].upper()
+        if sql_act=='SELECT':
             return cur.fetchall()
-            return row[0]
-        elif sql_act.upper() in ['UPDATE','DELETE']:
+        elif sql_act in ['UPDATE','DELETE', 'INSERT']:
             conn.commit()
         return None
-    except Exception as ex:
+    except Exception:
         traceback.print_exc()
     finally:
         conn.close()
 
 def main():
-    if len(sys.argv) < 1 :
+    if len(sys.argv) < 1:
         return
     sql_cmd = sys.argv[1]
     rows = psql(sql_cmd)
