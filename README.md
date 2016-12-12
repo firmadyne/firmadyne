@@ -147,7 +147,7 @@ recommended), or [upstream qemu](https://github.com/qemu/qemu).
    * `./analyses/webAccess.py 1 192.168.0.100 log.txt`
    * `mkdir exploits; ./analyses/runExploits.py -t 192.168.0.100 -o exploits/exploit -e x` (requires Metasploit Framework)
    * `sudo nmap -O -sV 192.168.0.100`
-10. To access a console in the firmware, use a presupplied debug run script to access the default console (no network access), modify the network-enabled `run.sh` script to provide console access, or use the second console provided by the framework. Note that for the sample firmware above, you will need to first delete the file `/etc/securetty` from the filesystem.
+10. To access a console in the firmware, use a VNC viewer to connect to display corresponding to firmware `1` on `127.0.0.1`. Alternatively, use a presupplied debug run script to access the default console (no network access), modify the network-enabled `run.sh` script to provide console access, or use the second console provided by the framework. Note that for the sample firmware above, you will need to first delete the file `/etc/securetty` from the filesystem.
    * `./scripts/run-debug.sh 1`
    * `nc -U /tmp/qemu.1.S1`
 11. The following scripts can be used to mount/unmount the filesystem of firmware `1`. Ensure that the emulated firmware is not running, and remember to unmount before performing any other operations.

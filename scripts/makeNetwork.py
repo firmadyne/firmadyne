@@ -66,7 +66,7 @@ echo -n "Starting emulation of firmware... "
     -serial file:${WORK_DIR}/qemu.final.serial.log \\
     -serial unix:/tmp/qemu.${IID}.S1,server,nowait \\
     -monitor unix:/tmp/qemu.${IID},server,nowait \\
-    -display none \\
+    -display vnc=127.0.0.1:%(IID)i \\
     -daemonize \\
     %(QEMU_NETWORK)s
 
