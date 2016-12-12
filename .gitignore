@@ -1,3 +1,5 @@
+firmadyne.config
+
 *.o
 *.armel
 *.mipseb
