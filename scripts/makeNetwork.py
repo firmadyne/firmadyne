@@ -17,13 +17,6 @@ set -u
 
 ARCHEND=%(ARCHEND)s
 IID=%(IID)i
-GUESTIP=%(GUESTIP)s
-NETDEVIP=%(NETDEVIP)s
-HASVLAN=%(HASVLAN)i
-VLANID=%(VLANID)i
-
-TAPDEV=tap${IID}
-HOSTNETDEV=${TAPDEV}
 
 if [ -e ./firmadyne.config ]; then
     source ./firmadyne.config
@@ -43,22 +36,7 @@ QEMU_MACHINE=`get_qemu_machine ${ARCHEND}`
 QEMU_ROOTFS=`get_qemu_disk ${ARCHEND}`
 WORK_DIR=`get_scratch ${IID}`
 
-echo "Creating TAP device ${TAPDEV}..."
-sudo tunctl -t ${TAPDEV} -u ${USER}
-
-if [ ${HASVLAN} -ne 0 ]; then
-    echo "Initializing VLAN..."
-    HOSTNETDEV=${TAPDEV}.${VLANID}
-    sudo ip link add link ${TAPDEV} name ${HOSTNETDEV} type vlan id ${VLANID}
-    sudo ip link set ${HOSTNETDEV} up
-fi
-
-echo "Bringing up TAP device..."
-sudo ip link set ${HOSTNETDEV} up
-sudo ip addr add ${NETDEVIP}/24 dev ${HOSTNETDEV}
-
-echo "Adding route to ${GUESTIP}..."
-sudo ip route add ${GUESTIP} via ${GUESTIP} dev ${HOSTNETDEV}
+%(START_NET)s
 
 echo -n "Starting emulation of firmware... "
 %(QEMU_ENV_VARS)s${QEMU} -m 256 -M ${QEMU_MACHINE} -kernel ${KERNEL} \\
@@ -80,20 +58,7 @@ read -n 1
 
 killall ${QEMU}
 
-echo "Deleting route..."
-sudo ip route flush dev ${HOSTNETDEV}
-
-echo "Bringing down TAP device..."
-sudo ip link set ${TAPDEV} down
-
-if [ ${HASVLAN} -ne 0 ]
-then
-    echo "Removing VLAN..."
-    sudo ip link delete ${HOSTNETDEV}
-fi
-
-echo -n "Deleting TAP device ${TAPDEV}... "
-sudo tunctl -d ${TAPDEV}
+%(STOP_NET)s
 
 echo "Done!"
 """
@@ -152,20 +117,15 @@ def findIfacesForBridge(data, brif):
     result = []
     candidates = filter(lambda l: l.startswith("br_dev_ioctl") or l.startswith("br_add_if"), lines)
     for c in candidates:
-        pat = r"^br_dev_ioctl\[[^\]]+\]: br:%s dev:(.*)" % brif
-        g = re.match(pat, c)
-        if g:
-            iface = g.group(1)
-            #we only add it if the interface is not the bridge itself
-            #there are images that call brctl addif br0 br0 (e.g., 5152)
-            if iface != brif:
-                result.append(g.group(1))
-        pat = r"^br_add_if\[[^\]]+\]: br:%s dev:(.*)" % brif
-        g = re.match(pat, c)
-        if g:
-            iface = g.group(1)
-            if iface != brif:
-                result.append(g.group(1))
+        for p in [r"^br_dev_ioctl\[[^\]]+\]: br:%s dev:(.*)", r"^br_add_if\[[^\]]+\]: br:%s dev:(.*)"]:
+            pat = p % brif
+            g = re.match(pat, c)
+            if g:
+                iface = g.group(1)
+                #we only add it if the interface is not the bridge itself
+                #there are images that call brctl addif br0 br0 (e.g., 5152)
+                if iface != brif:
+                    result.append(iface.strip())
     return result
 
 def findVlanInfoForDev(data, dev):
@@ -181,21 +141,48 @@ def findVlanInfoForDev(data, dev):
 
 def ifaceNo(dev):
     g = re.match(r"[^0-9]+([0-9]+)", dev)
-    return int(g.group(1))
+    return int(g.group(1)) if g else -1
 
-def qemuNetworkConfig(dev, mac):
-    result = ""
-    mac_str = ""
-    if mac:
-        mac_str = ",macaddr=%s" % mac
-    template = """-net nic,vlan=%i -net socket,vlan=%i,listen=:200%i """
-    for i in range(0, 4):
-        if i == ifaceNo(dev):
-            result += "-net nic,vlan=%i%s -net tap,vlan=%i,ifname=${TAPDEV},script=no " % (i, mac_str, i)
+def qemuArchNetworkConfig(i, arch, n):
+    if not n:
+        if arch == "arm":
+            return "-device virtio-net-device,netdev=net%(I)i -netdev socket,id=net%(I)i,listen=:200%(I)i" % {'I': i}
         else:
-            result += template % (i, i, i)
+            return "-net nic,vlan=%(VLAN)i -net socket,vlan=%(VLAN)i,listen=:200%(I)i" % {'I': i, 'VLAN' : i}
+    else:
+        (ip, dev, vlan, mac) = n
+         # newer kernels use virtio only
+        if arch == "arm":
+            return "-device virtio-net-device,netdev=net%(I)i -netdev tap,id=net%(I)i,ifname=${TAPDEV_%(I)i},script=no" % {'I': i}
+        else:
+            vlan_id = vlan if vlan else i
+            mac_str = "" if not mac else ",macaddr=%s" % mac
+            return "-net nic,vlan=%(VLAN)i%(MAC)s -net tap,vlan=%(VLAN)i,id=net%(I)i,ifname=${TAPDEV_%(I)i},script=no" % { 'I' : i, 'MAC' : mac_str, 'VLAN' : vlan_id}
 
-    return result
+def qemuNetworkConfig(arch, network):
+    output = []
+    assigned = []
+    for i in range(0, 4):
+        for j, n in enumerate(network):
+            # need to connect the jth emulated network interface to the corresponding host interface
+            if i == ifaceNo(n[1]):
+                output.append(qemuArchNetworkConfig(j, arch, n))
+                assigned.append(n)
+                break
+
+        # otherwise, put placeholder socket connection
+        if len(output) <= i:
+            output.append(qemuArchNetworkConfig(i, arch, None))
+
+    # find unassigned interfaces
+    for j, n in enumerate(network):
+        if n not in assigned:
+            # guess assignment
+            print("Warning: Unmatched interface: %s" % (n,))
+            output[j] = qemuArchNetworkConfig(j, arch, n)
+            assigned.append(n)
+
+    return ' '.join(output)
 
 def buildConfig(brif, iface, vlans, macs):
     #there should be only one ip
@@ -219,7 +206,7 @@ def buildConfig(brif, iface, vlans, macs):
 
     return (ip, dev, vlan_id, mac)
 
-def closeIp(ip):
+def getIP(ip):
     tups = [int(x) for x in ip.split(".")]
     if tups[3] != 1:
         tups[3] -= 1
@@ -227,20 +214,71 @@ def closeIp(ip):
         tups[3] = 2
     return ".".join([str(x) for x in tups])
 
-def qemuCmd(iid, network, arch, endianness):
-    (ip, netdev, vlan_id, mac) = network
-    if vlan_id != None:
-        hasVlan = 1
-    else:
-        hasVlan = 0
-        vlan_id = -1
+def startNetwork(network):
+    template_1 = """
+TAPDEV_%(I)i=tap${IID}_%(I)i
+HOSTNETDEV_%(I)i=${TAPDEV_%(I)i}
+echo "Creating TAP device ${TAPDEV_%(I)i}..."
+sudo tunctl -t ${TAPDEV_%(I)i} -u ${USER}
+"""
 
+    template_vlan = """
+echo "Initializing VLAN..."
+HOSTNETDEV_%(I)i=${TAPDEV_%(I)i}.${VLANID}
+sudo ip link add link ${TAPDEV} name ${HOSTNETDEV_%(I)i} type vlan id ${VLANID}
+sudo ip link set ${HOSTNETDEV_%(I)i} up
+"""
+
+    template_2 = """
+echo "Bringing up TAP device..."
+sudo ip link set ${HOSTNETDEV_%(I)i} up
+sudo ip addr add %(HOSTIP)s/24 dev ${HOSTNETDEV_%(I)i}
+
+echo "Adding route to %(GUESTIP)s..."
+sudo ip route add %(GUESTIP)s via %(GUESTIP)s dev ${HOSTNETDEV_%(I)i}
+"""
+
+    output = []
+    for i, (ip, dev, vlan, mac) in enumerate(network):
+        output.append(template_1 % {'I' : i, 'GUESTIP': ip})
+        if vlan:
+            output.append(template_vlan % {'I' : i, 'GUESTIP': ip})
+        output.append(template_2 % {'I' : i, 'HOSTIP' : getIP(ip), 'GUESTIP': ip})
+    return '\n'.join(output)
+
+def stopNetwork(network):
+    template_1 = """
+echo "Deleting route..."
+sudo ip route flush dev ${HOSTNETDEV_%(I)i}
+
+echo "Bringing down TAP device..."
+sudo ip link set ${TAPDEV_%(I)i} down
+"""
+
+    template_vlan = """
+echo "Removing VLAN..."
+sudo ip link delete ${HOSTNETDEV_%(I)i}
+"""
+
+    template_2 = """
+echo "Deleting TAP device ${TAPDEV_%(I)i}..."
+sudo tunctl -d ${TAPDEV_%(I)i}
+"""
+
+    output = []
+    for i, (ip, dev, vlan, mac) in enumerate(network):
+        output.append(template_1 % {'I' : i, 'GUESTIP': ip})
+        if vlan:
+            output.append(template_vlan % {'I' : i, 'GUESTIP': ip})
+        output.append(template_2 % {'I' : i, 'GUESTIP': ip})
+    return '\n'.join(output)
+
+def qemuCmd(iid, network, arch, endianness):
     if arch == "mips":
         qemuEnvVars = ""
         qemuDisk = "-drive if=ide,format=raw,file=${IMAGE}"
         if endianness != "eb" and endianness != "el":
             raise Exception("You didn't specify a valid endianness")
-
     elif arch == "arm":
         qemuDisk = "-drive if=none,file=${IMAGE},format=raw,id=rootfs -device virtio-blk-device,drive=rootfs"
         if endianness == "el":
@@ -252,11 +290,12 @@ def qemuCmd(iid, network, arch, endianness):
     else:
         raise Exception("Unsupported architecture")
 
-    return QEMUCMDTEMPLATE % {'IID': iid, 'GUESTIP': ip, 'NETDEVIP': closeIp(ip),
-                              'HASVLAN' : hasVlan, 'VLANID': vlan_id,
+    return QEMUCMDTEMPLATE % {'IID': iid,
                               'ARCHEND' : arch + endianness,
+                              'START_NET' : startNetwork(network),
+                              'STOP_NET' : stopNetwork(network),
                               'QEMU_DISK' : qemuDisk,
-                              'QEMU_NETWORK' : qemuNetworkConfig(netdev, mac),
+                              'QEMU_NETWORK' : qemuNetworkConfig(arch, network),
                               'QEMU_ENV_VARS' : qemuEnvVars}
 
 def process(infile, iid, arch, endianness=None, makeQemuCmd=False, outfile=None):
@@ -293,23 +332,26 @@ def process(infile, iid, arch, endianness=None, makeQemuCmd=False, outfile=None)
             network.add((buildConfig(iwi, iwi[0], vlans, macChanges)))
 
     ips = set()
+    pruned_network = []
     for n in network:
         if n[0] not in ips:
             ips.add(n[0])
-            #print n
-            if makeQemuCmd:
-                qemuCommandLine = qemuCmd(iid, n, arch, endianness)
-                if qemuCommandLine:
-                    success = True
-                if outfile:
-                    with open(outfile, "w") as out:
-                        out.write(qemuCommandLine)
-                    os.chmod(outfile, stat.S_IRWXU | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
-                else:
-                    print(qemuCommandLine)
+            pruned_network.append(n)
         else:
             if debug:
                 print("duplicate ip address for interface: ", n)
+
+    if makeQemuCmd:
+        qemuCommandLine = qemuCmd(iid, pruned_network, arch, endianness)
+    if qemuCommandLine:
+        success = True
+    if outfile:
+        with open(outfile, "w") as out:
+            out.write(qemuCommandLine)
+        os.chmod(outfile, stat.S_IRWXU | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
+    else:
+        print(qemuCommandLine)
+
     return success
 
 def archEnd(value):
