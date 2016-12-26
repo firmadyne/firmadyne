@@ -5,7 +5,14 @@ import time
 import pytz
 import argparse
 from datetime import datetime
-from scripts.psql_firmware import psql
+from psql_firmware import psql
+import traceback
+import hashlib
+
+
+def getFileMd5(fileName)->str:
+    with open(fileName,mode='rb') as fin:
+        return hashlib.md5(fin.read()).hexdigest()
 
 
 def grep(fname, regexpattern):
@@ -17,28 +24,37 @@ def grep(fname, regexpattern):
     
 
 def main():
+    brand = sys.argv[1]
+    fw_file = sys.argv[2]
+    md5 = getFileMd5(fw_file)
+    rows = psql('SELECT id, process_finish_ts, process_start_ts FROM image WHERE hash=%(md5)s', locals())
+    if rows and rows[0][1]:
+        iid, process_finish_ts, process_start_ts = rows[0][0], rows[0][1], rows[0][2]
+        diff = process_finish_ts - process_start_ts
+        print("Already processed id=%(iid)s at %(process_start_ts)s, difftime=%(diff)s" % locals())
+        return
     try:
-        brand = sys.argv[1]
-        fw_file = sys.argv[2]
         ts = datetime.now(pytz.utc)
-        psql('UPDATE image SET process_start_ts=%(ts)s WHERE id=%(iid)s', locals())
         print("<<1>> extract fw_file\n")
-        os.system('python -u scripts/extractor.py -b "${brand}" "${fw_file}" images | tee extraction.log')
-        iid = grep('extration.log', r'Database Image ID: (\d+)')
+        
+        os.system('python -u scripts/extractor.py -b "%(brand)s" "%(fw_file)s" images | tee extraction.log' % locals())
+        iid = grep('extraction.log', r'Database Image ID: (\d+)')
         iid = int(iid)
+        os.remove('extraction.log')
+        psql('UPDATE image SET process_start_ts=%(ts)s WHERE id=%(iid)s', locals())
         print('scripts/fw_file_to_psql.py "%(fw_file)s" --brand %(brand)s' % locals())
         os.system('scripts/fw_file_to_psql.py "%(fw_file)s" --brand "%(brand)s"' % locals())
-        if not os.path.exists("images/%(iid)s.tar.gz"):
+        if not os.path.exists("images/%(iid)s.tar.gz" % locals()):
             print('images/%(iid)s.tar.gz doesn\'t exist. Extraction failed.' % locals())
             return
 
         print('<<2>> store unpacked file names and hashes\n')
         os.system('scripts/getArch.sh images/%(iid)s.tar.gz' % locals())
-        arch = psql("SELECT arch FROM image WHERE id=$%(iid)s" % locals())
+        arch = psql("SELECT arch FROM image WHERE id=%(iid)s" % locals())
         arch = arch[0][0]
         os.system('scripts/tar2db_tlsh.py images/%(iid)s.tar.gz' % locals())
         os.system('sudo ./scripts/makeImage.sh %(iid)s %(arch)s' % locals())
-        os.system('sudo chown -R $USER:$USER scratch/%(iid)s' % locals())
+        os.system(os.path.expandvars('sudo chown -R $USER:$USER scratch/%(iid)s') % locals())
 
         # infer network
 
@@ -64,18 +80,19 @@ def main():
 
         print( "<<5>> Metasploit and Nmap scan\n" )
         guest_ip=psql("SELECT guest_ip FROM image WHERE id=%(iid)s", locals())
+        guest_ip=guest_ip[0][0]
         os.system('python3 -u scripts/test_network_reachable.py %(iid)s construct' % locals())
         while True:
-            ret = os.system('ping -c1 %(guest_ip)s &>/dev/null')
+            ret = os.system('ping -c1 %(guest_ip)s &>/dev/null' % locals())
             if ret==0:
                 break
             else:
                 time.sleep(1)
 
-        os.system('python3 -u analyses/runExploits.py -i ${IID}' % locals())
+        os.system('python3 -u analyses/runExploits.py -i %(iid)s' % locals())
         os.system('scripts/nmap_scan.py %(iid)s' % locals())
         os.system('scripts/test_network_reachable.py %(iid)s destruct' % locals())
-        os.system('scripts/merge_metasploit_logs.py ${IID}' % locals())
+        os.system('scripts/merge_metasploit_logs.py %(iid)s' % locals())
 
     except BaseException as ex:
         traceback.print_exc()
