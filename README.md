@@ -142,14 +142,12 @@ recommended), or [upstream qemu](https://github.com/qemu/qemu).
    * `./scripts/inferNetwork.sh 1`
 8. Emulate firmware `1` with the inferred network configuration. This will modify the configuration of the host system by creating a TAP device and adding a route.
    * `./scratch/1/run.sh`
-9. The system should be available over the network, and is ready for analysis. Kernel messages are logged to `./scratch/1/qemu.final.serial.log`.
+9. The system should be available over the network, and is ready for analysis. Kernel messages are mirrored to `./scratch/1/qemu.final.serial.log`.
    * `./analyses/snmpwalk.sh 192.168.0.100`
    * `./analyses/webAccess.py 1 192.168.0.100 log.txt`
    * `mkdir exploits; ./analyses/runExploits.py -t 192.168.0.100 -o exploits/exploit -e x` (requires Metasploit Framework)
    * `sudo nmap -O -sV 192.168.0.100`
-10. To access a console in the firmware, use a VNC viewer to connect to display corresponding to firmware `1` on `127.0.0.1`. Alternatively, use a presupplied debug run script to access the default console (no network access), modify the network-enabled `run.sh` script to provide console access, or use the second console provided by the framework. Note that for the sample firmware above, you will need to first delete the file `/etc/securetty` from the filesystem.
-   * `./scripts/run-debug.sh 1`
-   * `nc -U /tmp/qemu.1.S1`
+10. The default console should be automatically connected to the terminal. Note that `Ctrl-c` is sent to the guest; use the QEMU monitor command `Ctrl-a + x` to terminate emulation. For the sample firmware above, you will first need to delete the file `/etc/securetty` from the filesystem to login as `root` with password `password`.
 11. The following scripts can be used to mount/unmount the filesystem of firmware `1`. Ensure that the emulated firmware is not running, and remember to unmount before performing any other operations.
    * `sudo ./scripts/mount.sh 1`
    * `sudo ./scripts/umount.sh 1`

@@ -38,29 +38,22 @@ WORK_DIR=`get_scratch ${IID}`
 
 %(START_NET)s
 
-echo -n "Starting emulation of firmware... "
-%(QEMU_ENV_VARS)s${QEMU} -m 256 -M ${QEMU_MACHINE} -kernel ${KERNEL} \\
-    %(QEMU_DISK)s -append "root=${QEMU_ROOTFS} console=ttyS0 nandsim.parts=64,64,64,64,64,64,64,64,64,64 rdinit=/preInit.sh rw debug ignore_loglevel print-fatal-signals=1 user_debug=31 firmadyne.syscall=8" \\
-    -serial file:${WORK_DIR}/qemu.final.serial.log \\
-    -serial unix:/tmp/qemu.${IID}.S1,server,nowait \\
-    -monitor unix:/tmp/qemu.${IID},server,nowait \\
-    -display vnc=127.0.0.1:%(IID)i \\
-    -daemonize \\
-    %(QEMU_NETWORK)s
+function cleanup {
+    pkill -P $$
+    %(STOP_NET)s
+}
 
-echo "Done!"
+trap cleanup EXIT
 
-echo "The emulated firmware may not be accessible while booting."
+echo "Starting firmware emulation... use Ctrl-a + x to exit"
+sleep 1s
 
-echo "Press any key to destroy the network and shutdown emulation."
+%(QEMU_ENV_VARS)s ${QEMU} -m 256 -M ${QEMU_MACHINE} -kernel ${KERNEL} \\
+    %(QEMU_DISK)s -append "root=${QEMU_ROOTFS} console=ttyS0 nandsim.parts=64,64,64,64,64,64,64,64,64,64 rdinit=/preInit.sh rw debug ignore_loglevel print-fatal-signals=1 user_debug=31 firmadyne.syscall=0" \\
+    -nographic \\
+    %(QEMU_NETWORK)s | tee ${WORK_DIR}/qemu.final.serial.log
 
-read -n 1
-
-killall ${QEMU}
-
-%(STOP_NET)s
-
-echo "Done!"
+cleanup
 """
 
 def stripTimestamps(data):
@@ -282,7 +275,7 @@ def qemuCmd(iid, network, arch, endianness):
     elif arch == "arm":
         qemuDisk = "-drive if=none,file=${IMAGE},format=raw,id=rootfs -device virtio-blk-device,drive=rootfs"
         if endianness == "el":
-            qemuEnvVars = "QEMU_AUDIO_DRV=none "
+            qemuEnvVars = "QEMU_AUDIO_DRV=none"
         elif endianness == "eb":
             raise Exception("armeb currently not supported")
         else:
