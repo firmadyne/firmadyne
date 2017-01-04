@@ -1,3 +1,5 @@
+#!/usr/bin/env python3.5
+# -*- coding: utf8 -*-
 import os
 import sys
 import re
@@ -10,7 +12,7 @@ import traceback
 import hashlib
 
 
-def getFileMd5(fileName)->str:
+def getFileMd5(fileName):
     with open(fileName,mode='rb') as fin:
         return hashlib.md5(fin.read()).hexdigest()
 
@@ -99,6 +101,7 @@ def main():
     finally:
         ts = datetime.now(pytz.utc)
         psql('UPDATE image SET process_finish_ts=%(ts)s WHERE id=%(iid)s', locals())
+        print('UPDATE process_finish_ts = %(ts)s' % locals())
 
 
 if __name__=="__main__":
