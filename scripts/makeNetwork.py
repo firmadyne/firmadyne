@@ -12,7 +12,6 @@ debug = 0
 
 QEMUCMDTEMPLATE = """#!/bin/bash
 
-set -e
 set -u
 
 ARCHEND=%(ARCHEND)s
@@ -52,8 +51,6 @@ sleep 1s
     %(QEMU_DISK)s -append "root=${QEMU_ROOTFS} console=ttyS0 nandsim.parts=64,64,64,64,64,64,64,64,64,64 rdinit=/preInit.sh rw debug ignore_loglevel print-fatal-signals=1 user_debug=31 firmadyne.syscall=0" \\
     -nographic \\
     %(QEMU_NETWORK)s | tee ${WORK_DIR}/qemu.final.serial.log
-
-cleanup
 """
 
 def stripTimestamps(data):
