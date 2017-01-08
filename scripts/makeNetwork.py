@@ -214,8 +214,8 @@ sudo tunctl -t ${TAPDEV_%(I)i} -u ${USER}
 
     template_vlan = """
 echo "Initializing VLAN..."
-HOSTNETDEV_%(I)i=${TAPDEV_%(I)i}.${VLANID}
-sudo ip link add link ${TAPDEV} name ${HOSTNETDEV_%(I)i} type vlan id ${VLANID}
+HOSTNETDEV_%(I)i=${TAPDEV_%(I)i}.%(VLANID)i
+sudo ip link add link ${TAPDEV} name ${HOSTNETDEV_%(I)i} type vlan id %(VLANID)i
 sudo ip link set ${HOSTNETDEV_%(I)i} up
 """
 
@@ -230,9 +230,9 @@ sudo ip route add %(GUESTIP)s via %(GUESTIP)s dev ${HOSTNETDEV_%(I)i}
 
     output = []
     for i, (ip, dev, vlan, mac) in enumerate(network):
-        output.append(template_1 % {'I' : i, 'GUESTIP': ip})
+        output.append(template_1 % {'I' : i})
         if vlan:
-            output.append(template_vlan % {'I' : i, 'GUESTIP': ip})
+            output.append(template_vlan % {'I' : i, 'VLANID' : vlan})
         output.append(template_2 % {'I' : i, 'HOSTIP' : getIP(ip), 'GUESTIP': ip})
     return '\n'.join(output)
 
@@ -257,10 +257,10 @@ sudo tunctl -d ${TAPDEV_%(I)i}
 
     output = []
     for i, (ip, dev, vlan, mac) in enumerate(network):
-        output.append(template_1 % {'I' : i, 'GUESTIP': ip})
+        output.append(template_1 % {'I' : i})
         if vlan:
-            output.append(template_vlan % {'I' : i, 'GUESTIP': ip})
-        output.append(template_2 % {'I' : i, 'GUESTIP': ip})
+            output.append(template_vlan % {'I' : i})
+        output.append(template_2 % {'I' : i})
     return '\n'.join(output)
 
 def qemuCmd(iid, network, arch, endianness):
