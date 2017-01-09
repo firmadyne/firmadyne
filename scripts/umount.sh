@@ -34,7 +34,6 @@ echo "----Unmounting----"
 umount "${DEVICE}"
 
 echo "----Disconnecting Device File----"
-umount "${IMAGE}"
 kpartx -d "${IMAGE}"
 losetup -d "${DEVICE}" &>/dev/null
-dmsetup remove $(basename "$DEVICE") &>/dev/null
+dmsetup remove $(basename "${DEVICE}") &>/dev/null
