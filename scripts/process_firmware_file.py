@@ -34,18 +34,20 @@ def main():
         iid, process_finish_ts, process_start_ts = rows[0][0], rows[0][1], rows[0][2]
         diff = process_finish_ts - process_start_ts
         print("Already processed id=%(iid)s at %(process_start_ts)s, difftime=%(diff)s" % locals())
-        return
+        #return
     try:
-        ts = datetime.now(pytz.utc)
+        process_start_ts = datetime.now(pytz.utc)
         print("<<1>> extract fw_file\n")
         
         os.system('python -u scripts/extractor.py -b "%(brand)s" "%(fw_file)s" images | tee extraction.log' % locals())
         iid = grep('extraction.log', r'Database Image ID: (\d+)')
         iid = int(iid)
         os.remove('extraction.log')
-        psql('UPDATE image SET process_start_ts=%(ts)s WHERE id=%(iid)s', locals())
+        psql('UPDATE image SET process_start_ts=%(process_start_ts)s WHERE id=%(iid)s', locals())
         print('scripts/fw_file_to_psql.py "%(fw_file)s" --brand %(brand)s' % locals())
         os.system('scripts/fw_file_to_psql.py "%(fw_file)s" --brand "%(brand)s"' % locals())
+        rootfs_extracted_ts = datetime.now(pytz.utc)
+        psql('UPDATE image SET rootfs_extracted_ts=%(rootfs_extracted_ts)s WHERE id=%(iid)s', locals())
         if not os.path.exists("images/%(iid)s.tar.gz" % locals()):
             print('images/%(iid)s.tar.gz doesn\'t exist. Extraction failed.' % locals())
             return
@@ -66,6 +68,9 @@ def main():
 
         net_infer_OK=psql("SELECT network_inferred FROM image WHERE id=%(iid)s", locals())
         net_infer_OK = net_infer_OK[0][0]
+
+        network_inferred_ts = datetime.now(pytz.utc)
+        psql('UPDATE image SET network_inferred_ts=%(network_inferred_ts)s WHERE id=%(iid)s', locals())
         if not net_infer_OK:
             print('network inference failed')
             return
@@ -76,6 +81,9 @@ def main():
 
         net_reachable = grep('test_network_reachable.log', r'network_reachable=(\w+)')
         os.remove('test_network_reachable.log')
+
+        network_reachable_ts = datetime.now(pytz.utc)
+        psql('UPDATE image SET network_reachable_ts=%(network_reachable_ts)s WHERE id=%(iid)s', locals())
         if net_reachable != 'True':
             print("network_reachable = False")
             return
@@ -92,16 +100,24 @@ def main():
                 time.sleep(1)
 
         os.system('python3 -u analyses/runExploits.py -i %(iid)s' % locals())
-        os.system('scripts/nmap_scan.py %(iid)s' % locals())
-        os.system('scripts/test_network_reachable.py %(iid)s destruct' % locals())
         os.system('scripts/merge_metasploit_logs.py %(iid)s' % locals())
+
+        vulns_ts = datetime.now(pytz.utc)
+        psql('UPDATE image SET vulns_ts=%(vulns_ts)s WHERE id=%(iid)s', locals())
+
+        os.system('scripts/nmap_scan.py %(iid)s' % locals())
+
+        open_ports_ts = datetime.now(pytz.utc)
+        psql('UPDATE image SET open_ports_ts=%(open_ports_ts)s WHERE id=%(iid)s', locals())
+
+        os.system('scripts/test_network_reachable.py %(iid)s destruct' % locals())
 
     except BaseException as ex:
         traceback.print_exc()
     finally:
-        ts = datetime.now(pytz.utc)
-        psql('UPDATE image SET process_finish_ts=%(ts)s WHERE id=%(iid)s', locals())
-        print('UPDATE process_finish_ts = %(ts)s' % locals())
+        process_finish_ts = datetime.now(pytz.utc)
+        psql('UPDATE image SET process_finish_ts=%(process_finish_ts)s WHERE id=%(iid)s', locals())
+        print('UPDATE process_finish_ts = %(process_finish_ts)s' % locals())
 
 
 if __name__=="__main__":
