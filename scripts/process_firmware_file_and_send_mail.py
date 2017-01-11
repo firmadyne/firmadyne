@@ -56,9 +56,9 @@ def main():
     buf = StringIO()
 
     from psql_firmware import psql
-    extractOK, arch, netInfOK, netReachOK, default_ip, vulns = \
+    extractOK, arch, netInfOK, netReachOK, default_ip, vulns, open_ports = \
         psql("SELECT rootfs_extracted, arch, network_inferred, network_reachable, "
-             "guest_ip, vulns FROM image WHERE id=%(iid)s", locals())[0]
+             "guest_ip, vulns, open_ports FROM image WHERE id=%(iid)s", locals())[0]
     if not extractOK:
         buf.write('extraction failed\n')
         send_mail(recipients, subject, buf.getvalue(), cwd + '/process.log')
@@ -81,9 +81,15 @@ def main():
     buf.write('arch=%(arch)s\n' % locals())
     buf.write('default_ip=%(default_ip)s\n' % locals())
     buf.write('network reachability OK\n')
+    buf.write('\n')
     buf.write('Vulnerabilites:\n')
     for vuln in vulns:
         buf.write('  %s\n'%vuln)
+    buf.write('\n')
+    buf.write('Open Ports:\n')
+    for open_port in open_ports:
+        buf.write('  %s\n'%open_port)
+
     send_mail(recipients, subject, buf.getvalue(), cwd + '/process.log')
 
 if __name__=='__main__':
