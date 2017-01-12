@@ -5,7 +5,7 @@ import sys
 import re
 import time
 import pytz
-import argparse
+# import argparse
 from datetime import datetime
 from psql_firmware import psql
 import traceback
@@ -23,7 +23,7 @@ def grep(fname, regexpattern):
             m = re.search(regexpattern, line)
             if m:
                 return m.group(1)
-    
+
 
 def main():
     brand = sys.argv[1]
@@ -34,18 +34,18 @@ def main():
         iid, process_finish_ts, process_start_ts = rows[0][0], rows[0][1], rows[0][2]
         diff = process_finish_ts - process_start_ts
         print("Already processed id=%(iid)s at %(process_start_ts)s, difftime=%(diff)s" % locals())
-        #return
+        # return
     try:
         process_start_ts = datetime.now(pytz.utc)
         print("<<1>> extract fw_file\n")
-        
+
         os.system('python -u scripts/extractor.py -b "%(brand)s" "%(fw_file)s" images | tee extraction.log' % locals())
         iid = grep('extraction.log', r'Database Image ID: (\d+)')
         iid = int(iid)
         os.remove('extraction.log')
         psql('UPDATE image SET process_start_ts=%(process_start_ts)s WHERE id=%(iid)s', locals())
-        print('scripts/fw_file_to_psql.py "%(fw_file)s" --brand %(brand)s' % locals())
-        os.system('scripts/fw_file_to_psql.py "%(fw_file)s" --brand "%(brand)s"' % locals())
+        print('python3 -u scripts/fw_file_to_psql.py "%(fw_file)s" --brand %(brand)s' % locals())
+        os.system('python3 -u scripts/fw_file_to_psql.py "%(fw_file)s" --brand "%(brand)s"' % locals())
         rootfs_extracted_ts = datetime.now(pytz.utc)
         psql('UPDATE image SET rootfs_extracted_ts=%(rootfs_extracted_ts)s WHERE id=%(iid)s', locals())
         if not os.path.exists("images/%(iid)s.tar.gz" % locals()):
@@ -56,7 +56,7 @@ def main():
         os.system('scripts/getArch.sh images/%(iid)s.tar.gz' % locals())
         arch = psql("SELECT arch FROM image WHERE id=%(iid)s" % locals())
         arch = arch[0][0]
-        os.system('scripts/tar2db_tlsh.py images/%(iid)s.tar.gz' % locals())
+        os.system('python3 scripts/tar2db_tlsh.py images/%(iid)s.tar.gz' % locals())
         os.system('sudo ./scripts/makeImage.sh %(iid)s %(arch)s' % locals())
         os.system(os.path.expandvars('sudo chown -R $USER:$USER scratch/%(iid)s') % locals())
 
@@ -88,7 +88,7 @@ def main():
             print("network_reachable = False")
             return
 
-        print( "<<5>> Metasploit and Nmap scan\n" )
+        print("<<5>> Metasploit and Nmap scan\n")
         guest_ip=psql("SELECT guest_ip FROM image WHERE id=%(iid)s", locals())
         guest_ip=guest_ip[0][0]
         os.system('python3 -u scripts/test_network_reachable.py %(iid)s construct' % locals())
@@ -105,7 +105,7 @@ def main():
         vulns_ts = datetime.now(pytz.utc)
         psql('UPDATE image SET vulns_ts=%(vulns_ts)s WHERE id=%(iid)s', locals())
 
-        os.system('scripts/nmap_scan.py %(iid)s' % locals())
+        os.system('python3 -u scripts/nmap_scan.py %(iid)s' % locals())
 
         open_ports_ts = datetime.now(pytz.utc)
         psql('UPDATE image SET open_ports_ts=%(open_ports_ts)s WHERE id=%(iid)s', locals())
@@ -122,4 +122,3 @@ def main():
 
 if __name__=="__main__":
     main()
-
