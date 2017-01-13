@@ -67,7 +67,7 @@ def get_fs(iid):
 
 def closeIp(ip):
     tups = [int(x) for x in ip.split(".")]
-    if tups[3] != 1:
+    if tups[3] != 1 and tups[3] != 0:
         tups[3] -= 1
     else:
         tups[3] = 2
