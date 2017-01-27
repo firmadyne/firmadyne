@@ -28,13 +28,12 @@ WORK_DIR=`get_scratch ${IID}`
 IMAGE=`get_fs ${IID}`
 IMAGE_DIR=`get_fs_mount ${IID}`
 
-DEVICE=/dev/mapper/loop0p1
+DEVICE=`get_device`
 
 echo "----Unmounting----"
 umount "${DEVICE}"
 
 echo "----Disconnecting Device File----"
-umount "${IMAGE}"
 kpartx -d "${IMAGE}"
 losetup -d "${DEVICE}" &>/dev/null
-dmsetup remove loop0p1 &>/dev/null
+dmsetup remove $(basename "${DEVICE}") &>/dev/null

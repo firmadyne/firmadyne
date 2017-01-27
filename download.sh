@@ -17,8 +17,8 @@ wget -O ./binaries/console.mipseb https://github.com/firmadyne/console/releases/
 wget -O ./binaries/console.mipsel https://github.com/firmadyne/console/releases/download/v1.0/console.mipsel
 
 echo "Downloading libnvram..."
-wget -O ./binaries/libnvram.so.armel https://github.com/firmadyne/libnvram/releases/download/v1.0/libnvram.so.armel
-wget -O ./binaries/libnvram.so.mipseb https://github.com/firmadyne/libnvram/releases/download/v1.0/libnvram.so.mipseb
-wget -O ./binaries/libnvram.so.mipsel https://github.com/firmadyne/libnvram/releases/download/v1.0/libnvram.so.mipsel
+wget -O ./binaries/libnvram.so.armel https://github.com/firmadyne/libnvram/releases/download/v1.0b/libnvram.so.armel
+wget -O ./binaries/libnvram.so.mipseb https://github.com/firmadyne/libnvram/releases/download/v1.0b/libnvram.so.mipseb
+wget -O ./binaries/libnvram.so.mipsel https://github.com/firmadyne/libnvram/releases/download/v1.0b/libnvram.so.mipsel
 
 echo "Done!"

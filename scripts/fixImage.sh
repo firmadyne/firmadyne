@@ -32,7 +32,7 @@ fi
 # make /dev and add default device nodes if current /dev does not have greater
 # than 5 device nodes
 mkdir -p $(resolve_link /dev)
-FILECOUNT="$($BUSYBOX find ${WORKDIR}/dev -maxdepth 1 -type b -or -type c -print | $BUSYBOX wc -l)"
+FILECOUNT="$($BUSYBOX find ${WORKDIR}/dev -maxdepth 1 -type b -o -type c -print | $BUSYBOX wc -l)"
 if [ $FILECOUNT -lt "5" ]; then
     echo "Warning: Recreating device nodes!"
 
@@ -144,30 +144,30 @@ rm -f /etc/scripts/sys_resetbutton
 # add some default nvram entries
 if $BUSYBOX grep -sq "ipv6_6to4_lan_ip" /sbin/rc; then
     echo "Creating default ipv6_6to4_lan_ip!"
-    echo -n "2002:7f00:0001::" > /libnvram.defaults/ipv6_6to4_lan_ip
+    echo -n "2002:7f00:0001::" > /firmadyne/libnvram.override/ipv6_6to4_lan_ip
 fi
 
 if $BUSYBOX grep -sq "time_zone_x" /lib/libacos_shared.so; then
     echo "Creating default time_zone_x!"
-    echo -n "0" > /libnvram.defaults/time_zone_x fi
+    echo -n "0" > /firmadyne/libnvram.override/time_zone_x
 fi
 
 if $BUSYBOX grep -sq "rip_multicast" /usr/sbin/httpd; then
     echo "Creating default rip_multicast!"
-    echo -n "0" > /libnvram.defaults/rip_multicast
+    echo -n "0" > /firmadyne/libnvram.override/rip_multicast
 fi
 
 if $BUSYBOX grep -sq "bs_trustedip_enable" /usr/sbin/httpd; then
     echo "Creating default bs_trustedip_enable!"
-    echo -n "0" > /libnvram.defaults/bs_trustedip_enable
+    echo -n "0" > /firmadyne/libnvram.override/bs_trustedip_enable
 fi
 
 if $BUSYBOX grep -sq "filter_rule_tbl" /usr/sbin/httpd; then
     echo "Creating default filter_rule_tbl!"
-    echo -n "" > /libnvram.defaults/filter_rule_tbl
+    echo -n "" > /firmadyne/libnvram.override/filter_rule_tbl
 fi
 
 if $BUSYBOX grep -sq "rip_enable" /sbin/acos_service; then
     echo "Creating default rip_enable!"
-    echo -n "0" > /libnvram.defaults/rip_enable
+    echo -n "0" > /firmadyne/libnvram.override/rip_enable
 fi
