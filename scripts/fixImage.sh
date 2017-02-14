@@ -5,28 +5,28 @@ BUSYBOX="/busybox"
 
 # print input if not symlink, otherwise attempt to resolve symlink
 resolve_link() {
-    DIR=$($BUSYBOX readlink $1)
-    if [ -z "$DIR" ]; then
+    TARGET=$($BUSYBOX readlink $1)
+    if [ -z "$TARGET" ]; then
         echo "$1"
     fi
-    echo "$DIR"
+    echo "$TARGET"
 }
 
 # make /etc and add some essential files
 mkdir -p $(resolve_link /etc)
 if [ ! -s /etc/TZ ]; then
     echo "Creating /etc/TZ!"
-    echo "EST5EDT" > /etc/TZ
+    echo "EST5EDT" > $(resolve_link /etc/TZ)
 fi
 
 if [ ! -s /etc/hosts ]; then
     echo "Creating /etc/hosts!"
-    echo "127.0.0.1 localhost" > /etc/hosts
+    echo "127.0.0.1 localhost" > $(resolve_link /etc/hosts)
 fi
 
 if [ ! -s /etc/passwd ]; then
     echo "Creating /etc/passwd!"
-    echo "root::0:0:root:/root:/bin/sh" > /etc/passwd
+    echo "root::0:0:root:/root:/bin/sh" > $(resolve_link /etc/passwd)
 fi
 
 # make /dev and add default device nodes if current /dev does not have greater
