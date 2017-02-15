@@ -13,28 +13,28 @@ resolve_link() {
 }
 
 # make /etc and add some essential files
-mkdir -p $(resolve_link /etc)
+mkdir -p "$(resolve_link /etc)"
 if [ ! -s /etc/TZ ]; then
     echo "Creating /etc/TZ!"
     mkdir -p "$(dirname $(resolve_link /etc/TZ))"
-    echo "EST5EDT" > $(resolve_link /etc/TZ)
+    echo "EST5EDT" > "$(resolve_link /etc/TZ)"
 fi
 
 if [ ! -s /etc/hosts ]; then
     echo "Creating /etc/hosts!"
     mkdir -p "$(dirname $(resolve_link /etc/hosts))"
-    echo "127.0.0.1 localhost" > $(resolve_link /etc/hosts)
+    echo "127.0.0.1 localhost" > "$(resolve_link /etc/hosts)"
 fi
 
 if [ ! -s /etc/passwd ]; then
     echo "Creating /etc/passwd!"
     mkdir -p "$(dirname $(resolve_link /etc/passwd))"
-    echo "root::0:0:root:/root:/bin/sh" > $(resolve_link /etc/passwd)
+    echo "root::0:0:root:/root:/bin/sh" > "$(resolve_link /etc/passwd)"
 fi
 
 # make /dev and add default device nodes if current /dev does not have greater
 # than 5 device nodes
-mkdir -p $(resolve_link /dev)
+mkdir -p "$(resolve_link /dev)"
 FILECOUNT="$($BUSYBOX find ${WORKDIR}/dev -maxdepth 1 -type b -o -type c -print | $BUSYBOX wc -l)"
 if [ $FILECOUNT -lt "5" ]; then
     echo "Warning: Recreating device nodes!"
