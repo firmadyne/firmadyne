@@ -19,7 +19,9 @@ def wait_for_inet_insert_ifa(logfile, timeout, archend, interval=1):
         for m in matches:
             ip = socket.inet_ntoa(struct.pack(fmt, int(m, 16)))
             if ip not in ['0.0.0.0', '127.0.0.1']:
-                return ip
+                if int(ip.split('.')[3]) != 0:
+                    return ip
+
 
         time.sleep(interval)
         if time.time()-begin > timeout:
