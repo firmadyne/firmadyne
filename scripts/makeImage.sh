@@ -48,7 +48,7 @@ IMAGE_DIR=`get_fs_mount ${IID}`
 CONSOLE=`get_console ${ARCH}`
 LIBNVRAM=`get_nvram ${ARCH}`
 
-DEVICE=/dev/mapper/loop0p1
+DEVICE=`get_device`
 
 echo "----Copying Filesystem Tarball----"
 mkdir -p "${WORK_DIR}"
@@ -74,7 +74,7 @@ echo -e "o\nn\np\n1\n\n\nw" | /sbin/fdisk "${IMAGE}"
 
 sleep 5
 echo "----Mounting QEMU Image----"
-kpartx -a -v "${IMAGE}"
+kpartx -a -s -v "${IMAGE}"
 sleep 5
 
 echo "----Creating Filesystem----"
@@ -127,4 +127,4 @@ sleep 5
 umount "${DEVICE}"
 kpartx -d "${IMAGE}"
 losetup -d "${DEVICE}" &>/dev/null
-dmsetup remove loop0p1 &>/dev/null
+dmsetup remove $(basename "$DEVICE") &>/dev/null
