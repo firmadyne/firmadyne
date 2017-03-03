@@ -49,7 +49,7 @@ echo "Starting firmware emulation... use Ctrl-a + x to exit"
 sleep 1s
 
 %(QEMU_ENV_VARS)s ${QEMU} -m 256 -M ${QEMU_MACHINE} -kernel ${KERNEL} \\
-    %(QEMU_DISK)s -append "root=${QEMU_ROOTFS} console=ttyS0 nandsim.parts=64,64,64,64,64,64,64,64,64,64 rdinit=/preInit.sh rw debug ignore_loglevel print-fatal-signals=1 user_debug=31 firmadyne.syscall=0" \\
+    %(QEMU_DISK)s -append "root=${QEMU_ROOTFS} console=ttyS0 nandsim.parts=64,64,64,64,64,64,64,64,64,64 rdinit=/firmadyne/preInit.sh rw debug ignore_loglevel print-fatal-signals=1 user_debug=31 firmadyne.syscall=0" \\
     -nographic \\
     %(QEMU_NETWORK)s | tee ${WORK_DIR}/qemu.final.serial.log
 """
@@ -216,7 +216,7 @@ sudo tunctl -t ${TAPDEV_%(I)i} -u ${USER}
     template_vlan = """
 echo "Initializing VLAN..."
 HOSTNETDEV_%(I)i=${TAPDEV_%(I)i}.%(VLANID)i
-sudo ip link add link ${TAPDEV} name ${HOSTNETDEV_%(I)i} type vlan id %(VLANID)i
+sudo ip link add link ${TAPDEV_%(I)i} name ${HOSTNETDEV_%(I)i} type vlan id %(VLANID)i
 sudo ip link set ${HOSTNETDEV_%(I)i} up
 """
 

@@ -20,14 +20,14 @@ IID=${1}
 echo "checking the process table for a running qemu instance ..."
 PID=`ps -ef | grep qemu | grep "${IID}" | grep -v grep | awk '{print $2}'`
 if ! [ -z $PID ]; then
-  echo "killing process ${PID}"
-  sudo kill -9 ${PID}
+    echo "killing process ${PID}"
+    sudo kill -9 ${PID}
 fi
 
 PID1=`ps -ef | grep "${IID}\/run.sh" | grep -v grep | awk '{print $2}'`
 if ! [ -z $PID1 ]; then
-  echo "killing process ${PID1}"
-  sudo kill ${PID1}
+    echo "killing process ${PID1}"
+    sudo kill ${PID1}
 fi
 
 #Check that nothing is mounted:
@@ -36,8 +36,10 @@ sudo ./scripts/umount.sh ${IID}
 
 #Check network config
 echo "In case the network is configured, reconfigure it now ..."
-sudo ifconfig tap${IID} down
-sudo tunctl -d tap${IID}
+for i in 0 .. 4; do
+    sudo ifconfig tap${IID}_${i} down
+    sudo tunctl -d tap${IID}_${i}
+done
 
 #Cleanup database:
 echo "Remove the database entries ..."
@@ -46,19 +48,19 @@ psql -d firmware -U firmadyne -h 127.0.0.1 -t -q -c "DELETE from image WHERE id=
 #Cleanup filesystem:
 echo "Clean up the file system ..."
 if [ -f "/tmp/qemu.${IID}*" ]; then
-   sudo rm /tmp/qemu.${IID}*
+    sudo rm /tmp/qemu.${IID}*
 fi
 
 if [ -f ./images/${IID}.tar.gz ]; then
-   sudo rm ./images/${IID}.tar.gz
+    sudo rm ./images/${IID}.tar.gz
 fi
 
 if [ -f ./images/${IID}.kernel ]; then
-   sudo rm ./images/${IID}.kernel
+    sudo rm ./images/${IID}.kernel
 fi
 
 if [ -d ./scratch/${IID}/ ]; then
-   sudo rm -r ./scratch/${IID}/
+    sudo rm -r ./scratch/${IID}/
 fi
 
 echo "Done. Removed project ID ${IID}."
