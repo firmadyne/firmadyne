@@ -119,33 +119,42 @@ def get_qemu_cmd_line(iid, archend):
             {qemuNetwork}'''.format(**locals()))
 
 
-def try_ip(ip_addr, loopcount=20, timeout=3):
-    for _i in range(loopcount):
-        try:
-            print('test http://%s/'%ip_addr)
-            with request.urlopen('http://%s/'%ip_addr, timeout=timeout) as fin:
-                return True
-        except Exception as ex:
-            pass
+# def try_ip(ip_addr, loopcount=20, timeout=3):
+#     for _i in range(loopcount):
+#         try:
+#             print('test http://%s/'%ip_addr)
+#             with request.urlopen('http://%s/'%ip_addr, timeout=timeout) as fin:
+#                 return True
+#         except Exception as ex:
+#             pass
+#     return False
+
+
+def ping_until_OK(host, timeOut=60, interval=2):
+    import time, sys, os
+    begin = time.time()
+    while (time.time() - begin) < timeOut:
+        ret = os.system("ping %(host)s -c 1 -w %(interval)d" % locals())
+        if ret==0:
+            return True
+        else:
+            time.sleep(interval) 
+    print("time out", file=sys.stderr)
     return False
 
 
-def construct(iid):
+
+def construct(iid, guest_ip):
     archend = psql1("SELECT arch FROM image WHERE id=%d"%iid)
-    guestip = psql1("SELECT guest_ip FROM image WHERE id=%d"%iid)
-    if not guestip:
-        return False
     netdev = psql1("SELECT netdev FROM image WHERE id=%d"%iid)
-    if not guestip:
-        return False
-    netdevip=closeIp(guestip)
+    netdevip=closeIp(guest_ip)
     tapdev='tap%d'%iid
     print("Creating TAP device %(tapdev)s..."%locals())
     os.system('sudo tunctl -t %(tapdev)s -u $USER'%locals())
     print("Bringing up TAP device...")
     os.system('sudo ifconfig %(tapdev)s %(netdevip)s/24 up'%locals())
-    print("Adding route to %(guestip)s..."%locals())
-    os.system('sudo route add -host %(guestip)s gw %(guestip)s %(tapdev)s'%locals())
+    print("Adding route to %(guest_ip)s..."%locals())
+    os.system('sudo route add -host %(guest_ip)s gw %(guest_ip)s %(tapdev)s'%locals())
     print("Starting emulation of firmware... ")
     WORK_DIR=get_scratch(iid)
     os.system('sudo rm -f {WORK_DIR}/qemu.final.serial.log'.format(**locals()))
@@ -156,15 +165,14 @@ def construct(iid):
     return True
 
 
-def destruct(iid):
+def destruct(iid, guest_ip):
     archend = psql1("SELECT arch FROM image WHERE id=%d"%iid)
-    guestip = psql1("SELECT guest_ip FROM image WHERE id=%d"%iid)
     netdev = psql1("SELECT netdev FROM image WHERE id=%d"%iid)
     tapdev='tap%d'%iid
     QEMU=get_qemu(archend)
     os.system('killall %(QEMU)s'%locals())
     print( "Deleting route...")
-    os.system('sudo route del -host %(guestip)s gw %(guestip)s %(tapdev)s'%locals())
+    os.system('sudo route del -host %(guest_ip)s gw %(guest_ip)s %(tapdev)s'%locals())
     print( "Bringing down %(tapdev)s..."%locals())
     os.system('sudo ifconfig %(tapdev)s down'%locals())
     print("Deleting TAP device %(tapdev)s... "%locals())
@@ -187,30 +195,30 @@ Use "destruct" to destruct network setups.
                 """.format(sys.argv[0]))
         return
     iid = int(sys.argv[1])
-    purpose = sys.argv[2] if len(sys.argv)>2 else "test"
-    if purpose=='test':
-        if not construct(iid):
+    purpose = sys.argv[2]
+    guest_ip = psql1("SELECT guest_ip FROM image WHERE id=%d"%iid)
+    if purpose == 'test':
+        if not construct(iid, guest_ip):
             destruct(iid)
             return False
-        guestip = psql1("SELECT guest_ip FROM image WHERE id=%d"%iid)
         time.sleep(10)
-        network_reachable = try_ip(guestip)
-        print('network_reachable=%s'%network_reachable)
+        network_reachable = ping_until_OK(guest_ip, 60)
+        # network_reachable = try_ip(guest_ip)
+        print('network_reachable = %s' % network_reachable)
         psql("UPDATE image SET network_reachable=%s WHERE id=%s", (network_reachable, iid))
-        return destruct(iid)
+        return destruct(iid, guest_ip)
     elif purpose=='emulate':
-        if not construct(iid):
+        if not construct(iid, guest_ip):
             destruct(iid)
             return False
-        guestip = psql1("SELECT guest_ip FROM image WHERE id=%d"%iid)
-        print('open http://%(guestip)s/'%locals())
+        print('open http://%s/' % guest_ip)
         print('press any key to stop')
         input()
-        return destruct(iid)
+        return destruct(iid, guest_ip)
     elif purpose=='construct':
-        return construct(iid)
+        return construct(iid, guest_ip)
     elif purpose=='destruct':
-        return destruct(iid)
+        return destruct(iid, guest_ip)
 
 
 if __name__=="__main__":

@@ -70,21 +70,17 @@ def telnet_login(host, username, password):
             tn.close()
 
 
-class TimeOutException(Exception):
-    pass
-
-
-def ping_until_network_reachable(host, timeOut=60.0):
+def ping_until_OK(host, timeOut=60.0):
     import time, sys, os
     begin = time.time()
-    while (time.time() - begin) < 60.0:
+    while (time.time() - begin) < timeOut:
         ret = os.system("ping %(host)s -c 1 -w 2" % locals())
         if ret==0:
-            return
+            return True
         else:
             time.sleep(2) 
     print("time out", file=sys.stderr)
-    raise TimeOutException("time out")
+    return False
 
 
 mirai_credentials = """
@@ -161,7 +157,8 @@ def all_combinations(unames, pwords):
 
 def main():
     host = '192.168.0.1'
-    ping_until_network_reachable(host, 60.0)
+    if not ping_until_OK(host, 60.0):
+        return
 
     creds = [l.strip().split(':') for l in mirai_credentials.splitlines() if l.strip()]
     unames = sorted(list(set(_[0] for _ in creds)))

@@ -25,6 +25,19 @@ def grep(fname, regexpattern):
                 return m.group(1)
 
 
+def ping_until_OK(host, timeOut=60.0):
+    import time, sys, os
+    begin = time.time()
+    while (time.time() - begin) < timeOut:
+        ret = os.system("ping %(host)s -c 1 -w 2" % locals())
+        if ret==0:
+            return True
+        else:
+            time.sleep(2) 
+    print("time out", file=sys.stderr)
+    return False
+
+
 def main():
     brand = sys.argv[1]
     fw_file = sys.argv[2]
@@ -76,6 +89,11 @@ def main():
             return
 
         print("<<4>> test network_reachable\n")
+        guest_ip = psql("SELECT guest_ip FROM image WHERE id=%(iid)s", locals())
+        guest_ip = guest_ip[0][0]
+        if ping_until_OK(guest_ip, 60.0) != True:
+            print()
+
         # net_reachable
         os.system('python3 -u scripts/test_network_reachable.py %(iid)s test | tee test_network_reachable.log' % locals())
 
@@ -89,15 +107,14 @@ def main():
             return
 
         print("<<5>> Metasploit and Nmap scan\n")
-        guest_ip=psql("SELECT guest_ip FROM image WHERE id=%(iid)s", locals())
-        guest_ip=guest_ip[0][0]
         os.system('python3 -u scripts/test_network_reachable.py %(iid)s construct' % locals())
-        while True:
-            ret = os.system('ping -c1 %(guest_ip)s &>/dev/null' % locals())
-            if ret==0:
-                break
-            else:
-                time.sleep(1)
+        ping_until_OK(guest_ip, 60.0)
+        # while time.time() - begin < timeOut:
+        #     ret = os.system('ping -c1 %(guest_ip)s &>/dev/null' % locals())
+        #     if ret==0:
+        #         break
+        #     else:
+        #         time.sleep(1)
 
         os.system('python3 -u analyses/runExploits.py -i %(iid)s' % locals())
         os.system('scripts/merge_metasploit_logs.py %(iid)s' % locals())
