@@ -1,6 +1,31 @@
 #!/usr/bin/env python3
 
 
+def telnet_login1(host, username):
+    import telnetlib
+    try:
+        tn = telnetlib.Telnet(host)
+        while True:
+            s = tn.read_eager().decode().lower()
+            if s != '':
+                print(s)
+                break
+        tn.write(username.encode() + b"\n")
+        while True:
+            s = tn.read_eager().decode().lower().strip()
+            if s != '':
+                print(s)
+                if s != username:
+                    break
+        return 'password:' in s
+    except ConnectionRefusedError as ex:
+        print(ex)
+        return False
+    finally:
+        if 'tn' in locals().keys():
+            tn.close()
+
+
 def telnet_login(host, username, password):
     import telnetlib
     try:
@@ -41,66 +66,8 @@ def telnet_login(host, username, password):
         print(ex)
         return False
     finally:
-        tn.close()
-
-
-
-# def telnet_tester(host, usernames, passwords):
-#     tested_credentials=[]
-#     import telnetlib
-#     try:
-#         tn = telnetlib.Telnet(host)
-#     except ConnectionRefusedError as ex:
-#         print(ex)
-#         return
-#     login = False
-#     while True:
-#         while True:
-#             if login==True:
-#                 break
-#             s = tn.read_eager().decode().lower()
-#             if s != '':
-#                 print(s)
-#                 break
-#         try:
-#             username = usernames[0]
-#         except IndexError:
-#             print('all usernames tested')
-#             return tested_credentials
-#         usernames.pop(0)
-#         tn.write(username.encode() + b"\n")
-#         print('username=%s' % username)
-#         while True:
-#             s = tn.read_eager().decode().lower()
-#             if s != '':
-#                 print(s)
-#                 if s.strip() != username:
-#                     break
-#         if 'password' in s:
-#             tn.write(password.encode() + b"\b")
-#             print('password=%s' %  password)
-#             while True:
-#                 s = tn.read_eager().decode().lower()
-#                 if s != '':
-#                     print(s)
-#                     break
-#             if 'failed' in s:
-#                 tested_credentials += [(username, password)]
-#                 s = tn.read_until(b'login:', timeout=6).decode().lower()
-#                 tn.write(username.encode() + b"\n")
-#         else:
-#             if 'login incorrect' in s:
-#                 tested_credentials += [(username, None)]
-#                 if 'login:' in s:
-#                     login = True
-#                 else:
-#                     login = False
-#                 continue
-#             elif 'timed out' in s:
-#                 break
-#             else:
-#                 s = tn.read_eager()
-#     return s
+        if 'tn' in locals().keys():
+            tn.close()
 
 
 class TimeOutException(Exception):
@@ -200,6 +167,12 @@ def main():
     unames = sorted(list(set(_[0] for _ in creds)))
     pwords = sorted(list(set(_[1] for _ in creds)))
     creds = list(all_combinations(unames, pwords))
+
+    for uname in unames:
+        if telnet_login1(host, uname):
+            print('login succesful for "%s"' % (uname))
+            break
+
     for cred in creds:
         uname,pword = cred
         print(cred)
