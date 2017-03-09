@@ -49,7 +49,6 @@ def main():
         print(
             "Already processed id=%(iid)s at %(process_start_ts)s, difftime=%(diff)s" %
             locals())
-        # return
     try:
         process_start_ts = datetime.now(pytz.utc)
         print("<<1>> extract fw_file\n")
@@ -111,12 +110,6 @@ def main():
             return
 
         print("<<4>> test network_reachable\n")
-        guest_ip = psql(
-            "SELECT guest_ip FROM image WHERE id=%(iid)s",
-            locals())
-        guest_ip = guest_ip[0][0]
-        if ping_until_OK(guest_ip, 60.0) != True:
-            print()
 
         # net_reachable
         os.system(
@@ -129,9 +122,9 @@ def main():
         os.remove('test_network_reachable.log')
 
         network_reachable_ts = datetime.now(pytz.utc)
-        psql(
-            'UPDATE image SET network_reachable_ts=%(network_reachable_ts)s WHERE id=%(iid)s',
-            locals())
+        psql('UPDATE image SET network_reachable_ts=%(network_reachable_ts)s '
+             'WHERE id=%(iid)s',
+             locals())
         if net_reachable != 'True':
             print("network_reachable = False")
             return
@@ -140,13 +133,14 @@ def main():
         os.system(
             'python3 -u scripts/test_network_reachable.py %(iid)s construct' %
             locals())
+        guest_ip = psql(
+            "SELECT guest_ip FROM image WHERE id=%(iid)s",
+            locals())
+        guest_ip = guest_ip[0][0]
         ping_until_OK(guest_ip, 60.0)
-        # while time.time() - begin < timeOut:
-        #     ret = os.system('ping -c1 %(guest_ip)s &>/dev/null' % locals())
-        #     if ret==0:
-        #         break
-        #     else:
-        #         time.sleep(1)
+
+        print("<<5.0>> Mirai Vulnerable Test\n")
+        os.system('python3 -u scripts/telnet_login_test.py %(guest_ip)s %(iid)s' % locals())
 
         os.system('python3 -u analyses/runExploits.py -i %(iid)s' % locals())
         os.system('scripts/merge_metasploit_logs.py %(iid)s' % locals())

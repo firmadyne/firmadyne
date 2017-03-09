@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+import os
+import sys
+import time
+import re
+from psql_firmware import psql
+
+
+def psql0(query, var):
+    return psql(query, var)[0][0]
 
 
 def telnet_login1(host, username):
@@ -26,7 +35,7 @@ def telnet_login1(host, username):
             tn.close()
 
 
-def telnet_login(host, username, password):
+def telnet_login(host, username, password): #noqa
     import telnetlib
     try:
         tn = telnetlib.Telnet(host)
@@ -45,7 +54,7 @@ def telnet_login(host, username, password):
         if 'password' not in s:
             return False
         tn.write(password.encode() + b"\b")
-        print('password=%s' %  password)
+        print('password=%s' % password)
         while True:
             s = tn.read_eager().decode().lower()
             if s != '':
@@ -71,82 +80,14 @@ def telnet_login(host, username, password):
 
 
 def ping_until_OK(host, timeOut=60.0):
-    import time, sys, os
     begin = time.time()
     while (time.time() - begin) < timeOut:
         ret = os.system("ping %(host)s -c 1 -w 2" % locals())
-        if ret==0:
+        if ret == 0:
             return True
         else:
-            time.sleep(2) 
-    print("time out", file=sys.stderr)
+            time.sleep(2)
     return False
-
-
-mirai_credentials = """
-root:xc3511
-root:vizxv
-root:admin
-admin:admin
-root:888888
-root:xmhdipc
-root:default
-root:juantech
-root:123456
-root:54321
-support:support
-root:
-admin:password
-root:root
-root:12345
-user:user
-admin:
-root:pass
-admin:admin1234
-root:1111
-admin:smcadmin
-admin:1111
-root:666666
-root:password
-root:1234
-root:klv123
-Administrator:admin
-service:service
-supervisor:supervisor
-guest:guest
-guest:12345
-guest:12345
-admin1:password
-administrator:1234
-666666:666666
-888888:888888
-ubnt:ubnt
-root:klv1234
-root:Zte521
-root:hi3518
-root:jvbzd
-root:anko
-root:zlxx.
-root:7ujMko0vizxv
-root:7ujMko0admin
-root:system
-root:ikwb
-root:dreambox
-root:user
-root:realtek
-root:00000000
-admin:1111111
-admin:1234
-admin:12345
-admin:54321
-admin:123456
-admin:7ujMko0admin
-admin:1234
-admin:pass
-admin:meinsm
-tech:tech
-mother:fucker
-"""
 
 
 def all_combinations(unames, pwords):
@@ -156,28 +97,54 @@ def all_combinations(unames, pwords):
 
 
 def main():
-    host = '192.168.0.1'
+    target = sys.argv[1]
+    if re.match(r'\d+\.\d+\.\d+\.\d+', target):
+        host = target
+    elif re.match(r'\d+', target):
+        iid = int(target)
+        host = psql0(
+            "SELECT guest_ip FROM image WHERE id=%(iid)s",
+            locals())
+        if not host:
+            print("guest_ip is empty for id=%(iid)s" % locals())
+            return
+
+    with open('scripts/Mirai_credentials.txt', 'r') as fin:
+        creds = fin.read().splitlines()
+        creds = [_.strip().split(':') for _ in creds if _.strip()]
+
+    unames = sorted(list(set(_[0] for _ in creds)))
+    pwords = sorted(list(set(_[1] for _ in creds)))
+
     if not ping_until_OK(host, 60.0):
         return
 
-    creds = [l.strip().split(':') for l in mirai_credentials.splitlines() if l.strip()]
-    unames = sorted(list(set(_[0] for _ in creds)))
-    pwords = sorted(list(set(_[1] for _ in creds)))
-    creds = list(all_combinations(unames, pwords))
-
+    tested_creds = []
+    success_uname = None
     for uname in unames:
         if telnet_login1(host, uname):
             print('login succesful for "%s"' % (uname))
+            success_uname = uname
+            tested_creds += [(success_uname, None)]
             break
+        else:
+            tested_creds += [(uname, None)]
 
-    for cred in creds:
-        uname,pword = cred
-        print(cred)
-        if telnet_login(host, uname, pword):
-            print('login succesful for "%s", "%s"' % (uname, pword))
-            break
+    success_cred = (None, None)
+    if success_uname:
+        for pword in pwords:
+            if telnet_login(host, success_uname, pword):
+                print('login succesful for "%s" "%s" ' % (uname, pword))
+                success_cred = (uname, pword)
+                tested_creds += [success_cred]
+                break
+            else:
+                tested_creds += [(uname, pword)]
+    tested_creds += [success_cred]
+    print('tested_creds=', tested_creds)
+    psql("UPDATE image SET mirai_credentials_tested=%s WHERE id=%s",
+         (tested_creds, iid))
 
 
 if __name__ == '__main__':
     main()
-
