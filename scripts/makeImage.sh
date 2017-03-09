@@ -72,13 +72,16 @@ chmod a+rw "${IMAGE}"
 echo "----Creating Partition Table----"
 echo -e "o\nn\np\n1\n\n\nw" | /sbin/fdisk "${IMAGE}"
 
+sleep 5
 echo "----Mounting QEMU Image----"
 kpartx -a -s -v "${IMAGE}"
-sleep 1
+sleep 5
 
 echo "----Creating Filesystem----"
 mkfs.ext2 "${DEVICE}"
+sleep 5
 sync
+sleep 5
 
 echo "----Making QEMU Image Mountpoint----"
 if [ ! -e "${IMAGE_DIR}" ]; then
@@ -97,6 +100,7 @@ echo "----Creating FIRMADYNE Directories----"
 mkdir "${IMAGE_DIR}/firmadyne/"
 mkdir "${IMAGE_DIR}/firmadyne/libnvram/"
 mkdir "${IMAGE_DIR}/firmadyne/libnvram.override/"
+mkdir "${IMAGE_DIR}//libnvram.defaults/"
 
 echo "----Patching Filesystem (chroot)----"
 cp $(which busybox) "${IMAGE_DIR}"
@@ -117,7 +121,9 @@ cp "${SCRIPT_DIR}/preInit.sh" "${IMAGE_DIR}/firmadyne/preInit.sh"
 chmod a+x "${IMAGE_DIR}/firmadyne/preInit.sh"
 
 echo "----Unmounting QEMU Image----"
+sleep 5
 sync
+sleep 5
 umount "${DEVICE}"
 kpartx -d "${IMAGE}"
 losetup -d "${DEVICE}" &>/dev/null
