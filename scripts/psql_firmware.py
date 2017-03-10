@@ -4,6 +4,7 @@ import psycopg2
 import sys
 import traceback
 
+
 def psql(sql_cmd, params=None):
     try:
         conn = psycopg2.connect(database="firmware", user="firmadyne",
@@ -11,15 +12,19 @@ def psql(sql_cmd, params=None):
         cur = conn.cursor()
         cur.execute(sql_cmd, params)
         sql_act = sql_cmd.split()[0].upper()
-        if sql_act=='SELECT':
+        if sql_act == 'SELECT':
             return cur.fetchall()
         elif sql_act in ['UPDATE','DELETE', 'INSERT']:
             conn.commit()
-        return None
+        if 'RETURNING' in sql_cmd:
+            return cur.fetchall()
+        else:
+            return None
     except Exception:
         traceback.print_exc()
     finally:
         conn.close()
+
 
 def main():
     if len(sys.argv) < 1:
