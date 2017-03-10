@@ -27,9 +27,6 @@ def telnet_login1(host, username):
                 if s != username:
                     break
         return 'password:' in s
-    except ConnectionRefusedError as ex:
-        print(ex)
-        return False
     finally:
         if 'tn' in locals().keys():
             tn.close()
@@ -121,14 +118,18 @@ def main():
 
     tested_creds = []
     success_uname = None
-    for uname in unames:
-        if telnet_login1(host, uname):
-            print('login succesful for "%s"' % (uname))
-            success_uname = uname
-            tested_creds += [(success_uname, None)]
-            break
-        else:
-            tested_creds += [(uname, None)]
+    try:
+        for uname in unames:
+            if telnet_login1(host, uname):
+                print('login succesful for "%s"' % (uname))
+                success_uname = uname
+                tested_creds += [(success_uname, None)]
+                break
+            else:
+                tested_creds += [(uname, None)]
+    except ConnectionRefusedError as ex:
+        print(ex)
+        tested_creds = None
 
     success_cred = (None, None)
     if success_uname:

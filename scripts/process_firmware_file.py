@@ -159,20 +159,15 @@ def main():
 
         # net_reachable
         os.system(
-            'python3 -u scripts/test_network_reachable.py %(iid)s test | tee test_network_reachable.log' %
-            locals())
-
-        net_reachable = grep(
-            'test_network_reachable.log',
-            r'network_reachable=(\w+)')
-        os.remove('test_network_reachable.log')
-
+            'python3 -u scripts/test_network_reachable.py %(iid)s test' % locals())
+        net_reachable = psql00(
+            "SELECT network_reachable FROM image WHERE id=%(iid)s", locals())
+        print("network_reachable = ", net_reachable)
         network_reachable_ts = datetime.now(pytz.utc)
         psql('UPDATE image SET network_reachable_ts=%(network_reachable_ts)s '
              'WHERE id=%(iid)s',
              locals())
-        if net_reachable != 'True':
-            print("network_reachable = False")
+        if net_reachable is not True:
             return
 
         print("<<5>> Metasploit and Nmap scan\n")
@@ -186,7 +181,7 @@ def main():
         ping_until_OK(guest_ip, 60.0)
 
         print("<<5.0>> Mirai Vulnerable Test\n")
-        os.system('python3 -u scripts/telnet_login_test.py %(guest_ip)s %(iid)s' % locals())
+        os.system('python3 -u scripts/telnet_login_test.py %(iid)s' % locals())
 
         os.system('python3 -u analyses/runExploits.py -i %(iid)s' % locals())
         os.system('scripts/merge_metasploit_logs.py %(iid)s' % locals())
