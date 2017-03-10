@@ -191,7 +191,7 @@ CREATE TABLE image (
     filename text NOT NULL,
     description text,
     brand_id integer DEFAULT 1 NOT NULL,
-    hash text,
+    hash uuid,
     rootfs_extracted boolean DEFAULT false,
     kernel_extracted boolean DEFAULT false,
     arch text,
