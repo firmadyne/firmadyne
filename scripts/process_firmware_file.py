@@ -1,5 +1,5 @@
-#!/usr/bin/env python3.5
-# -*- coding: utf8 -*-
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 import os
 import sys
 import re
@@ -12,9 +12,18 @@ import traceback
 import hashlib
 
 
+def psql00(query, params):
+    return psql(query, params)[0][0]
+
+
 def getFileMd5(fileName):
     with open(fileName, mode='rb') as fin:
         return hashlib.md5(fin.read()).hexdigest()
+
+
+def getFileSha1(fileName):
+    with open(fileName, mode='rb') as fin:
+        return hashlib.sha1(fin.read()).hexdigest()
 
 
 def grep(fname, regexpattern):
@@ -36,10 +45,47 @@ def ping_until_OK(host, timeOut=60.0):
     return False
 
 
+def download_file(furl):
+    import requests
+    from urllib import parse
+    fileName = os.path.basename(parse.urlparse(furl).path)
+    with open(fileName, "wb") as fout:
+        try:
+            fin = requests.get(url=furl)
+            fout.write(fin.content)
+            return fileName
+        finally:
+            fin.close()
+
+
+def is_url_file(furl):
+    return furl.startswith("https://") or furl.startswith("ftp://") or \
+        furl.startswith("http://")
+
+
 def main():
     brand = sys.argv[1]
-    fw_file = sys.argv[2]
-    md5 = getFileMd5(fw_file)
+    furl = sys.argv[2]
+    if is_url_file(furl):
+        fw_file = download_file(furl)
+        md5 = getFileMd5(fw_file)
+        try:
+            iid = psql00('SELECT id FROM image WHERE hash=%(md5)s', locals())
+            psql('UPDATE image SET file_url=%(furl)s, filename=%(fw_file)s '
+                 'WHERE id=%(iid)s', locals())
+        except IndexError:
+            sha1 = getFileSha1(fw_file)
+            fsize = os.path.getsize(fw_file)
+            iid = psql("INSERT INTO image "
+                       " (filename, brand, hash, file_sha1, file_size, file_url) VALUES"
+                       " (%(fw_file)s, %(brand)s, %(md5)s, %(sha1)s, %(fsize)s, %(furl)s)"
+                       " RETURNING id", locals())
+            iid = iid[0][0]
+        print("UPDATE file_url for id=%(iid)s " % locals())
+    else:
+        fw_file = furl
+        md5 = getFileMd5(fw_file)
+
     rows = psql(
         'SELECT id, process_finish_ts, process_start_ts FROM image WHERE hash=%(md5)s',
         locals())
@@ -51,7 +97,7 @@ def main():
             locals())
     try:
         process_start_ts = datetime.now(pytz.utc)
-        print("<<1>> extract fw_file\n")
+        print("<<1>> extract firmware file\n")
 
         os.system(
             'python -u scripts/extractor.py -b "%(brand)s" "%(fw_file)s" images | tee extraction.log' %
