@@ -141,7 +141,8 @@ def main():
                 break
             else:
                 tested_creds += [(uname, pword)]
-    tested_creds += [success_cred]
+    if tested_creds is not None:
+        tested_creds += [success_cred]
     print('tested_creds=', tested_creds)
     psql("UPDATE image SET mirai_credentials_tested=%s WHERE id=%s",
          (tested_creds, iid))
