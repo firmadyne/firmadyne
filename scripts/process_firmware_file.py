@@ -49,13 +49,20 @@ def download_file(furl):
     import requests
     from urllib import parse
     fileName = os.path.basename(parse.urlparse(furl).path)
-    with open(fileName, "wb") as fout:
-        try:
-            fin = requests.get(url=furl)
-            fout.write(fin.content)
-            return fileName
-        finally:
-            fin.close()
+    fout = open(fileName, "wb")
+    try:
+        fin = requests.get(url=furl)
+    except:
+        fout.close()
+        raise
+    fout.write(fin.content)
+    fout.close()
+    if 'Content-Disposition' in fin.headers:
+        newFileName = fin.headers['Content-Disposition'].split(';')[-1].split('=')[-1]
+        os.rename(fileName, newFileName)
+        fileName= newFileName
+    fin.close()
+    return fileName
 
 
 def is_url_file(furl):

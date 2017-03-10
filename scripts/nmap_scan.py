@@ -16,7 +16,7 @@ def parse_nmap_log(nmap, iid):
             port, pro, _, service = m.groups()
             services += [(port, pro, service)]
     if services:
-        psql0(
+        psql(
             "UPDATE image SET open_ports = %(services)s::TEXT[] WHERE id=%(iid)s",
             locals())
 
