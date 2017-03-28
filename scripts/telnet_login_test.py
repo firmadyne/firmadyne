@@ -14,13 +14,15 @@ def telnet_login1(host, username):
     import telnetlib
     try:
         tn = telnetlib.Telnet(host)
-        while True:
+        begin = time.time()
+        while (time.time() - begin) < 10:
             s = tn.read_eager().decode().lower()
             if s != '':
                 print(s)
                 break
         tn.write(username.encode() + b"\n")
-        while True:
+        begin = time.time()
+        while (time.time() - begin) < 10:
             s = tn.read_eager().decode().lower().strip()
             if s != '':
                 print(s)
@@ -36,7 +38,8 @@ def telnet_login(host, username, password): #noqa
     import telnetlib
     try:
         tn = telnetlib.Telnet(host)
-        while True:
+        begin = time.time()
+        while (time.time() - begin) < 10:
             s = tn.read_eager().decode().lower()
             if s != '':
                 print(s)
@@ -93,7 +96,7 @@ def all_combinations(unames, pwords):
             yield (uname, pword)
 
 
-def main():
+def main(): #noqa
     target = sys.argv[1]
     if re.match(r'\d+\.\d+\.\d+\.\d+', target):
         host = target
@@ -118,6 +121,7 @@ def main():
 
     tested_creds = []
     success_uname = None
+    mirai_botnet_positive = False
     try:
         for uname in unames:
             if telnet_login1(host, uname):
@@ -138,14 +142,18 @@ def main():
                 print('login succesful for "%s" "%s" ' % (uname, pword))
                 success_cred = (uname, pword)
                 tested_creds += [success_cred]
+                mirai_botnet_positive = True
                 break
             else:
                 tested_creds += [(uname, pword)]
     if tested_creds is not None:
         tested_creds += [success_cred]
     print('tested_creds=', tested_creds)
+    print('mirai_botnet_positive=', mirai_botnet_positive)
     psql("UPDATE image SET mirai_credentials_tested=%s WHERE id=%s",
          (tested_creds, iid))
+    psql("UPDATE image SET mirai_botnet_positive=%s WHERE id=%s",
+         (mirai_botnet_positive, iid))
 
 
 if __name__ == '__main__':
