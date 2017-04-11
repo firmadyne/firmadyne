@@ -131,7 +131,7 @@ def main(): #noqa
                 break
             else:
                 tested_creds += [(uname, None)]
-    except ConnectionRefusedError as ex:
+    except (ConnectionRefusedError, EOFError) as ex:
         print(ex)
         tested_creds = None
 
