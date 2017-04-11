@@ -46,6 +46,24 @@ def ping_until_OK(host, timeOut=60.0):
 
 
 def download_file(furl):
+    if furl.startswith("ftp://"):
+        return download_ftp_file(furl)
+    else:
+        return download_http_file(furl)
+
+
+def download_ftp_file(furl):
+    from urllib import parse
+    import ftputil
+    fw_path = parse.urlsplit(furl).path
+    netloc = parse.urlsplit(furl).netloc
+    with ftputil.FTPHost(netloc, 'anonymous', '') as host:
+        fname = furl.split('/')[-1]
+        host.download(fw_path, fname)
+        return fname
+
+
+def download_http_file(furl):
     import requests
     from urllib import parse
     fileName = os.path.basename(parse.urlparse(furl).path)
@@ -60,14 +78,13 @@ def download_file(furl):
     if 'Content-Disposition' in fin.headers:
         newFileName = fin.headers['Content-Disposition'].split(';')[-1].split('=')[-1]
         os.rename(fileName, newFileName)
-        fileName= newFileName
+        fileName = newFileName
     fin.close()
     return fileName
 
 
 def is_url_file(furl):
-    return furl.startswith("https://") or furl.startswith("ftp://") or \
-        furl.startswith("http://")
+    return re.match(r'(http://|https://|ftp://)', furl)
 
 
 def main():
@@ -162,20 +179,20 @@ def main():
             print('network inference failed')
             return
 
-        print("<<4>> test network_reachable\n")
+        # print("<<4>> test network_reachable\n")
 
-        # net_reachable
-        os.system(
-            'python3 -u scripts/test_network_reachable.py %(iid)s test' % locals())
-        net_reachable = psql00(
-            "SELECT network_reachable FROM image WHERE id=%(iid)s", locals())
-        print("network_reachable = ", net_reachable)
-        network_reachable_ts = datetime.now(pytz.utc)
-        psql('UPDATE image SET network_reachable_ts=%(network_reachable_ts)s '
-             'WHERE id=%(iid)s',
-             locals())
-        if net_reachable is not True:
-            return
+        # # net_reachable
+        # os.system(
+        #     'python3 -u scripts/test_network_reachable.py %(iid)s test' % locals())
+        # net_reachable = psql00(
+        #     "SELECT network_reachable FROM image WHERE id=%(iid)s", locals())
+        # print("network_reachable = ", net_reachable)
+        # network_reachable_ts = datetime.now(pytz.utc)
+        # psql('UPDATE image SET network_reachable_ts=%(network_reachable_ts)s '
+        #      'WHERE id=%(iid)s',
+        #      locals())
+        # if net_reachable is not True:
+        #     return
 
         print("<<5>> Metasploit and Nmap scan\n")
         os.system(
@@ -185,23 +202,36 @@ def main():
             "SELECT guest_ip FROM image WHERE id=%(iid)s",
             locals())
         guest_ip = guest_ip[0][0]
-        ping_until_OK(guest_ip, 60.0)
+        network_reachable = True
+        if not ping_until_OK(guest_ip, 80.0):
+            network_reachable = False
+            print("network_reachable = ", network_reachable)
+            psql('UPDATE image SET network_reachable=%(network_reachable)s '
+                 'WHERE id=%(iid)s', locals())
+            os.system(
+                'python3 -u scripts/test_network_reachable.py %(iid)s destruct' %
+                locals())
+            return
+        else:
+            psql('UPDATE image SET network_reachable=%(network_reachable)s '
+                 'WHERE id=%(iid)s', locals())
+
 
         print("<<5.0>> Mirai Vulnerable Test\n")
         os.system('python3 -u scripts/telnet_login_test.py %(iid)s' % locals())
 
-        os.system('python3 -u analyses/runExploits.py -i %(iid)s' % locals())
-        os.system('scripts/merge_metasploit_logs.py %(iid)s' % locals())
+        # os.system('python3 -u analyses/runExploits.py -i %(iid)s' % locals())
+        # os.system('scripts/merge_metasploit_logs.py %(iid)s' % locals())
 
-        vulns_ts = datetime.now(pytz.utc)
-        psql('UPDATE image SET vulns_ts=%(vulns_ts)s WHERE id=%(iid)s', locals())
+        # vulns_ts = datetime.now(pytz.utc)
+        # psql('UPDATE image SET vulns_ts=%(vulns_ts)s WHERE id=%(iid)s', locals())
 
         os.system('python3 -u scripts/nmap_scan.py %(iid)s' % locals())
 
-        open_ports_ts = datetime.now(pytz.utc)
-        psql(
-            'UPDATE image SET open_ports_ts=%(open_ports_ts)s WHERE id=%(iid)s',
-            locals())
+        # open_ports_ts = datetime.now(pytz.utc)
+        # psql(
+        #     'UPDATE image SET open_ports_ts=%(open_ports_ts)s WHERE id=%(iid)s',
+        #     locals())
 
         os.system(
             'scripts/test_network_reachable.py %(iid)s destruct' %
