@@ -26,10 +26,12 @@ def main():
     guestip = psql0("SELECT guest_ip FROM image WHERE id=%d" % iid)
     print('guestip=', guestip)
     from subprocess import Popen
-    pp = Popen('sudo /usr/local/bin/nmap -e tap%(iid)s -T4 -sS -sU --top-ports 500 -v %(guestip)s'
-               '| tee nmap.log.txt 2>&1' % locals(),
-               shell=True,
-               bufsize=1, stderr=sys.stdout, stdout=sys.stdout, universal_newlines=True)
+    pp = Popen(
+        # 'sudo /usr/local/bin/nmap -e tap%(iid)s -T4 -sS -sU --top-ports 500 -v %(guestip)s'
+        'sudo nmap -e tap%(iid)s --top-ports 20000 -v %(guestip)s'
+        '| tee nmap.log.txt 2>&1' % locals(),
+        shell=True,
+        bufsize=1, stderr=sys.stdout, stdout=sys.stdout, universal_newlines=True)
     pp.wait()
     with open('nmap.log.txt', 'r') as nmap:
         parse_nmap_log(nmap, iid)
