@@ -175,6 +175,9 @@ def main():
         psql(
             'UPDATE image SET network_inferred_ts=%(network_inferred_ts)s WHERE id=%(iid)s',
             locals())
+        psql(
+            'UPDATE image SET network_inferred=%(net_infer_OK)s WHERE id=%(iid)s',
+            locals())
         if not net_infer_OK:
             print('network inference failed')
             return
