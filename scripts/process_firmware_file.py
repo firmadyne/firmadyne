@@ -46,10 +46,26 @@ def ping_until_OK(host, timeOut=60.0):
 
 
 def download_file(furl):
-    if furl.startswith("ftp://"):
+    if furl.startswith("s3://"):
+        return download_s3_file(furl)
+    elif furl.startswith("ftp://"):
         return download_ftp_file(furl)
     else:
         return download_http_file(furl)
+
+
+def download_s3_file(furl):
+    from urllib import parse
+    fw_path = parse.urlsplit(furl).path
+    netloc = parse.urlsplit(furl).netloc
+    assert netloc=='grid-iot-firmware-harvest'
+    import boto
+    conn = boto.connect_s3()
+    buck = conn.get_bucket('grid-iot-firmware-harvest')
+    obj = buck.get_key(fw_path)
+    fname = os.path.basename(fw_path)
+    obj.get_contents_to_filename(fname)
+    return fname
 
 
 def download_ftp_file(furl):
@@ -84,7 +100,7 @@ def download_http_file(furl):
 
 
 def is_url_file(furl):
-    return re.match(r'(http://|https://|ftp://)', furl)
+    return re.match(r'(http://|https://|ftp://|s3://)', furl)
 
 
 def main():
@@ -94,9 +110,12 @@ def main():
         fw_file = download_file(furl)
         md5 = getFileMd5(fw_file)
         try:
-            iid = psql00('SELECT id FROM image WHERE hash=%(md5)s', locals())
-            psql('UPDATE image SET file_url=%(furl)s, filename=%(fw_file)s '
-                 'WHERE id=%(iid)s', locals())
+            iid, file_url = psql(
+                    'SELECT id, file_url FROM image WHERE hash=%(md5)s'
+                    ' LIMIT 1', locals())[0]
+            if not file_url:
+                psql('UPDATE image SET file_url=%(furl)s, filename=%(fw_file)s '
+                     'WHERE id=%(iid)s', locals())
         except IndexError:
             sha1 = getFileSha1(fw_file)
             fsize = os.path.getsize(fw_file)
@@ -119,6 +138,9 @@ def main():
         print(
             "Already processed id=%(iid)s at %(process_start_ts)s, difftime=%(diff)s" %
             locals())
+        if process_start_ts >  datetime(2017,4,12):
+            print('Too recent processed firmware 2017/04/12')
+            return
     try:
         process_start_ts = datetime.now(pytz.utc)
         print("<<1>> extract firmware file\n")
@@ -170,6 +192,8 @@ def main():
             "SELECT network_inferred FROM image WHERE id=%(iid)s",
             locals())
         net_infer_OK = net_infer_OK[0][0]
+        if not net_infer_OK:
+            net_infer_OK = False 
 
         network_inferred_ts = datetime.now(pytz.utc)
         psql(
@@ -223,8 +247,8 @@ def main():
         print("<<5.0>> Mirai Vulnerable Test\n")
         os.system('python3 -u scripts/telnet_login_test.py %(iid)s' % locals())
 
-        # os.system('python3 -u analyses/runExploits.py -i %(iid)s' % locals())
-        # os.system('scripts/merge_metasploit_logs.py %(iid)s' % locals())
+        os.system('python3 -u analyses/runExploits.py -i %(iid)s' % locals())
+        os.system('scripts/merge_metasploit_logs.py %(iid)s' % locals())
 
         # vulns_ts = datetime.now(pytz.utc)
         # psql('UPDATE image SET vulns_ts=%(vulns_ts)s WHERE id=%(iid)s', locals())
