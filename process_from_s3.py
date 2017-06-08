@@ -5,6 +5,7 @@ import os
 import traceback
 import time
 from datetime import datetime
+from urllib import parse
 import hashlib
 import psycopg2
 from scripts.psql_firmware import psql
@@ -23,27 +24,14 @@ def main():
     try:
         conn = boto.connect_s3()
         buck = conn.get_bucket('grid-iot-firmware-harvest')
-        for obj in buck.list('fw_files/IpTime/'):
-            md5 = getBucketMd5(buck, obj)
-            psql("UPDATE image SET brand ='IpTime' WHERE hash=%(md5)s", locals())
-            idlist = psql(
-                "SELECT id FROM image WHERE hash=%(md5)s and open_ports_ts is not NULL LIMIT 1",
-                locals())
-            if bool(idlist):
-                # print('Already processed "%(fname)s"' % locals())
-                continue
-            fname = os.path.basename(obj.key)
-            print('download "%s"' % fname)
-            obj.get_contents_to_filename(fname)
-            begin = time.time()
-            print('begin=%s' % datetime.fromtimestamp(begin))
+        for obj in buck.list('fw_files/D-Link/'):
             os.system(
-                'python3 -u scripts/process_firmware_file.py "IpTime" "%s"' %
-                fname)
-            os.remove(fname)
-            end = time.time()
-            print('end=%s' % datetime.fromtimestamp(end))
-            print('consumed %s minutes' % ((end - begin) / 60.0))
+                'python3 -u scripts/process_firmware_file.py "D-Link" "%s"' %
+                ('s3://grid-iot-firmware-harvest/'+obj.key))
+            try:
+                os.remove(os.path.basename(parse.urlsplit(obj.key).path))
+            except:
+                pass
     except BaseException as ex:
         traceback.print_exc()
 
