@@ -66,7 +66,7 @@ def main():
                 "FROM image "
                 # "WHERE file_url ILIKE 's3://%' "
                 # "WHERE  open_ports @> array['(23,tcp,telnet)'] AND mirai_botnet_positive IS NULL "
-                " WHERE id>1230"
+                " WHERE id>=83539"
                 " ORDER BY id")
     # rows = [_ for _ in rows]
     for row in rows:
