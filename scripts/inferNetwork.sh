@@ -27,7 +27,7 @@ if [ $# -gt 1 ]; then
     ARCH=${2}
 else
     echo -n "Querying database for architecture... "
-    ARCH=$(psql -d firmware -U firmadyne -h 127.0.0.1 -t -q -c "SELECT arch from image WHERE id=${1};")
+    ARCH=$(scripts/psql_firmware.py "SELECT arch from image WHERE id=${1};")
     ARCH="${ARCH#"${ARCH%%[![:space:]]*}"}"
     echo "${ARCH}"
     if [ -z "${ARCH}" ]; then
@@ -37,7 +37,18 @@ else
 fi
 
 echo "Running firmware ${IID}: terminating after 60 secs..."
-timeout --preserve-status --signal SIGINT 60 "${SCRIPT_DIR}/run.${ARCH}.sh" "${IID}"
+# timeout --preserve-status --signal SIGINT 60 "${SCRIPT_DIR}/run.${ARCH}.sh" "${IID}"
+WORK_DIR=`get_scratch ${IID}`
+sudo rm -f ${WORK_DIR}/qemu.initial.serial.log
+sudo rm -f ${WORK_DIR}/run.sh
+"${SCRIPT_DIR}/run.${ARCH}.sh" "${IID}" &
+# echo "\$ARCH = $ARCH, \$WORK_DIR=$WORK_DIR"
+sleep 3
+echo 'wait for inet_insert_ifa'
+scripts/wait_for_inet_insert_ifa.py ${WORK_DIR}/qemu.initial.serial.log --timeout 60 --archend ${ARCH}
+QEMU=`get_qemu ${ARCH}`
+# echo "\$QEMU = $QEMU"
+killall ${QEMU} # qemu-system-mipsel
 sleep 1
 
 echo "Inferring network..."

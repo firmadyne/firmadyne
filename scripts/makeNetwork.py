@@ -7,6 +7,7 @@ import struct
 import socket
 import stat
 import os
+import psycopg2
 
 debug = 0
 
@@ -97,7 +98,7 @@ def findNonLoInterfaces(data, endianness):
         if g:
             (iface, addr) = g.groups()
             addr = socket.inet_ntoa(struct.pack(fmt, int(addr, 16)))
-            if addr != "127.0.0.1" and addr != "0.0.0.0":
+            if addr != "127.0.0.1" and addr != "0.0.0.0": # 0x0100007f
                 result.append((iface, addr))
     return result
 
@@ -313,7 +314,7 @@ def process(infile, iid, arch, endianness=None, makeQemuCmd=False, outfile=None)
             #find vlan_ids for all interfaces in the bridge
             vlans = findVlanInfoForDev(data, dev)
             #create a config for each tuple
-            network.add((buildConfig(iwi, dev, vlans, macChanges)))
+            network.add(buildConfig(iwi, dev, vlans, macChanges))
             deviceHasBridge = True
 
         #if there is no bridge just add the interface
