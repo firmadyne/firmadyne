@@ -6,6 +6,8 @@
 import argparse
 import os
 import subprocess
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from sources.extractor.extractor import *
 
 class AutoExtractor:
