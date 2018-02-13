@@ -1,4 +1,4 @@
-#!usr/bin/env python
+#!/usr/bin/env python
 
 #This program will automatically try to extract all firmware image.
 #Note that this program only extracts.
@@ -16,16 +16,20 @@ class AutoExtractor:
         self.inputImage = inputImage
         self.brand = brand
         self.firmadynedir = ['analyses','binaries','database','images','paper','scratch','scripts','sources']
-            
-    @staticmethod
-    def execute(self, inputImage, brand=None):
-        Extractor(inputImage, "images", True, False,
-                                False, "127.0.0.1", brand).extract()
+        self.cwd = os.getcwd()
+    
+    @staticmethod        
+    def execute(inputImage, brand=None):
+        Extractor(inputImage, 'images', True, False,
+                  False, "127.0.0.1", brand).extract()
+        #extract = Extractor(result.input, result.output, result.rootfs,
+        #                result.kernel, result.parallel, result.sql,
+        #                result.brand)
 
     @staticmethod
     def checkLog(fileForCheck):
         try:
-            f = open("%s"%fileForCheck, 'r')
+            f = open("%s"%fileForCheck, 'r+')
         except:
             return []
         visited = [line[:-1] for line in f]
@@ -50,7 +54,7 @@ class AutoExtractor:
 
     def extract(self):
         if self.auto == True:
-            visited = AutoExtractor.checkLog("visited.txt")
+            visited = AutoExtractor.checkLog("./visited.txt")
             dirlist = [dir for dir in os.listdir('.') if os.path.isdir(dir) and not dir in self.firmadynedir and not dir.startswith('.')]
             dirlist.sort()
             for d in dirlist:
@@ -58,11 +62,13 @@ class AutoExtractor:
                 files = [f for f in files if not f in visited]
                 files.sort()
                 for f in files:
-                    AutoExtractor.execute(d,'%s/%s'%(d,f))
-                    AutoExtractor.markImage("visited.txt",f)
+                    AutoExtractor.execute(inputImage='%s/%s'%(d,f), brand=d)
+                    os.chdir(self.cwd)
+                    AutoExtractor.markImage("./visited.txt",f)
         elif not self.auto and self.inputImage:
             AutoExtractor.execute(self.inputImage, self.brand)
-            AutoExtractor.markImage("visited.txt", self.inputImage)
+            os.chdir(self.cwd)
+            AutoExtractor.markImage("./visited.txt", self.inputImage)
         else:
             print
             print ("Wrong option was given...")
@@ -70,6 +76,7 @@ class AutoExtractor:
             print
 
 if __name__ == "__main__":
+    os.nice(-20)
     parser = argparse.ArgumentParser(description="Automatically Detect Vendors and Firmware Image and Execute All process\n\nThis Option Require All Firmware Images in the Directory")
     parser.add_argument('-na', action='store_false', dest='auto', default=True, help="This option require inputImage(relpath) and brand(optional)")
     parser.add_argument('-b', action='store', dest='brand', help="Firmware's Vendor name")
