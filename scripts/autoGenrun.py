@@ -15,7 +15,7 @@ class autoRunGenerator:
         'makeImage':'./scripts/makeImage.sh %d',
         'inferNetwork':'./scripts/inferNetwork.sh %d'
     }
-    firmadynedir = ['analyses','binaries','database','images','paper','scratch','scripts','sources']
+    
     def getImagenameFromDB(self,image_ID):
         import psycopg2
         query = 'SELECT filename FROM image WHERE id=%d'%image_ID

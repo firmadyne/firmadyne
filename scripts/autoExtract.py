@@ -22,9 +22,6 @@ class AutoExtractor:
     def execute(inputImage, brand=None):
         Extractor(inputImage, 'images', True, False,
                   False, "127.0.0.1", brand).extract()
-        #extract = Extractor(result.input, result.output, result.rootfs,
-        #                result.kernel, result.parallel, result.sql,
-        #                result.brand)
 
     @staticmethod
     def checkLog(fileForCheck):
