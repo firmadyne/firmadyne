@@ -9,6 +9,8 @@ import subprocess
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from sources.extractor.extractor import *
+import signal
+import time
 
 class AutoExtractor:
     def __init__(self, auto=False, inputImage=None, brand=None):
@@ -17,12 +19,20 @@ class AutoExtractor:
         self.brand = brand
         self.firmadynedir = ['analyses','binaries','database','images','paper','scratch','scripts','sources']
         self.cwd = os.getcwd()
-    
+    @staticmethod
+    def timeout_handler(num, stack):
+        raise Exception
     @staticmethod        
-    def execute(inputImage, brand=None):
-        Extractor(inputImage, 'images', True, False,
-                  False, "127.0.0.1", brand).extract()
-
+    def execute(inputImage, brand=None,cwd=None):
+        signal.signal(signal.SIGALRM, AutoExtractor.timeout_handler)
+        signal.alarm(1200) #20 minute timeout
+        try:
+            Extractor(inputImage, 'images', True, False,
+                      False, "127.0.0.1", brand).extract()
+        except:
+            if cwd:
+                os.chdir(cwd)
+            AutoExtractor.markImage("./timeout.txt", inputImage)
     @staticmethod
     def checkLog(fileForCheck):
         try:
@@ -59,11 +69,11 @@ class AutoExtractor:
                 files = [f for f in files if not f in visited]
                 files.sort()
                 for f in files:
-                    AutoExtractor.execute(inputImage='%s/%s'%(d,f), brand=d)
+                    AutoExtractor.execute(inputImage='%s/%s'%(d,f), brand=d, cwd=self.cwd)
                     os.chdir(self.cwd)
                     AutoExtractor.markImage("./visited.txt",f)
         elif not self.auto and self.inputImage:
-            AutoExtractor.execute(self.inputImage, self.brand)
+            AutoExtractor.execute(self.inputImage, self.brand, self.cwd)
             os.chdir(self.cwd)
             AutoExtractor.markImage("./visited.txt", self.inputImage)
         else:
@@ -73,7 +83,7 @@ class AutoExtractor:
             print
 
 if __name__ == "__main__":
-    os.nice(-20)
+    os.nice(0)
     parser = argparse.ArgumentParser(description="Automatically Detect Vendors and Firmware Image and Execute All process\n\nThis Option Require All Firmware Images in the Directory")
     parser.add_argument('-na', action='store_false', dest='auto', default=True, help="This option require inputImage(relpath) and brand(optional)")
     parser.add_argument('-b', action='store', dest='brand', help="Firmware's Vendor name")
