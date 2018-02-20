@@ -1,0 +1,11 @@
+XCTU/82001329_E.bin
+XCTU/82001329_H.bin
+XCTU/40M1260DF.bin
+XCTU/80006691_K2.bin
+XCTU/80006691_M.bin
+XCTU/80006691_M1.bin
+XCTU/80006691_M3.bin
+cramFS/80007050_M.bin
+cramFS/_80007050_A.bin.extracted
+cramFS/_80007050_A.bin.extracted
+cramFS/_80007050_A.bin.extracted
