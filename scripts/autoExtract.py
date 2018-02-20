@@ -13,15 +13,17 @@ import signal
 import time
 
 class AutoExtractor:
+    firmadynedir = ['analyses','binaries','database','images','paper','scratch','scripts','sources']
     def __init__(self, auto=False, inputImage=None, brand=None):
         self.auto = auto
         self.inputImage = inputImage
         self.brand = brand
-        self.firmadynedir = ['analyses','binaries','database','images','paper','scratch','scripts','sources']
         self.cwd = os.getcwd()
+    
     @staticmethod
     def timeout_handler(num, stack):
         raise Exception
+    
     @staticmethod        
     def execute(inputImage, brand=None,cwd=None):
         signal.signal(signal.SIGALRM, AutoExtractor.timeout_handler)
@@ -33,6 +35,7 @@ class AutoExtractor:
             if cwd:
                 os.chdir(cwd)
             AutoExtractor.markImage("./timeout.txt", inputImage)
+    
     @staticmethod
     def checkLog(fileForCheck):
         try:
@@ -62,7 +65,7 @@ class AutoExtractor:
     def extract(self):
         if self.auto == True:
             visited = AutoExtractor.checkLog("./visited.txt")
-            dirlist = [dir for dir in os.listdir('.') if os.path.isdir(dir) and not dir in self.firmadynedir and not dir.startswith('.')]
+            dirlist = [dir for dir in os.listdir('.') if os.path.isdir(dir) and not dir in AutoExtractor.firmadynedir and not dir.startswith('.')]
             dirlist.sort()
             for d in dirlist:
                 files = os.listdir('./%s'%d)

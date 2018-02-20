@@ -37,7 +37,7 @@ Also, These scripts extracts `-np -nk -sql 127.0.0.1` mode.
 - coded by nodapCoder
 1. `sudo python ./scripts/autoGenrun.py` will automatically generate run.sh of every firmware image if possible. 
 * This script will generate `visited.txt` and `success.txt` which contain list of visited file and successfully generated run.sh files.
-* Note that this script does not have timeout functionality.(But, pp_main.sh have timeout functinality.)
+* Note that this scripts have timeout functionality.(default is 1200 seconds per image)
 
 ##autoExtract.py
 - coded by nodapCoder

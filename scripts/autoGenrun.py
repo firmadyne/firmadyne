@@ -47,12 +47,16 @@ class autoRunGenerator:
         AutoExtractor(True).extract()
         os.chdir(cwd)
         extracted = os.listdir('./images')
-        extracted = [int(i[:-7]) for i in extracted if '.tar.gz' in i]
+        extracted = [int(i[:-7]) for i in extracted if i.endswith('.tar.gz')]
         
         for image_ID in extracted:
             try:
                 self.run(self.script['getArch']%image_ID, True, False)
-                self.run(self.script['tar2db']%(image_ID, image_ID), False, False)
+                try:
+                    self.run(self.script['tar2db']%(image_ID, image_ID), False, False)
+                except:
+                    print("Error: tar2db")
+                    print("Did you already registered this(image_ID: %d) tar file to DB?"%image_D)
                 self.run(self.script['makeImage']%image_ID, True, True)
                 self.run(self.script['inferNetwork']%image_ID, True, False)
             except:
