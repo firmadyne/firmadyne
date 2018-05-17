@@ -187,7 +187,7 @@ toolchain; others have not been tested.
 To simplify the process of building cross-compilation toolchains with musl, we
 recommend using the [musl-cross](https://github.com/GregorR/musl-cross) project.
 Follow the below steps to build these toolchains from source, or alternatively
-click [here](https://cmu.box.com/s/hnpvf1n72uccnhyfe307rc2nb9rfxmjp) to
+click [here](https://cmu.boxcn.net/s/hnpvf1n72uccnhyfe307rc2nb9rfxmjp) to
 download our pre-built toolchains.
 
 1. `git clone https://github.com/GregorR/musl-cross.git`
@@ -272,10 +272,10 @@ download our pre-built toolchains.
 
 During development, the database was stored on a PostgreSQL server.
 
-## [Data](https://cmu.box.com/s/hnpvf1n72uccnhyfe307rc2nb9rfxmjp)
+## Data
 
 Although we cannot redistribute binary firmware, the data used for our
-experiments is available [here](https://cmu.box.com/s/hnpvf1n72uccnhyfe307rc2nb9rfxmjp).
+experiments is available [here](https://cmu.boxcn.net/s/hnpvf1n72uccnhyfe307rc2nb9rfxmjp).
 
 ## [Schema](https://github.com/firmadyne/firmadyne/blob/master/database/schema)
 
