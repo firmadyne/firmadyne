@@ -90,9 +90,9 @@ def main():
             infile = v
 
     if infile and not iid:
-        m = re.match(r"(\d+)\.tar\.gz", infile)
+        m = re.search(r"(\d+)\.tar\.gz", infile)
         if m:
-            iid = int(m.groups(1))
+            iid = int(m.group(1))
 
     process(iid, infile)
 
