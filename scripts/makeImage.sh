@@ -73,7 +73,9 @@ echo "----Creating Partition Table----"
 echo -e "o\nn\np\n1\n\n\nw" | /sbin/fdisk "${IMAGE}"
 
 echo "----Mounting QEMU Image----"
-kpartx -a -s -v "${IMAGE}"
+output=$(kpartx -a -s -v "${IMAGE}")
+foo=$(echo "$output" | cut -d ' ' -f 3)
+DEVICE="/dev/mapper/$foo"
 sleep 1
 
 echo "----Creating Filesystem----"
