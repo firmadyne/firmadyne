@@ -15,7 +15,6 @@ if check_number $1; then
     echo "Usage: makeImage.sh <image ID> [<architecture]"
     exit 1
 fi
-
 IID=${1}
 
 if check_root; then
@@ -48,8 +47,6 @@ IMAGE_DIR=`get_fs_mount ${IID}`
 CONSOLE=`get_console ${ARCH}`
 LIBNVRAM=`get_nvram ${ARCH}`
 
-#DEVICE=`get_device`
-
 echo "----Copying Filesystem Tarball----"
 mkdir -p "${WORK_DIR}"
 chmod a+rwx "${WORK_DIR}"
@@ -73,9 +70,7 @@ echo "----Creating Partition Table----"
 echo -e "o\nn\np\n1\n\n\nw" | /sbin/fdisk "${IMAGE}"
 
 echo "----Mounting QEMU Image----"
-output=$(kpartx -a -s -v "${IMAGE}")
-foo=$(echo "$output" | cut -d ' ' -f 3)
-DEVICE=`get_device "${foo}"`
+DEVICE=$(get_device "$(kpartx -a -s -v "${IMAGE}")")
 sleep 1
 
 echo "----Creating Filesystem----"
