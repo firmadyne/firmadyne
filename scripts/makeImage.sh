@@ -48,8 +48,6 @@ IMAGE_DIR=`get_fs_mount ${IID}`
 CONSOLE=`get_console ${ARCH}`
 LIBNVRAM=`get_nvram ${ARCH}`
 
-DEVICE=`get_device`
-
 echo "----Copying Filesystem Tarball----"
 mkdir -p "${WORK_DIR}"
 chmod a+rwx "${WORK_DIR}"
@@ -73,7 +71,7 @@ echo "----Creating Partition Table----"
 echo -e "o\nn\np\n1\n\n\nw" | /sbin/fdisk "${IMAGE}"
 
 echo "----Mounting QEMU Image----"
-kpartx -a -s -v "${IMAGE}"
+DEVICE=$(get_device "$(kpartx -a -s -v "${IMAGE}")")
 sleep 1
 
 echo "----Creating Filesystem----"
