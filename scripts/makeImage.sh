@@ -11,6 +11,7 @@ else
     echo "Error: Could not find 'firmadyne.config'!"
     exit 1
 fi
+
 if check_number $1; then
     echo "Usage: makeImage.sh <image ID> [<architecture]"
     exit 1
