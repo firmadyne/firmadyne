@@ -28,13 +28,8 @@ WORK_DIR=`get_scratch ${IID}`
 IMAGE=`get_fs ${IID}`
 IMAGE_DIR=`get_fs_mount ${IID}`
 
-#DEVICE=`get_device`
-
 echo "----Adding Device File----"
-#/usr/bin/qemu-nbd --connect=/dev/${NBD} "${IMAGE}"
-output=$(kpartx -a -s -v "${IMAGE}")
-foo=$(echo "$output" | cut -d ' ' -f 3)
-DEVICE=`get_device "${foo}"`
+DEVICE=$(get_device "$(kpartx -a -s -v "${IMAGE}")")
 sleep 1
 
 echo "----Making image directory----"
