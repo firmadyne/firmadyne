@@ -202,6 +202,7 @@ download our pre-built toolchains.
    * `MUSL_DEFAULT_VERSION=1.1.12`
    * `MUSL_GIT_VERSION=615629bd6fcd6ddb69ad762e679f088c7bd878e2`
    * `LANG_CXX=no`
+   * `GCC_BUILTIN_PREREQS=yes`
 
 3. Modify or set the following variables in `config.sh`
    * `CFLAGS="-fPIC"`
