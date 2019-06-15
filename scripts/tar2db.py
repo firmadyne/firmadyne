@@ -6,6 +6,7 @@ import sys
 import re
 import hashlib
 import psycopg2
+import six
 
 def getFileHashes(infile):
     t = tarfile.open(infile)
@@ -72,7 +73,7 @@ def process(iid, infile):
     fdict = dict([(h, (filename, uid, gid, mode)) \
             for (filename, h, uid, gid, mode) in files])
 
-    file2oid = [(fdict[h], oid) for (h, oid) in oids.iteritems()]
+    file2oid = [(fdict[h], oid) for (h, oid) in six.iteritems(oids)]
 
     insertObjectToImage(iid, file2oid, links, cur)
 
