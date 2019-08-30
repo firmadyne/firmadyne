@@ -113,6 +113,8 @@ Alternatively, refer to the instructions [below](#compiling-from-source) to comp
 
 ## QEMU
 
+**Only QEMU <= 2.12 is supported! See bugs [#96](https://github.com/firmadyne/firmadyne/issues/96) and [#119](https://github.com/firmadyne/firmadyne/issues/119) for more information.**
+
 To use [QEMU](http://wiki.qemu.org/Main_Page) provided by your distribution:
 
 * `sudo apt-get install qemu-system-arm qemu-system-mips qemu-system-x86 qemu-utils`
