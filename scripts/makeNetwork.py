@@ -139,7 +139,7 @@ def qemuArchNetworkConfig(i, arch, n):
             return "-device virtio-net-device,netdev=net%(I)i -netdev socket,id=net%(I)i,listen=:200%(I)i" % {'I': i}
         else:
             #workaround for qemu >= 2.1.1 tested on Ubuntu 19 with qemu 3.1
-            return "-netdev user,id=n%(VLAN)i -device e1000,netdev=n%(VLAN)i -nic socket,listen=:200%(I)i" % {'I': i, 'VLAN' : i}
+            return "-netdev user,id=net%(I)i -device e1000,netdev=net%(I)i -nic socket,listen=:200%(I)i" % {'I': i}
     else:
         (ip, dev, vlan, mac) = n
          # newer kernels use virtio only
@@ -147,9 +147,9 @@ def qemuArchNetworkConfig(i, arch, n):
             return "-device virtio-net-device,netdev=net%(I)i -netdev tap,id=net%(I)i,ifname=${TAPDEV_%(I)i},script=no" % {'I': i}
         else:
             vlan_id = vlan if vlan else i
-            mac_str = "" if not mac else ",macaddr=%s" % mac
+            mac_str = "" if not mac else ",mac=%s" % mac
             #workaround for qemu >= 2.1.1 tested on Ubuntu 19 with qemu 3.1
-            return "-netdev tap,id=net%(I)i,ifname=${TAPDEV_%(I)i},script=no -device e1000,netdev=net%(I)i" % { 'I' : i, 'MAC' : mac_str, 'VLAN' : vlan_id}
+            return "-netdev tap,id=net%(I)i,ifname=${TAPDEV_%(I)i},script=no -device e1000,netdev=net%(I)i%(MAC)s" % { 'I' : i, 'MAC' : mac_str}
 
 def qemuNetworkConfig(arch, network):
     output = []
