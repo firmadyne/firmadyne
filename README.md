@@ -1,5 +1,6 @@
 # Table of Contents
 
+- [Table of Contents](#table-of-contents)
 - [Introduction](#introduction)
 - [Setup](#setup)
   - [Extractor](#extractor)
@@ -8,6 +9,9 @@
   - [QEMU](#qemu)
 - [Usage](#usage)
 - [FAQ](#faq)
+  - [run.sh is not generated](#runsh-is-not-generated)
+  - [A process crashed, e.g. do_page_fault() #2: sending SIGSEGV for invalid read access from 00000000](#a-process-crashed-eg-dopagefault-2-sending-sigsegv-for-invalid-read-access-from-00000000)
+  - [How do I debug the emulated firmware?](#how-do-i-debug-the-emulated-firmware)
 - [Compiling from Source](#compiling-from-source)
   - [Toolchain](#toolchain)
   - [console](#console)
@@ -112,8 +116,6 @@ To download our pre-built binaries for all components, run the following script:
 Alternatively, refer to the instructions [below](#compiling-from-source) to compile from source.
 
 ## QEMU
-
-**Only QEMU <= 2.12 is supported! See bugs [#96](https://github.com/firmadyne/firmadyne/issues/96) and [#119](https://github.com/firmadyne/firmadyne/issues/119) for more information.**
 
 To use [QEMU](http://wiki.qemu.org/Main_Page) provided by your distribution:
 
