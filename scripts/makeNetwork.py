@@ -216,9 +216,9 @@ sudo tunctl -t ${TAPDEV_%(I)i} -u ${USER}
 
     template_vlan = """
 echo "Initializing VLAN..."
-sudo ip link add link ${TAPDEV_%(I)i} name ${HOSTNETDEV_%(I)i} type vlan id %(VLANID)i
 HOSTNETDEV_%(I)i=${TAPDEV_%(I)i}.%(VLANID)i
-sudo ip link set ${HOSTNETDEV_%(I)i} up
+sudo ip link add link ${TAPDEV_%(I)i} name ${HOSTNETDEV_%(I)i} type vlan id %(VLANID)i
+sudo ip link set ${TAPDEV_%(I)i} up
 """
 
     template_2 = """
