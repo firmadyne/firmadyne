@@ -28,7 +28,7 @@ WORK_DIR=`get_scratch ${IID}`
 IMAGE=`get_fs ${IID}`
 IMAGE_DIR=`get_fs_mount ${IID}`
 
-DEVICE=`get_device`
+DEVICE=$(get_device "$(kpartx -u -s -v "${IMAGE}")")
 
 echo "----Unmounting----"
 umount "${DEVICE}"
