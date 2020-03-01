@@ -152,17 +152,23 @@ def qemuArchNetworkConfig(i, arch, n):
 def qemuNetworkConfig(arch, network):
     output = []
     assigned = []
-    for i in range(0, 4):
+
+    # Fix Id conflict bug
+    flag = 0
+    for k in range(0, 4):
         for j, n in enumerate(network):
             # need to connect the jth emulated network interface to the corresponding host interface
-            if i == ifaceNo(n[1]):
+            if k == ifaceNo(n[1]):
                 output.append(qemuArchNetworkConfig(j, arch, n))
                 assigned.append(n)
+                flag = j
                 break
 
-        # otherwise, put placeholder socket connection
-        if len(output) <= i:
-            output.append(qemuArchNetworkConfig(i, arch, None))
+    for i in range(0, 4):
+        if i != flag:
+            # otherwise, put placeholder socket connection
+            if len(output) <= i:
+                output.append(qemuArchNetworkConfig(i, arch, None))
 
     # find unassigned interfaces
     for j, n in enumerate(network):
