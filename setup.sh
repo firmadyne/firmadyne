@@ -11,7 +11,7 @@ mkdir $FIRMADYNE_INSTALL_DIR
 pushd $FIRMADYNE_INSTALL_DIR
 
 # Clone repos
-git clone https://github.com/devttys0/binwalk.git
+git clone https://github.com/ReFirmLabs/binwalk
 git clone --recursive https://github.com/firmadyne/firmadyne.git
 
 # Set up binwalk
