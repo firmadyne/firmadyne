@@ -10,7 +10,8 @@
 - [Usage](#usage)
 - [FAQ](#faq)
   - [run.sh is not generated](#runsh-is-not-generated)
-  - [A process crashed, e.g. do_page_fault() #2: sending SIGSEGV for invalid read access from 00000000](#a-process-crashed-eg-dopagefault-2-sending-sigsegv-for-invalid-read-access-from-00000000)
+  - [Log ends with "Kernel panic - not syncing: No working init found"](#log-ends-with-kernel-panic---not-syncing-no-working-init-found)
+  - [A process crashed, e.g. do_page_fault() #2: sending SIGSEGV for invalid read access from 00000000](#a-process-crashed-eg-do_page_fault-2-sending-sigsegv-for-invalid-read-access-from-00000000)
   - [How do I debug the emulated firmware?](#how-do-i-debug-the-emulated-firmware)
 - [Compiling from Source](#compiling-from-source)
   - [Toolchain](#toolchain)
@@ -162,7 +163,10 @@ This is a common error that is encountered when the network configuration is una
 
 1. `inferNetwork.sh`: Did this script find any network interfaces (e.g. `Interfaces: [br0, 192.168.0.1]`)? If so, this is a bug; please report it. Otherwise, continue below.
 2. `qemu.initial.serial.log`: Does this file end with `Unable to mount root fs on unknown-block(8,1)`? If so, the initial filesystem image was not generated correctly using `kpartx`. Try deleting the scratch directory corresponding to this firmware image, and restart at `makeImage.sh`. Otherwise, the initial emulation didn't produce any useful instrumentation. Try increasing the timeout in `inferNetwork.sh` from `60` to `120` and restarting at `inferNetwork.sh`.
-3. `qemu.initial.serial.log`: Did the `init` process crash, and is this preceded by a failed NVRAM operation (e.g. `nvram_get_buf: Unable to open key <foo>`)? If so, see the FAQ entry below.
+3. `qemu.initial.serial.log`: Did the `init` process crash, and is this preceded by a failed NVRAM operation (e.g. `nvram_get_buf: Unable to open key <foo>`)? If so, see the FAQ entries below.
+
+## Log ends with "Kernel panic - not syncing: No working init found"
+The firmware uses an initialization process with an unusual name. You'll need to manually inspect the filesystem to identify the correct one, then modify the script to specify its full path by appending a kernel boot parameter `init=<path>` to QEMU.
 
 ## A process crashed, e.g. `do_page_fault() #2: sending SIGSEGV for invalid read access from 00000000`
 It is likely that the process requested a NVRAM entry that FIRMADYNE does not have a default value for. This can be fixed by manually adding a source for NVRAM entries to `NVRAM_DEFAULTS_PATH`, an entry to `NVRAM_DEFAULTS`, or a file to `OVERRIDE_POINT` in `libnvram`. For more details, see the [documentation for libnvram](https://github.com/firmadyne/libnvram). Note that the first two options involve modifying `config.h`, which will require recompilation of `libnvram`.
