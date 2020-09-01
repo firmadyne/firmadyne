@@ -31,7 +31,7 @@ FIRMADYNE is an automated and scalable system for performing emulation and
 dynamic analysis of Linux-based embedded firmware. It includes the following
 components:
 
-* modified kernels (MIPS: [v2.6.32](https://github.com/firmadyne/kernel-v2.6.32),
+* modified kernels (MIPS: [v2.6](https://github.com/firmadyne/kernel-v2.6),
 ARM: [v4.1](https://github.com/firmadyne/kernel-v4.1),
 [v3.10](https://github.com/firmadyne/kernel-v3.10)) for instrumentation of
 firmware execution;
@@ -217,13 +217,13 @@ download our pre-built toolchains.
 
 4. For little-endian MIPS, perform the following:
    * set `TRIPLE=mipsel-linux-musl` in `config.sh`
-   * set `LINUX_HEADERS_URL=https://kernel.org/pub/linux/kernel/v2.6/longterm/v2.6.32/linux-2.6.32.70.tar.xz` in `defs.sh`
+   * set `LINUX_HEADERS_URL=https://mirrors.edge.kernel.org/pub/linux/kernel/v2.6/linux-2.6.39.4.tar.xz` in `defs.sh`
    * run `./clean.sh` to clean out any previous builds
    * run `./build.sh` to build and install the toolchain into `/opt/cross`
 
 5. For big-endian MIPS, perform the following:
    * set `TRIPLE=mipseb-linux-musl` in `config.sh`
-   * set `LINUX_HEADERS_URL=https://kernel.org/pub/linux/kernel/v2.6/longterm/v2.6.32/linux-2.6.32.70.tar.xz` in `defs.sh`
+   * set `LINUX_HEADERS_URL=https://mirrors.edge.kernel.org/pub/linux/kernel/v2.6/linux-2.6.39.4.tar.xz` in `defs.sh`
    * run `./clean.sh` to clean out any previous builds
    * run `./build.sh` to build and install the toolchain into `/opt/cross`
 
@@ -262,9 +262,9 @@ download our pre-built toolchains.
 4. `make ARCH=arm CROSS_COMPILE=/opt/cross/arm-linux-musleabi/bin/arm-linux-musleabi- O=./build/armel zImage -j8`
 5. `cp build/armel/arch/arm/boot/zImage ../firmadyne/binaries/zImage.armel`
 
-### [MIPS](https://github.com/firmadyne/kernel-v2.6.32)
+### [MIPS](https://github.com/firmadyne/kernel-v2.6)
 
-1. `git clone https://github.com/firmadyne/kernel-v2.6.32.git && cd kernel-v2.6.32`
+1. `git clone https://github.com/firmadyne/kernel-v2.6.git && cd kernel-v2.6`
 2. For big-endian MIPS, perform the following:
     1. `mkdir -p build/mipseb`
     2. `cp config.mipseb build/mipseb/.config`
