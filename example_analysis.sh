@@ -9,7 +9,7 @@ set -x
 
 # Download firmware image
 pushd /firmadyne/firmadyne
-wget http://www.downloads.netgear.com/files/GDC/WNAP320/WNAP320%20Firmware%20Version%202.0.3.zip
+wget -N --continue http://www.downloads.netgear.com/files/GDC/WNAP320/WNAP320%20Firmware%20Version%202.0.3.zip
 ZIP_FILE="WNAP320 Firmware Version 2.0.3.zip"
 
 python3 ./sources/extractor/extractor.py -b Netgear -sql 127.0.0.1 -np -nk "$ZIP_FILE" images
