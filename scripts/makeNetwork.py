@@ -351,19 +351,8 @@ def process(infile, iid, arch, endianness=None, makeQemuCmd=False, outfile=None)
     return success
 
 def archEnd(value):
-    arch = None
-    end = None
-
     tmp = value.lower()
-    if tmp.startswith("mips"):
-        arch = "mips"
-    elif tmp.startswith("arm"):
-        arch = "arm"
-    if tmp.endswith("el"):
-        end = "el"
-    elif tmp.endswith("eb"):
-        end = "eb"
-    return (arch, end)
+    return (tmp[:-2], tmp[-2:])
 
 def main():
     infile = None
