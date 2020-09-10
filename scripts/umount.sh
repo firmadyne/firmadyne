@@ -30,10 +30,10 @@ IMAGE_DIR=`get_fs_mount ${IID}`
 
 DEVICE=$(get_device "$(kpartx -u -s -v "${IMAGE}")")
 
-echo "----Unmounting----"
+echo "----Unmounting ${IMAGE_DIR}----"
 umount "${DEVICE}"
 
-echo "----Disconnecting Device File----"
+echo "----Disconnecting Device File ${DEVICE}----"
 kpartx -d "${IMAGE}"
 losetup -d "${DEVICE}" &>/dev/null
 dmsetup remove $(basename "${DEVICE}") &>/dev/null
