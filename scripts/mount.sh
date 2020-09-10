@@ -32,12 +32,14 @@ echo "----Adding Device File----"
 DEVICE=$(get_device "$(kpartx -a -s -v "${IMAGE}")")
 sleep 1
 
-echo "----Making image directory----"
 if [ ! -e "${IMAGE_DIR}" ]
 then
-        mkdir "${IMAGE_DIR}"
+    echo "----Making image directory ${IMAGE_DIR}----"
+    mkdir "${IMAGE_DIR}"
 fi
 
-echo "----Mounting----"
+echo "----Mounting ${DEVICE}----"
 #sudo /bin/mount /dev/nbd0p1 "${IMAGE_DIR}"
 mount "${DEVICE}" "${IMAGE_DIR}"
+
+echo "----Mounted at ${IMAGE_DIR}----"
