@@ -80,7 +80,7 @@ def findMacChanges(data, endianness):
             result.append((iface, mac))
     return result
 
-# Get the netwokr interfaces in the router, except 127.0.0.1
+# Get the network interfaces in the router, except 127.0.0.0/8
 def findNonLoInterfaces(data, endianness):
     #lines = data.split("\r\n")
     lines = stripTimestamps(data)
@@ -97,7 +97,7 @@ def findNonLoInterfaces(data, endianness):
         if g:
             (iface, addr) = g.groups()
             addr = socket.inet_ntoa(struct.pack(fmt, int(addr, 16)))
-            if addr != "127.0.0.1" and addr != "0.0.0.0":
+            if (not addr.startswith("127.")) and addr != "0.0.0.0":
                 result.append((iface, addr))
     return result
 
