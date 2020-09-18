@@ -75,9 +75,6 @@ requests are greatly appreciated, whether for documentation, tests, or code!
 
 # Setup
 
-The following has been tested on a Ubuntu 14.04 machine. Other Debian-based
-systems should also be compatible.
-
 First, clone this repository recursively and install its dependencies.
 
 1. `sudo apt-get install busybox-static fakeroot git dmsetup kpartx netcat-openbsd nmap python-psycopg2 python3-psycopg2 snmp uml-utilities util-linux vlan`
