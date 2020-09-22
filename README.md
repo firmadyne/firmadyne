@@ -82,10 +82,10 @@ First, clone this repository recursively and install its dependencies.
 
 ## Extractor
 
-The extractor depends on the [binwalk](https://github.com/devttys0/binwalk)
+The extractor depends on the [binwalk](https://github.com/ReFirmLabs/binwalk)
 tool, so we need to install that and its dependencies.
 
-1. `git clone https://github.com/devttys0/binwalk.git`
+1. `git clone https://github.com/ReFirmLabs/binwalk.git`
 2. `cd binwalk`
 2. `sudo ./deps.sh`
 3. `sudo python ./setup.py install`
@@ -130,7 +130,7 @@ recommended), or [upstream qemu](https://github.com/qemu/qemu).
 # Usage
 
 1. Set `FIRMWARE_DIR` in `firmadyne.config` to point to the root of this repository.
-2. Download a firmware image, e.g. [v2.0.3](http://www.downloads.netgear.com/files/GDC/WNAP320/WNAP320%20Firmware%20Version%202.0.3.zip) for [Netgear WNAP320](http://www.netgear.com/business/products/wireless/business-wireless/wnap320.aspx).
+2. Download a firmware image, e.g. [v2.0.3](http://www.downloads.netgear.com/files/GDC/WNAP320/WNAP320%20Firmware%20Version%202.0.3.zip) for [Netgear WNAP320](https://www.netgear.com/support/product/WNAP320.aspx).
    * `wget http://www.downloads.netgear.com/files/GDC/WNAP320/WNAP320%20Firmware%20Version%202.0.3.zip`
 3. Use the extractor to recover only the filesystem, no kernel (`-nk`), no parallel operation (`-np`), populating the `image` table in the SQL server at `127.0.0.1` (`-sql`) with the `Netgear` brand (`-b`), and storing the tarball in `images`.
    * `./sources/extractor/extractor.py -b Netgear -sql 127.0.0.1 -np -nk "WNAP320 Firmware Version 2.0.3.zip" images`
@@ -361,6 +361,6 @@ The results discussed in our [paper](https://github.com/firmadyne/firmadyne/blob
 * extractor: [`5520c64bfa8554c5c17ab671aaed0fdeec91bf19`](https://github.com/firmadyne/extractor/commits/5520c64bfa8554c5c17ab671aaed0fdeec91bf19)
 * libnvram: [`b60e7d4d576b39dd46107058adb635d43e80e00d`](https://github.com/firmadyne/libnvram/commits/b60e7d4d576b39dd46107058adb635d43e80e00d)
 * qemu-linaro: [`4753f5e8126a00cc0a8559bfd9b47d6340903323`](https://github.com/firmadyne/qemu-linaro/commits/4753f5e8126a00cc0a8559bfd9b47d6340903323)
-* binwalk: [`f2ce2992695fae5477c46980148c89e9c91a5cce`](https://github.com/devttys0/binwalk/commits/f2ce2992695fae5477c46980148c89e9c91a5cce)
+* binwalk: [`f2ce2992695fae5477c46980148c89e9c91a5cce`](https://github.com/ReFirmLabs/binwalk/commits/f2ce2992695fae5477c46980148c89e9c91a5cce)
    * jefferson: [`090a33be0be4aac8eee8d825447c0eb18dc8b51a`](https://github.com/firmadyne/jefferson/commits/090a33be0be4aac8eee8d825447c0eb18dc8b51a)
    * sasquatch: [`287e4a8e059d3ee7a5f643211fcf00c292cd6f4d`](https://github.com/firmadyne/sasquatch/commits/287e4a8e059d3ee7a5f643211fcf00c292cd6f4d)
