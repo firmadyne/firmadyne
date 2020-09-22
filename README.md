@@ -82,10 +82,10 @@ First, clone this repository recursively and install its dependencies.
 
 ## Extractor
 
-The extractor depends on the [binwalk](https://github.com/devttys0/binwalk)
+The extractor depends on the [binwalk](https://github.com/ReFirmLabs/binwalk)
 tool, so we need to install that and its dependencies.
 
-1. `git clone https://github.com/devttys0/binwalk.git`
+1. `git clone https://github.com/ReFirmLabs/binwalk.git`
 2. `cd binwalk`
 2. `sudo ./deps.sh`
 3. `sudo python ./setup.py install`
@@ -361,6 +361,6 @@ The results discussed in our [paper](https://github.com/firmadyne/firmadyne/blob
 * extractor: [`5520c64bfa8554c5c17ab671aaed0fdeec91bf19`](https://github.com/firmadyne/extractor/commits/5520c64bfa8554c5c17ab671aaed0fdeec91bf19)
 * libnvram: [`b60e7d4d576b39dd46107058adb635d43e80e00d`](https://github.com/firmadyne/libnvram/commits/b60e7d4d576b39dd46107058adb635d43e80e00d)
 * qemu-linaro: [`4753f5e8126a00cc0a8559bfd9b47d6340903323`](https://github.com/firmadyne/qemu-linaro/commits/4753f5e8126a00cc0a8559bfd9b47d6340903323)
-* binwalk: [`f2ce2992695fae5477c46980148c89e9c91a5cce`](https://github.com/devttys0/binwalk/commits/f2ce2992695fae5477c46980148c89e9c91a5cce)
+* binwalk: [`f2ce2992695fae5477c46980148c89e9c91a5cce`](https://github.com/ReFirmLabs/binwalk/commits/f2ce2992695fae5477c46980148c89e9c91a5cce)
    * jefferson: [`090a33be0be4aac8eee8d825447c0eb18dc8b51a`](https://github.com/firmadyne/jefferson/commits/090a33be0be4aac8eee8d825447c0eb18dc8b51a)
    * sasquatch: [`287e4a8e059d3ee7a5f643211fcf00c292cd6f4d`](https://github.com/firmadyne/sasquatch/commits/287e4a8e059d3ee7a5f643211fcf00c292cd6f4d)
