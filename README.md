@@ -130,7 +130,7 @@ recommended), or [upstream qemu](https://github.com/qemu/qemu).
 # Usage
 
 1. Set `FIRMWARE_DIR` in `firmadyne.config` to point to the root of this repository.
-2. Download a firmware image, e.g. [v2.0.3](http://www.downloads.netgear.com/files/GDC/WNAP320/WNAP320%20Firmware%20Version%202.0.3.zip) for [Netgear WNAP320](http://www.netgear.com/business/products/wireless/business-wireless/wnap320.aspx).
+2. Download a firmware image, e.g. [v2.0.3](http://www.downloads.netgear.com/files/GDC/WNAP320/WNAP320%20Firmware%20Version%202.0.3.zip) for [Netgear WNAP320](https://www.netgear.com/support/product/WNAP320.aspx).
    * `wget http://www.downloads.netgear.com/files/GDC/WNAP320/WNAP320%20Firmware%20Version%202.0.3.zip`
 3. Use the extractor to recover only the filesystem, no kernel (`-nk`), no parallel operation (`-np`), populating the `image` table in the SQL server at `127.0.0.1` (`-sql`) with the `Netgear` brand (`-b`), and storing the tarball in `images`.
    * `./sources/extractor/extractor.py -b Netgear -sql 127.0.0.1 -np -nk "WNAP320 Firmware Version 2.0.3.zip" images`
