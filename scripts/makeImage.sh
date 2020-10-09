@@ -48,23 +48,28 @@ IMAGE_DIR=`get_fs_mount ${IID}`
 CONSOLE=`get_console ${ARCH}`
 LIBNVRAM=`get_nvram ${ARCH}`
 
-echo "----Copying Filesystem Tarball----"
+echo "----Creating working directory ${WORK_DIR}----"
 mkdir -p "${WORK_DIR}"
 chmod a+rwx "${WORK_DIR}"
 chown -R "${USER}" "${WORK_DIR}"
 chgrp -R "${USER}" "${WORK_DIR}"
 
-if [ ! -e "${WORK_DIR}/${IID}.tar.gz" ]; then
-    if [ ! -e "${TARBALL_DIR}/${IID}.tar.gz" ]; then
-        echo "Error: Cannot find tarball of root filesystem for ${IID}!"
-        exit 1
-    else
-        cp "${TARBALL_DIR}/${IID}.tar.gz" "${WORK_DIR}/${IID}.tar.gz"
-    fi
+if [ ! -e "${TARBALL_DIR}/${IID}.tar.gz" ]; then
+    echo "Error: Cannot find tarball of root filesystem for ${IID}!"
+    exit 1
 fi
 
-echo "----Creating QEMU Image----"
-qemu-img create -f raw "${IMAGE}" 1G
+
+tarball_size=$(tar ztvf "${TARBALL_DIR}/${IID}.tar.gz" --totals 2>&1 |tail -1|cut -f4 -d' ')
+echo "----The size of root filesystem '${TARBALL_DIR}/${IID}.tar.gz' is $tarball_size-----"
+image_size=8388608
+while [ $image_size -le $tarball_size ]
+do
+    image_size=$((image_size*2))
+done
+
+echo "----Creating QEMU Image ${IMAGE} with size ${image_size}----"
+qemu-img create -f raw "${IMAGE}" $image_size
 chmod a+rw "${IMAGE}"
 
 echo "----Creating Partition Table----"
@@ -87,9 +92,8 @@ fi
 echo "----Mounting QEMU Image Partition 1----"
 mount "${DEVICE}" "${IMAGE_DIR}"
 
-echo "----Extracting Filesystem Tarball----"
-tar -xf "${WORK_DIR}/$IID.tar.gz" -C "${IMAGE_DIR}"
-rm "${WORK_DIR}/${IID}.tar.gz"
+echo "----Extracting Filesystem Tarball to Mountpoint----"
+tar -xf "${TARBALL_DIR}/${IID}.tar.gz" -C "${IMAGE_DIR}"
 
 echo "----Creating FIRMADYNE Directories----"
 mkdir "${IMAGE_DIR}/firmadyne/"
