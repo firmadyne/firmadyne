@@ -60,16 +60,17 @@ if [ ! -e "${TARBALL_DIR}/${IID}.tar.gz" ]; then
 fi
 
 
-tarball_size=$(tar ztvf "${TARBALL_DIR}/${IID}.tar.gz" --totals 2>&1 |tail -1|cut -f4 -d' ')
-echo "----The size of root filesystem '${TARBALL_DIR}/${IID}.tar.gz' is $tarball_size-----"
-image_size=8388608
-while [ $image_size -le $tarball_size ]
+TARBALL_SIZE=$(tar ztvf "${TARBALL_DIR}/${IID}.tar.gz" --totals 2>&1 |tail -1|cut -f4 -d' ')
+MINIMUM_IMAGE_SIZE=$((TARBALL_SIZE + 10 * 1024 * 1024))
+echo "----The size of root filesystem '${TARBALL_DIR}/${IID}.tar.gz' is $TARBALL_SIZE-----"
+IMAGE_SIZE=8388608
+while [ $IMAGE_SIZE -le $MINIMUM_IMAGE_SIZE ]
 do
-    image_size=$((image_size*2))
+    IMAGE_SIZE=$((IMAGE_SIZE*2))
 done
 
-echo "----Creating QEMU Image ${IMAGE} with size ${image_size}----"
-qemu-img create -f raw "${IMAGE}" $image_size
+echo "----Creating QEMU Image ${IMAGE} with size ${IMAGE_SIZE}----"
+qemu-img create -f raw "${IMAGE}" $IMAGE_SIZE
 chmod a+rw "${IMAGE}"
 
 echo "----Creating Partition Table----"
