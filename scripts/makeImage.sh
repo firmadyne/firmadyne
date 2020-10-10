@@ -79,12 +79,13 @@ echo -e "o\nn\np\n1\n\n\nw" | /sbin/fdisk "${IMAGE}"
 echo "----Mounting QEMU Image----"
 DEVICE=$(get_device "$(kpartx -a -s -v "${IMAGE}")")
 sleep 1
+echo "----Device mapper created at ${DEVICE}----"
 
 echo "----Creating Filesystem----"
 mkfs.ext2 "${DEVICE}"
 sync
 
-echo "----Making QEMU Image Mountpoint----"
+echo "----Making QEMU Image Mountpoint at ${IMAGE_DIR}----"
 if [ ! -e "${IMAGE_DIR}" ]; then
     mkdir "${IMAGE_DIR}"
     chown "${USER}" "${IMAGE_DIR}"
@@ -122,6 +123,7 @@ chmod a+x "${IMAGE_DIR}/firmadyne/preInit.sh"
 echo "----Unmounting QEMU Image----"
 sync
 umount "${DEVICE}"
+echo "----Deleting device mapper----"
 kpartx -d "${IMAGE}"
 losetup -d "${DEVICE}" &>/dev/null
 dmsetup remove $(basename "$DEVICE") &>/dev/null
