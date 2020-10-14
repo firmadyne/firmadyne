@@ -142,18 +142,14 @@ recommended), or [upstream qemu](https://github.com/qemu/qemu).
    * `sudo ./scripts/makeImage.sh 1`
 7. Infer the network configuration for firmware `1`. Kernel messages are logged to `./scratch/1/qemu.initial.serial.log`.
    * `./scripts/inferNetwork.sh 1`
-8. Since the Netgear firmware disabled root access from tty0, you need to mount the QEMU disk image and do some modification. 
-   * `sudo ./scripts/mount.sh 1`
-   * `rm scratch/1/image/etc/securetty`
-   * `sudo ./scripts/umount.sh 1`
-9. Emulate firmware `1` with the inferred network configuration. This will modify the configuration of the host system by creating a TAP device and adding a route.
+8. Emulate firmware `1` with the inferred network configuration. This will modify the configuration of the host system by creating a TAP device and adding a route.
    * `./scratch/1/run.sh`
-10. The system should be available over the network, and is ready for analysis. Kernel messages are mirrored to `./scratch/1/qemu.final.serial.log`.
+9. The system should be available over the network, and is ready for analysis. Kernel messages are mirrored to `./scratch/1/qemu.final.serial.log`.
    * `./analyses/snmpwalk.sh 192.168.0.100`
    * `./analyses/webAccess.py 1 192.168.0.100 log.txt`
    * `mkdir exploits; ./analyses/runExploits.py -t 192.168.0.100 -o exploits/exploit -e x` (requires Metasploit Framework)
    * `sudo nmap -O -sV 192.168.0.100`
-11. The default console should be automatically connected to the terminal. You may also login with `root` and `password`. Note that `Ctrl-c` is sent to the guest; use the QEMU monitor command `Ctrl-a + x` to terminate emulation.
+10. The default console should be automatically connected to the terminal. You may also login with `root` and `password`. Note that `Ctrl-c` is sent to the guest; use the QEMU monitor command `Ctrl-a + x` to terminate emulation.
 
 # FAQ
 ## `run.sh` is not generated

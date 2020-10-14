@@ -12,6 +12,19 @@ resolve_link() {
     echo "$TARGET"
 }
 
+rename_file(){
+    if [ -f "$1" ]; then
+        echo "Renaming $1 to ${1}.bak"
+        mv "$1" "${1}.bak"
+    fi
+}
+
+remove_file(){
+    if [ -f "$1" ]; then
+        echo "Removing $1"
+        rm -f "$1"
+    fi
+}
 # make /etc and add some essential files
 mkdir -p "$(resolve_link /etc)"
 if [ ! -s /etc/TZ ]; then
@@ -141,8 +154,7 @@ fi
 # prevent system from rebooting
 #echo "Removing /sbin/reboot!"
 #rm -f /sbin/reboot
-echo "Removing /etc/scripts/sys_resetbutton!"
-rm -f /etc/scripts/sys_resetbutton
+remove_file /etc/scripts/sys_resetbutton
 
 # add some default nvram entries
 if $BUSYBOX grep -sq "ipv6_6to4_lan_ip" /sbin/rc; then
@@ -174,3 +186,5 @@ if $BUSYBOX grep -sq "rip_enable" /sbin/acos_service; then
     echo "Creating default rip_enable!"
     echo -n "0" > /firmadyne/libnvram.override/rip_enable
 fi
+
+rename_file /etc/securetty
