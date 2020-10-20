@@ -12,6 +12,13 @@ resolve_link() {
     echo "$TARGET"
 }
 
+backup_file(){
+    if [ -f "$1" ]; then
+        echo "Backing up $1 to ${1}.bak"
+        cp "$1" "${1}.bak"
+    fi
+}
+
 rename_file(){
     if [ -f "$1" ]; then
         echo "Renaming $1 to ${1}.bak"
@@ -39,10 +46,31 @@ if [ ! -s /etc/hosts ]; then
     echo "127.0.0.1 localhost" > "$(resolve_link /etc/hosts)"
 fi
 
-if [ ! -s /etc/passwd ]; then
-    echo "Creating /etc/passwd!"
-    mkdir -p "$(dirname $(resolve_link /etc/passwd))"
-    echo "root::0:0:root:/root:/bin/sh" > "$(resolve_link /etc/passwd)"
+PASSWD=$(resolve_link /etc/passwd)
+SHADOW=$(resolve_link /etc/shadow)
+if [ ! -s "$PASSWD" ]; then
+    echo "Creating $PASSWD!"
+    mkdir -p "$(dirname $PASSWD)"
+    echo "root::0:0:root:/root:/bin/sh" > "$PASSWD"
+else
+    backup_file $PASSWD
+    backup_file $SHADOW
+    if ! $BUSYBOX grep -sq "^root:" $PASSWD ; then
+        echo "No root user found, creating root user with shell '/bin/sh'"
+        echo "root::0:0:root:/root:/bin/sh" > "$PASSWD"
+        $BUSYBOX [ ! -d '/root' ] && $BUSYBOX mkdir /root
+    fi
+
+    if [ -z "$($BUSYBOX grep -Es '^root:' $PASSWD |$BUSYBOX grep -Es ':/bin/sh$')" ] ; then
+        echo "Fixing shell for root user"
+        $BUSYBOX sed -ir 's/^(root:.*):[^:]+$/\1:\/bin\/sh/' $PASSWD
+    fi
+
+    if [ ! -z "$($BUSYBOX grep -Es '^root:[^:]+' $PASSWD)" -o ! -z "$($BUSYBOX grep -Es '^root:[^:]+' $SHADOW)" ]; then
+        echo "Unlocking and blanking default root password. (*May not work since some routers reset the password back to default when booting)"
+        $BUSYBOX sed -ir 's/^(root:)[^:]+:/\1:/' $PASSWD
+        $BUSYBOX sed -ir 's/^(root:)[^:]+:/\1:/' $SHADOW
+    fi
 fi
 
 # make /dev and add default device nodes if current /dev does not have greater
