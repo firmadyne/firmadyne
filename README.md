@@ -144,7 +144,7 @@ recommended), or [upstream qemu](https://github.com/qemu/qemu).
    * `./scripts/inferNetwork.sh 1`
 8. Emulate firmware `1` with the inferred network configuration. This will modify the configuration of the host system by creating a TAP device and adding a route.
    * `./scratch/1/run.sh`
-9. The system should be available over the network, and is ready for analysis. Kernel messages are mirrored to `./scratch/1/qemu.final.serial.log`.
+9. The system should be available over the network, and is ready for analysis. Kernel messages are mirrored to `./scratch/1/qemu.final.serial.log`. The filesystem for firmware `1` can be mounted to and unmounted from `scratch/1/image` with `./scripts/mount.sh 1` and `./scripts/umount.sh 1`.
    * `./analyses/snmpwalk.sh 192.168.0.100`
    * `./analyses/webAccess.py 1 192.168.0.100 log.txt`
    * `mkdir exploits; ./analyses/runExploits.py -t 192.168.0.100 -o exploits/exploit -e x` (requires Metasploit Framework)
