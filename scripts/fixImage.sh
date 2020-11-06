@@ -50,7 +50,7 @@ PASSWD=$(resolve_link /etc/passwd)
 SHADOW=$(resolve_link /etc/shadow)
 if [ ! -s "$PASSWD" ]; then
     echo "Creating $PASSWD!"
-    $BUSYBOX $BUSYBOX mkdir -p "$(dirname $PASSWD)"
+    $BUSYBOX mkdir -p "$(dirname $PASSWD)"
     echo "root::0:0:root:/root:/bin/sh" > "$PASSWD"
 else
     backup_file $PASSWD
@@ -58,7 +58,7 @@ else
     if ! $BUSYBOX grep -sq "^root:" $PASSWD ; then
         echo "No root user found, creating root user with shell '/bin/sh'"
         echo "root::0:0:root:/root:/bin/sh" > "$PASSWD"
-        $BUSYBOX [ ! -d '/root' ] && $BUSYBOX $BUSYBOX mkdir /root
+        $BUSYBOX [ ! -d '/root' ] && $BUSYBOX mkdir /root
     fi
 
     if [ -z "$($BUSYBOX grep -Es '^root:' $PASSWD |$BUSYBOX grep -Es ':/bin/sh$')" ] ; then
