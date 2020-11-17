@@ -152,6 +152,9 @@ recommended), or [upstream qemu](https://github.com/qemu/qemu).
 10. The default console should be automatically connected to the terminal. You may also login with `root` and `password`. Note that `Ctrl-c` is sent to the guest; use the QEMU monitor command `Ctrl-a + x` to terminate emulation.
 
 # FAQ
+## QEMU outputs empty log for ARM device
+Emulation of `armel` devices appears to be broken with our kernel and QEMU >= 2.7.0 for an unknown reason. Use QEMU 2.6.2.
+
 ## `run.sh` is not generated
 This is a common error that is encountered when the network configuration is unable to be inferred. Follow the checklist below to figure out the cause.
 
