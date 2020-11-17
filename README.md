@@ -9,6 +9,7 @@
   - [QEMU](#qemu)
 - [Usage](#usage)
 - [FAQ](#faq)
+  - [QEMU outputs empty log for ARM device](#qemu-outputs-empty-log-for-arm-device)
   - [run.sh is not generated](#runsh-is-not-generated)
   - [Log ends with "Kernel panic - not syncing: No working init found"](#log-ends-with-kernel-panic---not-syncing-no-working-init-found)
   - [A process crashed, e.g. do_page_fault() #2: sending SIGSEGV for invalid read access from 00000000](#a-process-crashed-eg-do_page_fault-2-sending-sigsegv-for-invalid-read-access-from-00000000)
