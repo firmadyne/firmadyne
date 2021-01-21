@@ -3,7 +3,7 @@ set -e
 set -x
 
 # Install dependencies
-sudo apt-get install -y busybox-static fakeroot git dmsetup kpartx netcat-openbsd nmap python-psycopg2 python3-psycopg2 snmp uml-utilities util-linux vlan postgresql wget qemu-system-arm qemu-system-mips qemu-system-x86 qemu-utils vim unzip
+sudo apt-get install -y busybox-static fakeroot git dmsetup kpartx netcat-openbsd nmap python3-psycopg2 snmp uml-utilities util-linux vlan postgresql wget qemu-system-arm qemu-system-mips qemu-system-x86 qemu-utils vim unzip
 
 # Move to firmadyne dir
 FIRMADYNE_INSTALL_DIR=/firmadyne
