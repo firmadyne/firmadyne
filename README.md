@@ -56,7 +56,7 @@ authentication.
 `public` and `private` SNMP v2c communities to disk using no credentials.
 * Vulnerability Check: This script tests for the presence
 of 60 known vulnerabilities using exploits from Metasploit. In addition, it
-also checks for 14 previously-unknown vulnerbailities that we discovered.
+also checks for 14 previously-unknown vulnerabilities that we discovered.
 For more information, including affected products and CVE's, refer to
 [analyses/README.md](https://github.com/firmadyne/firmadyne/blob/master/analyses/README.md).
 
