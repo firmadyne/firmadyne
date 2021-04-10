@@ -13,7 +13,7 @@ download https://github.com/firmadyne/kernel-v2.6/releases/download/v1.1/vmlinux
 download https://github.com/firmadyne/kernel-v2.6/releases/download/v1.1/vmlinux.mipseb
 
 echo "Downloading kernel 4.1 (ARM)..."
-download https://github.com/firmadyne/kernel-v4.1/releases/download/v1.0/zImage.armel
+download https://github.com/firmadyne/kernel-v4.1/releases/download/v1.1/zImage.armel
 
 echo "Downloading console..."
 download https://github.com/firmadyne/console/releases/download/v1.0/console.armel

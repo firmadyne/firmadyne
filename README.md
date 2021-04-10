@@ -9,7 +9,6 @@
   - [QEMU](#qemu)
 - [Usage](#usage)
 - [FAQ](#faq)
-  - [QEMU outputs empty log for ARM device](#qemu-outputs-empty-log-for-arm-device)
   - [run.sh is not generated](#runsh-is-not-generated)
   - [Log ends with "Kernel panic - not syncing: No working init found"](#log-ends-with-kernel-panic---not-syncing-no-working-init-found)
   - [A process crashed, e.g. do_page_fault() #2: sending SIGSEGV for invalid read access from 00000000](#a-process-crashed-eg-do_page_fault-2-sending-sigsegv-for-invalid-read-access-from-00000000)
@@ -153,9 +152,6 @@ recommended), or [upstream qemu](https://github.com/qemu/qemu).
 10. The default console should be automatically connected to the terminal. You may also login with `root` and `password`. Note that `Ctrl-c` is sent to the guest; use the QEMU monitor command `Ctrl-a + x` to terminate emulation.
 
 # FAQ
-## QEMU outputs empty log for ARM device
-Emulation of `armel` devices appears to be broken with our kernel and QEMU >= 2.7.0 for an unknown reason. Use QEMU 2.6.2.
-
 ## `run.sh` is not generated
 This is a common error that is encountered when the network configuration is unable to be inferred. Follow the checklist below to figure out the cause.
 
