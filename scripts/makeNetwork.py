@@ -143,11 +143,11 @@ def qemuArchNetworkConfig(i, arch, n):
         (ip, dev, vlan, mac) = n
          # newer kernels use virtio only
         if arch == "arm":
-            return "-device virtio-net-device,netdev=net%(I)i -netdev tap,id=net%(I)i,ifname=${TAPDEV_%(I)i},script=no" % {'I': i}
+            return "-device virtio-net-device,netdev=nettap%(I)i -netdev tap,id=nettap%(I)i,ifname=${TAPDEV_%(I)i},script=no" % {'I': i}
         else:
             vlan_id = vlan if vlan else i
             mac_str = "" if not mac else ",mac=%s" % mac
-            return "-netdev tap,id=net%(I)i,ifname=${TAPDEV_%(I)i},script=no -device e1000,netdev=net%(I)i%(MAC)s" % { 'I' : i, 'MAC' : mac_str}
+            return "-netdev tap,id=nettap%(I)i,ifname=${TAPDEV_%(I)i},script=no -device e1000,netdev=nettap%(I)i%(MAC)s" % { 'I' : i, 'MAC' : mac_str}
 
 def qemuNetworkConfig(arch, network):
     output = []
