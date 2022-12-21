@@ -65,7 +65,7 @@ set -e
 
 for TARGET in ${FILES}
 do
-    SKIP=$(echo "${TARGET}" | fgrep -o / | wc -l)
+    SKIP=$(echo "${TARGET}" | grep -F -o / | wc -l)
     tar -xf "${INFILE}" -C "/tmp/${IID}/" --strip-components=${SKIP} ${TARGET}
     TARGETLOC="/tmp/$IID/${TARGET##*/}"
 
