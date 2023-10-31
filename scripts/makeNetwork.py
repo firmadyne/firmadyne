@@ -297,7 +297,8 @@ def qemuCmd(iid, network, arch, endianness):
 def process(infile, iid, arch, endianness=None, makeQemuCmd=False, outfile=None):
     brifs = []
     vlans = []
-    data = open(infile).read()
+    data = open(infile,"rb").read()
+    data = data.decode('utf-8', 'replace')
     network = set()
     success = False
 
