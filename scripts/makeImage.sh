@@ -74,7 +74,7 @@ qemu-img create -f raw "${IMAGE}" $IMAGE_SIZE
 chmod a+rw "${IMAGE}"
 
 echo "----Creating Partition Table----"
-echo -e "o\nn\np\n1\n\n\nw" | /sbin/fdisk "${IMAGE}"
+echo -e "o\nn\np\n1\n\n\nw" | fdisk "${IMAGE}"
 
 echo "----Mounting QEMU Image----"
 DEVICE=$(get_device "$(kpartx -a -s -v "${IMAGE}")")
