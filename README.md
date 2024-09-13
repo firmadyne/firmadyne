@@ -128,6 +128,11 @@ firmware with an `alphafs` webserver that assumes a fixed memory mapping (not
 recommended), or [upstream qemu](https://github.com/qemu/qemu).
 
 # Usage
+There is two way to generate run.sh file.
+1. Manual
+  * Follow directions of below.
+2. Automatic
+  * See ./scripts/README.md
 
 1. Set `FIRMWARE_DIR` in `firmadyne.config` to point to the root of this repository.
 2. Download a firmware image, e.g. [v2.0.3](http://www.downloads.netgear.com/files/GDC/WNAP320/WNAP320%20Firmware%20Version%202.0.3.zip) for [Netgear WNAP320](https://www.netgear.com/support/product/WNAP320.aspx).
