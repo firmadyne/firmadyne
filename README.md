@@ -360,3 +360,19 @@ The results discussed in our [paper](https://github.com/firmadyne/firmadyne/blob
 * binwalk: [`f2ce2992695fae5477c46980148c89e9c91a5cce`](https://github.com/ReFirmLabs/binwalk/commits/f2ce2992695fae5477c46980148c89e9c91a5cce)
    * jefferson: [`090a33be0be4aac8eee8d825447c0eb18dc8b51a`](https://github.com/firmadyne/jefferson/commits/090a33be0be4aac8eee8d825447c0eb18dc8b51a)
    * sasquatch: [`287e4a8e059d3ee7a5f643211fcf00c292cd6f4d`](https://github.com/firmadyne/sasquatch/commits/287e4a8e059d3ee7a5f643211fcf00c292cd6f4d)
+  # Team Contributions:
+
+## Jaswanth and Sreekar:
+Worked on the architecture, disk image formation, running the emulator, Analyses, logs.Developed the core system architecture that enables firmware emulation across different device architectures.Involved creating robust disk image formation processes, designing analytical tools for firmware examination.
+
+## Santhosh:
+Worked on the terminal and the GUI communication. Developed the interface that allows users to interact directly with the emulated firmware environment through the terminal embedded in the GUI.
+
+## Vamsi:
+Worked on the extractor and the data loading section.
+
+## Manoj:
+Created the GUI using Python Tkinter library.
+
+## Danish:
+Worked on developing the installer for the software.
